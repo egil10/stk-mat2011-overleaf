@@ -1,55 +1,63 @@
 \section{Method}
 
-Let $P_\tau$ denote the observed transaction price at tick time $\tau$. The observed price can be decomposed as 
-\[
-P_\tau = P_\tau^*+\eta_\tau
-\]
-where $P_\tau$ is the latent efficient price and $\eta_\tau$ represents microstructure noise. The pre-averaged price is defined as 
-\[
-\bar P_t = \frac{1}{k} \sum_{j=0}^{k-1} P_{t-j}
-\]
-where $t$ now indexes the last tick in each averaging block. Returns are then constructed as 
-\[
-r_t=\bar P_t - \bar P_{t-1}
-\]
+Let $P_\tau$ denote the observed transaction price at tick time $\tau$. The observed price can be decomposed as shown in Equation \ref{eq:price_decomp}:
+\begin{equation}
+    P_\tau = P_\tau^*+\eta_\tau
+    \label{eq:price_decomp}
+\end{equation}
+where $P_\tau^*$ is the latent efficient price and $\eta_\tau$ represents microstructure noise. The pre-averaged price is defined in Equation \ref{eq:pre_avg} as
+\begin{equation}
+    \bar P_t = \frac{1}{k} \sum_{j=0}^{k-1} P_{t-j}
+    \label{eq:pre_avg}
+\end{equation}
+where $t$ now indexes the last tick in each averaging block. Returns are then constructed as shown in Equation \ref{eq:returns}:
+\begin{equation}
+    r_t=\bar P_t - \bar P_{t-1}
+    \label{eq:returns}
+\end{equation}
 
 \subsection{Baseline Auto-regressive Model}
 
-As a benchmark, we consider a single-regime auto-regressive model of order one
-\[
-r_t=\mu+\phi r_t{t-1} + \varepsilon_t
-\]
-where $\mu$ is the unconditional mean return, $\phi$ measures linear serial dependence and $\varepsilon_t$ is an innovative term with $\varepsilon_t\sim \mathcal{N}(0,\sigma^2)$. 
+As a benchmark, we consider a single-regime auto-regressive model of order one, given by Equation \ref{eq:baseline_ar}:
+\begin{equation}
+    r_t=\mu+\phi r_{t-1} + \varepsilon_t
+    \label{eq:baseline_ar}
+\end{equation}
+where $\mu$ is the unconditional mean return, $\phi$ measures linear serial dependence and $\varepsilon_t$ is an innovative term with $\varepsilon_t\sim \mathcal{N}(0,\sigma^2)$.
 
 \subsection{Hidden Markov Model with Regime-Switching Auto-regressive Dynamics}
 
-Let $S_t \in \{ 1,\dots,K \}$ denote an unobserved discrete-time Markov chain representing the dependence regime at time $t$. The transition probabilities are defined as 
-\[
-\mathbb{P}(S_t=j \mid S_{t-1} = i) = p_{ij}
-\]
-with $p_{ij} \geq 0$ and $\sum_{j=1}^K p_{ij} = 1$ for all $i$. 
+Let $S_t \in \{ 1,\dots,K \}$ denote an unobserved discrete-time Markov chain representing the dependence regime at time $t$. The transition probabilities are defined in Equation \ref{eq:trans_probs}:
+\begin{equation}
+    \mathbb{P}(S_t=j \mid S_{t-1} = i) = p_{ij}
+    \label{eq:trans_probs}
+\end{equation}
+with $p_{ij} \geq 0$ and $\sum_{j=1}^K p_{ij} = 1$ for all $i$.
 
-Conditional on the regime $S_t=k$, returns follow an auto-regressive process
-\[
-r_t = \mu_k + \phi_kr_{t-1} + \varepsilon_t, \quad \varepsilon_t \sim \mathcal{N}(0,\sigma_k^2)
-\]
+Conditional on the regime $S_t=k$, returns follow an auto-regressive process described by Equation \ref{eq:regime_ar}:
+\begin{equation}
+    r_t = \mu_k + \phi_kr_{t-1} + \varepsilon_t, \quad \varepsilon_t \sim \mathcal{N}(0,\sigma_k^2)
+    \label{eq:regime_ar}
+\end{equation}
 
-Here $\mu_k$ is the regime-specific mean, $\phi_k$ captures the strength of the short-term dependence in regime $k$ and $\sigma_k^2$ is the regime-specific innovation variance. 
+Here $\mu_k$ is the regime-specific mean, $\phi_k$ captures the strength of the short-term dependence in regime $k$ and $\sigma_k^2$ is the regime-specific innovation variance.
 
-Regimes with $\phi_k$ close to zero are interpreted as noise-dominated periods, while regimes with larger positive $\phi_k$ correspond to short-term momentum or price returns. 
+Regimes with $\phi_k$ close to zero are interpreted as noise-dominated periods, while regimes with larger positive $\phi_k$ correspond to short-term momentum or price returns.
 
 \subsection{Modeling volatility}
 
-Allowing $\sigma_k^2$ to vary across regimes captures abrupt changes in market uncertainty. As an extension, conditional heteroskedasticity can be introduced via a regime-dependent ARCH specification
-\[
-\sigma_{k,t}^2 = \omega_k + \alpha_k\varepsilon_{t-1}^2
-\]
-where $\omega_k\geq0$ and $\alpha_k\geq0$. Building on this, volatility persistence can be incorporated through a regime-dependent GARCH specification,
-\[
-\sigma_{k,t}^2 = \omega_k + \alpha_k\varepsilon_{t-1}^2 + \beta_k\sigma_{k,t-1}^2,
-\]
+Allowing $\sigma_k^2$ to vary across regimes captures abrupt changes in market uncertainty. As an extension, conditional heteroskedasticity can be introduced via a regime-dependent ARCH specification, shown in Equation \ref{eq:arch}:
+\begin{equation}
+    \sigma_{k,t}^2 = \omega_k + \alpha_k\varepsilon_{t-1}^2
+    \label{eq:arch}
+\end{equation}
+where $\omega_k\geq0$ and $\alpha_k\geq0$. Building on this, volatility persistence can be incorporated through a regime-dependent GARCH specification, see Equation \ref{eq:garch}:
+\begin{equation}
+    \sigma_{k,t}^2 = \omega_k + \alpha_k\varepsilon_{t-1}^2 + \beta_k\sigma_{k,t-1}^2,
+    \label{eq:garch}
+\end{equation}
 where $\beta_k\geq0$. This extension allows volatility shocks to decay gradually over time within each regime rather than affecting only the next period.
 
 \subsection{Data}
 
-Data was retrieved from \textcite{histdata}. 
+Data was retrieved from \textcite{histdata}.

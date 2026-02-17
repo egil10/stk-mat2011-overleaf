@@ -1,11 +1,13 @@
 \section{Introduction}
-Hello there \textcite{esl}. This is a citation \parencite{esl}. This is also a reference from \textcite{hautsch2012econometrics}, who has written a book. 
+Financial time series are well known to exhibit non-stationarity, volatility clustering, and structural change. While standard statistical learning techniques, such as those described by \textcite{esl}, provide robust frameworks for general data analysis, high-frequency financial data requires specialized treatment. As noted by \textcite{hautsch2012econometrics}, the analysis of tick-by-tick data introduces unique challenges related to the discreteness of price changes and the irregular spacing of transactions.
 
-\textcite{hamilton1989} did say to \textcite{hamilton1994} that \textcite{lo1990} and \textcite{engle1982} might know what \textcite{jacod2017} and \textcite{aitsahalia2014} and \textcite{rabiner1989} did to \textcite{cappe2005} although maybe not \parencite{tsay2010}. 
+The presence of time-varying dependence in financial returns has been a subject of extensive research. \textcite{hamilton1989} introduced a seminal framework for modeling regime changes in economic time series, and further expanded it in 1944 \parencite{hamilton1994}. However, in the context of high-frequency market structure, \textcite{lo1990} and \textcite{engle1982} identified that short-horizon return autocorrelation is not constant. Modern approaches often require robust estimation techniques; \textcite{jacod2017} and \textcite{aitsahalia2014} provide critical methodologies for separating microstructure noise from the efficient price. To model the latent states driving these market dynamics, we rely on the Hidden Markov Model (HMM) framework detailed by \textcite{rabiner1989}, while also considering the broader financial time series context provided by \textcite{tsay2010}.
 
 \subsection{Bid--ask bounce}
+The bid-ask bounce is a fundamental microstructure phenomenon where transaction prices oscillate between the bid and ask quotes even if the underlying asset value remains unchanged. This bouncing effect induces a negative autocorrelation in returns at the highest frequencies, creating a "noise" regime that can obscure genuine price trends.
 
 \subsection{Order flow imbalance}
+Order flow imbalance refers to the disparity between aggressive buy and sell orders. When order flow is heavily skewed in one direction, it can deplete liquidity at the best quote, causing the price to move. Unlike the mean-reverting bid-ask bounce, strong order flow imbalance can induce short-term momentum or positive serial dependence in returns.
 
-\subsection{Asynchronus trading}
-
+\subsection{Asynchronous trading}
+Asynchronous trading occurs because assets trade at different frequencies and times. \textcite{lo1990} demonstrated that this non-synchronicity can induce spurious cross-autocorrelations between assets. In the context of a single FX pair, irregular arrival times of information and trades contribute to the stochastic nature of the volatility and dependence structure we aim to model.

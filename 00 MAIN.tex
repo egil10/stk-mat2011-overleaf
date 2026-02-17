@@ -4,13 +4,27 @@
 \urlstyle{sf}
 \usepackage{babel, textcomp, uio/uiomasterfp}
 \usepackage{csquotes}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,    % Internal links (sections, equations)
+    citecolor=blue,    % Citations (bibliography)
+    urlcolor=blue      % URLs (web links)
+}
+%%%%%%%
+%%%%%%%
+%%%%%%%
 \usepackage[backend=biber, style=authoryear, maxcitenames=2]{biblatex}
 \addbibresource{99 BIB.bib}
-
-\title{ML \& HFTS}
-\subtitle{Predicting short-term regime shifts via HMMs}
+%%%%%%%
+%%%%%%%
+%%%%%%%
+\title{Machine Learning \& High Frequency Time Series}
+\subtitle{Predicting short-term regime shifts via Hidden Markov Models}
 \author{Egil Furnes \\ \url{egilsf@uio.no}}
-
+%%%%%%%
+%%%%%%%
+%%%%%%%
 \begin{document}
 \input{01 FRONTMATTER}
 \input{10 ABSTRACT}
@@ -18,8 +32,11 @@
 \input{11 METHOD}
 \input{12 RESULT}
 \input{13 CONCLUSION}
-\clearpage
+% \clearpage
 \printbibliography
-\clearpage
-\input{19 APPENDIX}
+% \clearpage
+% \input{19 APPENDIX}
 \end{document}
+%%%%%%%
+%%%%%%%
+%%%%%%%
