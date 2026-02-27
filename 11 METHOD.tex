@@ -61,3 +61,42 @@ where $\beta_k\geq0$. This extension allows volatility shocks to decay gradually
 \subsection{Data}
 
 Data was retrieved from \textcite{histdata}.
+
+\subsection{Financial metrics}
+
+\begin{equation}
+    S_\text{avg} = \frac{1}{N}\sum_{i=1}^{N}\mid P_{\text{exec},i} - P_{\text{int},i}  \mid 
+\end{equation}
+
+\begin{equation}
+    \text{Fill Rate} = \frac{\sum_{i=1}^{N} V_{\text{exec},i}}{\sum_{i=1}^{N}V_{\text{req},i}}
+\end{equation}
+
+\begin{equation}
+    \overline{T} = \frac{1}{N}\sum_{i=1}^{N}\left( t_{\text{close},i} - t_\text{open},i \right)
+\end{equation}
+
+\begin{equation}
+    MDD = \max_{\tau \in (0, T)} \left( \max_{t \in (0, \tau)} \frac{V(t) - V(\tau)}{V(t)} \right)
+\end{equation}
+
+\begin{equation}
+    \text{Sharpe} = \frac{E[R_p - R_f]}{\sigma_p}
+\end{equation}
+
+\begin{equation}
+    \text{Sortino} = \frac{E[R_p - R_f]}{\sigma_d}
+\end{equation}
+
+\begin{equation}
+    W = \frac{N_{\text{win}}}{N_{\text{total}}}
+\end{equation}
+
+\begin{equation}
+    PF = \frac{\sum \text{Gross Profits}}{\sum |\text{Gross Losses}|}
+\end{equation}
+
+\begin{equation}
+    \text{PnL}_{\text{avg}} = \frac{1}{N} \sum_{i=1}^{N} \left( (P_{\text{exit}, i} - P_{\text{entry}, i}) \cdot Q_i - c_i \right)
+\end{equation}
+
