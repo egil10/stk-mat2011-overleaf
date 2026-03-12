@@ -64,39 +64,230 @@ Data was retrieved from \textcite{histdata}.
 
 \subsection{Financial metrics}
 
+To evaluate the performance of the trading strategy, a set of financial metrics is computed. These metrics capture execution quality, trade-level performance, and portfolio-level risk and return characteristics.
+
+\subsubsection{Execution metrics}
+
+Average slippage measures the average absolute difference between the executed price and the intended price.
+
 \begin{equation}
-    S_\text{avg} = \frac{1}{N}\sum_{i=1}^{N}\mid P_{\text{exec},i} - P_{\text{int},i}  \mid 
+S_{\text{avg}}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left|
+P_{\text{exec},i}
+-
+P_{\text{int},i}
+\right|
+\end{equation}
+
+Fill rate measures the fraction of the requested trading volume that was actually executed.
+
+\begin{equation}
+\text{Fill Rate}
+=
+\frac{\sum_{i=1}^{N} V_{\text{exec},i}}
+{\sum_{i=1}^{N} V_{\text{req},i}}
+\end{equation}
+
+\subsubsection{Trade-level metrics}
+
+The average holding time measures the average time a position remains open.
+
+\begin{equation}
+\overline{T}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left(
+t_{\text{close},i}
+-
+t_{\text{open},i}
+\right)
+\end{equation}
+
+The win rate measures the fraction of trades that are profitable.
+
+\begin{equation}
+W
+=
+\frac{N_{\text{win}}}{N_{\text{total}}}
+\end{equation}
+
+Profit factor measures the ratio of total profits to total losses.
+
+\begin{equation}
+\text{PF}
+=
+\frac{\sum \text{Gross Profits}}
+{\sum |\text{Gross Losses}|}
+\end{equation}
+
+Average net profit per trade after transaction costs is defined as
+
+\begin{equation}
+\text{PnL}_{\text{avg}}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left(
+(P_{\text{exit},i}-P_{\text{entry},i})Q_i
+-
+c_i
+\right)
+\end{equation}
+
+Cumulative net profit and loss represents the total economic value of the strategy rather than just per-trade averages.
+
+\begin{equation}
+\text{PnL}_{\text{tot}}
+=
+\sum_{i=1}^{N}
+\left(
+(P_{\text{exit},i}-P_{\text{entry},i})Q_i
+-
+c_i
+\right)
+\end{equation}
+
+Average trade return as a fraction of capital committed is given by
+
+\begin{equation}
+\bar r_{\text{trade}}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\frac{
+(P_{\text{exit},i}-P_{\text{entry},i})Q_i - c_i
+}{
+P_{\text{entry},i}Q_i
+}
+\end{equation}
+
+The average gain and average loss separate the magnitude of winning and losing trades.
+
+\begin{equation}
+\overline{\text{Gain}}
+=
+\frac{1}{N_{\text{win}}}
+\sum_{i \in \mathcal{W}}
+\text{PnL}_i
 \end{equation}
 
 \begin{equation}
-    \text{Fill Rate} = \frac{\sum_{i=1}^{N} V_{\text{exec},i}}{\sum_{i=1}^{N}V_{\text{req},i}}
+\overline{\text{Loss}}
+=
+\frac{1}{N_{\text{loss}}}
+\sum_{i \in \mathcal{L}}
+\left|\text{PnL}_i\right|
 \end{equation}
+
+Expectancy combines win rate and win/loss magnitude to measure expected profit per trade.
 
 \begin{equation}
-    \overline{T} = \frac{1}{N}\sum_{i=1}^{N}\left( t_{\text{close},i} - t_\text{open},i \right)
+\text{Expectancy}
+=
+W \cdot \overline{\text{Gain}}
+-
+(1-W)\cdot \overline{\text{Loss}}
 \end{equation}
+
+\subsubsection{Risk and return metrics}
+
+The maximum drawdown measures the largest peak-to-trough decline in portfolio value over the period.
 
 \begin{equation}
-    MDD = \max_{\tau \in (0, T)} \left( \max_{t \in (0, \tau)} \frac{V(t) - V(\tau)}{V(t)} \right)
+\text{MDD}
+=
+\max_{\tau \in (0,T)}
+\left(
+\max_{t \in (0,\tau)}
+\frac{V(t)-V(\tau)}{V(t)}
+\right)
 \end{equation}
+
+The Sharpe ratio measures excess return per unit of total volatility.
 
 \begin{equation}
-    \text{Sharpe} = \frac{E[R_p - R_f]}{\sigma_p}
+\text{Sharpe}
+=
+\frac{\mathbb{E}[R_p-R_f]}{\sigma_p}
 \end{equation}
+
+The Sortino ratio measures the average excess return per unit of downside volatility.
 
 \begin{equation}
-    \text{Sortino} = \frac{E[R_p - R_f]}{\sigma_d}
+\text{Sortino}
+=
+\frac{\mathbb{E}[R_p-R_f]}{\sigma_d}
 \end{equation}
+
+Return volatility reports the variability of returns directly.
 
 \begin{equation}
-    W = \frac{N_{\text{win}}}{N_{\text{total}}}
+\sigma_R
+=
+\sqrt{
+\frac{1}{T-1}
+\sum_{t=1}^{T}
+(R_t-\bar R)^2
+}
 \end{equation}
+
+where
 
 \begin{equation}
-    PF = \frac{\sum \text{Gross Profits}}{\sum |\text{Gross Losses}|}
+\bar R
+=
+\frac{1}{T}
+\sum_{t=1}^{T} R_t
 \end{equation}
+
+The Calmar ratio relates returns to drawdown risk.
 
 \begin{equation}
-    \text{PnL}_{\text{avg}} = \frac{1}{N} \sum_{i=1}^{N} \left( (P_{\text{exit}, i} - P_{\text{entry}, i}) \cdot Q_i - c_i \right)
+\text{Calmar}
+=
+\frac{\mathbb{E}[R_p-R_f]}{\text{MDD}}
 \end{equation}
 
+Alternatively, it may be defined using annualized return:
+
+\begin{equation}
+\text{Calmar}
+=
+\frac{R_{\text{ann}}}{\text{MDD}}
+\end{equation}
+
+\subsubsection{Other metrics}
+
+Turnover measures how intensively the strategy trades relative to available capital, where $A_0$ is the initial capital.
+
+\begin{equation}
+\text{Turnover}
+=
+\frac{
+\sum_{i=1}^{N}
+|Q_i|P_{\text{entry},i}
+}{
+A_0
+}
+\end{equation}
+
+Exposure time measures the fraction of total sample time during which the strategy has an open position.
+
+\begin{equation}
+\text{Exposure}
+=
+\frac{
+\sum_{i=1}^{N}
+\left(
+t_{\text{close},i}
+-
+t_{\text{open},i}
+\right)
+}{
+T_{\text{sample}}
+}
+\end{equation}
