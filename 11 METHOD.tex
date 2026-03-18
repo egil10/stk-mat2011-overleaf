@@ -1,4 +1,5 @@
 \section{Method}
+\label{sec:method}
 
 Let $P_\tau$ denote the observed transaction price at tick time $\tau$. The observed price can be decomposed as shown in Equation \ref{eq:price_decomp}:
 \begin{equation}
@@ -57,6 +58,90 @@ where $\omega_k\geq0$ and $\alpha_k\geq0$. Building on this, volatility persiste
     \label{eq:garch}
 \end{equation}
 where $\beta_k\geq0$. This extension allows volatility shocks to decay gradually over time within each regime rather than affecting only the next period.
+
+\subsection{Complete parameter set and emission density}
+
+The complete set of HMM parameters is
+\begin{equation}
+    \theta = \bigl\{\pi,\,\mathbf{P},\,\mu_k,\,\phi_k,\,\sigma_k^2 : k = 1,\dots,K\bigr\},
+    \label{eq:params}
+\end{equation}
+where $\pi = (\pi_1,\dots,\pi_K)^\top$ with $\pi_k = \mathbb{P}(S_1 = k)$ is the initial state distribution, $\mathbf{P} = (p_{ij})$ is the $K\times K$ transition matrix, and $\mu_k$, $\phi_k$, $\sigma_k^2$ are the regime-specific AR parameters introduced in Equation \ref{eq:regime_ar}. Conditional on $S_t = k$ and the previous return $r_{t-1}$, the emission density is
+\begin{equation}
+    f_k(r_t \mid r_{t-1};\theta)
+    = \frac{1}{\sqrt{2\pi\sigma_k^2}}
+    \exp\!\left(-\frac{(r_t - \mu_k - \phi_k r_{t-1})^2}{2\sigma_k^2}\right).
+    \label{eq:emission}
+\end{equation}
+
+\subsection{Likelihood and the forward algorithm}
+
+Direct maximisation of the observed-data log-likelihood $\ell(\theta) = \log \mathbb{P}(r_{1:T};\theta)$ is intractable because it requires summing over all $K^T$ possible state sequences. The \emph{forward algorithm} \parencite{rabiner1989,cappe2005} computes the likelihood recursively. Define the forward variable
+\begin{equation}
+    \alpha_t(k) = \mathbb{P}(r_1,\dots,r_t,\,S_t = k \mid \theta),
+    \label{eq:forward}
+\end{equation}
+initialised as $\alpha_1(k) = \pi_k f_k(r_1)$ and propagated via
+\begin{equation}
+    \alpha_t(k) = \left[\sum_{i=1}^{K} \alpha_{t-1}(i)\,p_{ik}\right] f_k(r_t \mid r_{t-1};\theta),
+    \quad t = 2,\dots,T.
+    \label{eq:forward_rec}
+\end{equation}
+The observed-data likelihood then equals $\mathbb{P}(r_{1:T};\theta) = \sum_{k=1}^{K}\alpha_T(k)$.
+
+\subsection{Viterbi decoding}
+
+Given estimated parameters $\hat\theta$, the most probable latent state sequence is
+\begin{equation}
+    \hat S_{1:T} = \operatorname*{arg\,max}_{S_{1:T}} \mathbb{P}(S_{1:T} \mid r_{1:T};\hat\theta).
+    \label{eq:viterbi_obj}
+\end{equation}
+The \emph{Viterbi algorithm} \parencite{rabiner1989} solves this by dynamic programming. Define
+\begin{equation}
+    \delta_t(k) = \max_{S_{1:t-1}} \mathbb{P}(S_{1:t-1},\, S_t = k,\, r_{1:t} \mid \hat\theta),
+    \label{eq:viterbi}
+\end{equation}
+initialised as $\delta_1(k) = \pi_k f_k(r_1)$ and updated via
+\begin{equation}
+    \delta_t(k) = \max_{1 \leq i \leq K}\left[\delta_{t-1}(i)\,p_{ik}\right] f_k(r_t \mid r_{t-1};\hat\theta).
+    \label{eq:viterbi_rec}
+\end{equation}
+Storing the maximising state at each step, the optimal path $\hat S_{1:T}$ is recovered by backtracking from $\hat S_T = \operatorname*{arg\,max}_k \delta_T(k)$.
+
+\subsection{Parameter estimation via Baum--Welch}
+
+Parameters are estimated by maximum likelihood using the \emph{Baum--Welch algorithm} \parencite{cappe2005}, an instance of the Expectation--Maximisation (EM) procedure of \textcite{dempster1977}. Alongside the forward variable $\alpha_t(k)$, define the backward variable
+\begin{equation}
+    \beta_t(k) = \mathbb{P}(r_{t+1},\dots,r_T \mid S_t = k,\,\theta),
+    \label{eq:backward}
+\end{equation}
+initialised as $\beta_T(k)=1$ and propagated as $\beta_t(k) = \sum_{j=1}^K p_{kj}\,f_j(r_{t+1}\mid r_t;\theta)\,\beta_{t+1}(j)$. The E-step computes the smoothed state occupancy probabilities
+\begin{equation}
+    \gamma_t(k) = \mathbb{P}(S_t = k \mid r_{1:T};\theta)
+    = \frac{\alpha_t(k)\,\beta_t(k)}{\displaystyle\sum_{j=1}^{K}\alpha_t(j)\,\beta_t(j)}
+    \label{eq:gamma}
+\end{equation}
+and the pairwise transition probabilities
+\begin{equation}
+    \xi_t(i,j) = \mathbb{P}(S_{t-1}=i,\,S_t=j \mid r_{1:T};\theta)
+    \;\propto\; \alpha_{t-1}(i)\,p_{ij}\,f_j(r_t \mid r_{t-1};\theta)\,\beta_t(j).
+    \label{eq:xi}
+\end{equation}
+The M-step updates the parameters in closed form. Transition probabilities are updated as
+\begin{equation}
+    p_{ij}^{\text{new}} = \frac{\displaystyle\sum_{t=2}^{T}\xi_t(i,j)}{\displaystyle\sum_{t=2}^{T}\gamma_{t-1}(i)},
+    \label{eq:mstep_p}
+\end{equation}
+and the regime-specific AR parameters $(\mu_k,\phi_k,\sigma_k^2)$ are updated via weighted least squares with $\gamma_t(k)$ as observation weights. The E- and M-steps are iterated to convergence of the log-likelihood.
+
+\subsection{Model selection}
+
+The number of regimes $K$ is treated as a hyperparameter. For each candidate $K$ we compute the Bayesian Information Criterion
+\begin{equation}
+    \mathrm{BIC}(K) = -2\,\ell(\hat\theta_K) + p_K \log T,
+    \label{eq:bic}
+\end{equation}
+where $p_K = K^2 + 3K - 1$ counts the free parameters (transition matrix entries, regime-specific AR intercepts, slopes, and variances, and initial distribution) and $T$ is the number of observations. The preferred model minimises $\mathrm{BIC}(K)$. The stronger complexity penalty of BIC relative to AIC is appropriate given the large sample sizes typical of tick data.
 
 \subsection{Data}
 
