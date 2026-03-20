@@ -141,7 +141,7 @@ The number of regimes $K$ is treated as a hyperparameter. For each candidate $K$
     \mathrm{BIC}(K) = -2\,\ell(\hat\theta_K) + p_K \log T,
     \label{eq:bic}
 \end{equation}
-where $p_K = K^2 + 3K - 1$ counts the free parameters (transition matrix entries, regime-specific AR intercepts, slopes, and variances, and initial distribution) and $T$ is the number of observations. The preferred model minimises $\mathrm{BIC}(K)$. The stronger complexity penalty of BIC relative to AIC is appropriate given the large sample sizes typical of tick data.
+where $p_K = K^2 + 3K - 1$ counts the free parameters (transition matrix entries, regime-specific AR intercepts, slopes, and variances, and initial distribution) and $T$ is the number of observations. The preferred model minimises $\mathrm{BIC}(K)$. The stronger complexity penalty of BIC relative to AIC is appropriate given the large sample sizes typical of tick data. Empirical evidence from HMM-based intraday trading strategies suggests that a small number of regimes, typically $K \in \{2,3\}$, is sufficient to capture the dominant market dynamics \parencite{christensen2020}, providing prior support for evaluating candidate models in this range.
 
 \subsection{Data}
 
