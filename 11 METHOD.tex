@@ -17,7 +17,38 @@ where $t$ now indexes the last tick in each averaging block. Returns are then co
     \label{eq:returns}
 \end{equation}
 
-\subsection{Baseline Auto-regressive Model}
+\subsection{Time dependent models}
+
+AR(p)
+\begin{equation}
+    Y_t = c + \phi_1Y_{t-1} + \phi_2Y_{t-2} + \dots + \phi_pY_{t-p} + \epsilon_t
+\end{equation}
+
+MA(q)
+\begin{equation}
+    Y_t = \mu + \epsilon_t + \theta_1\epsilon_{t-1} + \theta_2\epsilon_{t-2} + \dots + \theta_q\epsilon_{t-q}
+\end{equation}
+
+ARMA(p,q)
+\begin{equation}
+    Y_t=c+\sum_{i=1}^p\phi_iY_{t-1}+\epsilon_t+\sum_{j=1}^q\theta_j\epsilon_{t-j}
+\end{equation}
+
+ARIMAX(p,d,q)
+\begin{equation}
+    Y_t^{'} = c + \beta Xt +  \sum_{i=1}^p\phi_iY^{'}_{t-1}+\epsilon_t+\sum_{j=1}^q\theta_j\epsilon_{t-j}
+\end{equation}
+
+ARCH(q)
+\begin{equation}
+    \sigma_t^2 = \alpha_0+\alpha_1\epsilon_{t-1}^2+\dots+\alpha_q\epsilon_{t-q}^2
+\end{equation}
+
+GARCH(p,q)
+\begin{equation}
+    \sigma_t^2 = \alpha_0 + \sum_{i=1}^q\alpha_i\epsilon_{t-i}^2+\sum_{j=1}^p
+\beta_j\sigma_{t-j}^2
+\end{equation}
 
 As a benchmark, we consider a single-regime auto-regressive model of order one, given by Equation \ref{eq:baseline_ar}:
 \begin{equation}
