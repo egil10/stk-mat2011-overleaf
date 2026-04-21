@@ -413,3 +413,8 @@ T_{\text{sample}}
 
 Using the Baum-Welch algorithm, where the Forward Pass walks chronologically from $t=0$ to $t=T$, calculating probabilities based on past data, and where the Backward Pass starts at the end of your dataset ($t=T$) and walks backwards to $t=0$.
 
+\subsection{Engle-Granger two-step method}
+
+\begin{equation}
+    S_t = \log(P_{1,t}) - \beta \log(P_{2,t})
+\end{equation}
