@@ -6,9 +6,477 @@
 
 \subsubsection{AURUSD/NZDUSD}
 
+\begin{table}[H]
+\centering
+\caption{Data and liquidity diagnostics for AUDUSD/NZDUSD. The sample consists of volume bars constructed from Dukascopy bid--ask data over 2024--2025. Spreads are reported in basis points.}
+\label{tab:audnzd_data_liquidity}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Sample & Number of bars & 108,093 \\
+Sample & Calendar span & 729 days \\
+Sample & Trading days & 523 \\
+Sample & Average bars per trading day & 206.7 \\
+Sample & Trading hours covered & 0--24 UTC \\
+\midrule
+Liquidity & Median spread, AUDUSD & 0.76 bps \\
+Liquidity & Median spread, NZDUSD & 0.89 bps \\
+Liquidity & P95 spread, AUDUSD & 1.04 bps \\
+Liquidity & P95 spread, NZDUSD & 1.21 bps \\
+Liquidity & Median round-trip cost & 1.63 bps \\
+Liquidity & Tightest 4-hour window & 11:00--14:00 UTC \\
+Liquidity & Widest 4-hour window & 20:00--23:00 UTC \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Return distribution and pair-dependence diagnostics for AUDUSD/NZDUSD. Returns are measured in basis points. The Ljung--Box test is applied to squared returns at lag 20.}
+\label{tab:audnzd_distribution_relationship}
+\small
+\begin{tabularx}{\linewidth}{lrr}
+\toprule
+\textbf{Metric} & \textbf{AUDUSD} & \textbf{NZDUSD} \\
+\midrule
+Mean return & -0.002 & -0.009 \\
+Volatility & 4.106 & 4.076 \\
+Skewness & -0.176 & -0.342 \\
+Kurtosis & 17.533 & 22.076 \\
+5th percentile & -6.346 & -6.569 \\
+95th percentile & 6.249 & 6.547 \\
+Minimum & -115.391 & -122.287 \\
+Maximum & 69.711 & 76.045 \\
+Ljung--Box $p$-value on $r_t^2$ & 0.000 & 0.000 \\
+\midrule
+\multicolumn{3}{l}{\textbf{Pair relationship}} \\
+\midrule
+Pearson correlation & \multicolumn{2}{r}{0.3720} \\
+Spearman correlation & \multicolumn{2}{r}{0.3308} \\
+OLS hedge ratio $\beta$ & \multicolumn{2}{r}{0.3693} \\
+Rolling correlation, minimum & \multicolumn{2}{r}{-0.041} \\
+Rolling correlation, median & \multicolumn{2}{r}{0.357} \\
+Rolling correlation, maximum & \multicolumn{2}{r}{0.768} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Cointegration diagnostics for AUDUSD/NZDUSD. The full-sample test is compared with rolling 2,000-bar windows stepped every 200 bars.}
+\label{tab:audnzd_cointegration}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Full sample & Cointegration $p$-value & 0.8657 \\
+Full sample & Half-life & 2415.8 bars \\
+Full sample & Hedge ratio $\beta$ & 0.6641 \\
+\midrule
+Rolling windows & Number of rolling windows & 531 \\
+Rolling windows & Share with $p < 0.05$ & 9.8\% \\
+Rolling windows & Share with $p < 0.10$ & 16.8\% \\
+Rolling windows & Median half-life & 32.5 bars \\
+Rolling windows & Half-life IQR & 19--65 bars \\
+Rolling windows & Mean rolling $\beta$ & 0.8363 \\
+Rolling windows & Std. dev. rolling $\beta$ & 0.2857 \\
+Rolling windows & Min. rolling $\beta$ & -0.1475 \\
+Rolling windows & Max. rolling $\beta$ & 1.7384 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The full-sample cointegration test does not support a stable long-run equilibrium relationship for AUDUSD/NZDUSD. However, the rolling diagnostics suggest intermittent short-lived mean-reversion episodes: only 9.8\% of rolling windows reject the null at the 5\% level, but the median rolling half-life is only 32.5 bars when local relationships are detected. This supports an adaptive rather than static pairs-trading specification.
+
+\begin{table}[H]
+\centering
+\caption{Walk-forward optimization summary for AUDUSD/NZDUSD. Each window uses three months for validation and one month for out-of-sample testing, with 100 Optuna trials per window.}
+\label{tab:audnzd_wfo_summary}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Design & Validation window & 3 months \\
+Design & Test window & 1 month \\
+Design & Trials per window & 100 \\
+Design & Number of OOS windows & 21 \\
+Design & OOS period & 2024-05-09--2025-12-31 \\
+\midrule
+OOS performance & Mean OOS return per window & 2.65\% \\
+OOS performance & Positive OOS windows & 17 / 21 \\
+OOS performance & Zero-return windows & 2 / 21 \\
+OOS performance & Negative OOS windows & 2 / 21 \\
+OOS performance & Best OOS window return & 12.30\% \\
+OOS performance & Worst OOS window return & -0.66\% \\
+\midrule
+Optimized rules & Typical entry threshold & $z \approx 1.4$ \\
+Optimized rules & Typical exit threshold & $z \approx 0.2$--$0.5$ \\
+Optimized rules & Dominant danger threshold & 0.95 \\
+Optimized rules & Typical AR limit & 0.96--0.97 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Strategy performance for AUDUSD/NZDUSD. Performance is reported net of the backtesting assumptions used in the simulation. Returns, volatility, drawdowns, average wins, and losses are reported in basis points.}
+\label{tab:audnzd_strategy_performance}
+\small
+\begin{tabularx}{\linewidth}{lrrr}
+\toprule
+\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return & 9286.14 & 7695.77 & 5567.68 \\
+Annual return & 5643.53 & 4677.00 & 3383.69 \\
+Positive months & 100.00\% & 90.00\% & 80.00\% \\
+Annual volatility & 819.72 & 724.16 & 686.87 \\
+Max drawdown & -263.67 & -263.67 & -281.26 \\
+Ulcer index & 59.56 & 74.47 & 79.16 \\
+Sharpe ratio & 6.88 & 6.46 & 4.93 \\
+Sortino ratio & 8.59 & 7.05 & 5.23 \\
+Calmar ratio & 21.40 & 17.74 & 12.03 \\
+Profit factor & 1.11 & 1.12 & 1.09 \\
+Number of trades & 3158 & 2452 & 2254 \\
+Win rate & 49.55\% & 49.62\% & 49.44\% \\
+Market exposure & 60.97\% & 46.69\% & 45.01\% \\
+Skewness & 1.17 & 1.48 & 0.76 \\
+Kurtosis & 34.41 & 51.53 & 21.08 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For AUDUSD/NZDUSD, the baseline strategy delivers the strongest total and risk-adjusted performance, while the AR and MS-AR filters reduce market exposure and volatility. The Markov-switching model produces the lowest exposure and lowest return volatility, but this risk reduction comes at the cost of materially lower total return, Sharpe ratio, and Calmar ratio. In this pair, the HMM therefore behaves more like a conservative exposure filter than a return-enhancing signal.
+
+
+
 \subsubsection{EURNOK/EURSEK}
+
+For EURNOK/EURSEK, the strategy fails economically across all three model classes. The AR and MS-AR filters reduce exposure, volatility, and total losses, but they do not convert the pair into a profitable trading signal. This suggests that the pair contains intermittent statistical structure, but not enough exploitable mean reversion after spread costs and adaptive thresholding.
+
+\begin{table}[H]
+\centering
+\caption{Data and liquidity diagnostics for EURNOK/EURSEK. The sample consists of volume bars constructed from Dukascopy bid--ask data over 2024--2025. Spreads are reported in basis points.}
+\label{tab:eurnok_eursek_data_liquidity}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Sample & Number of bars & 206,937 \\
+Sample & Calendar span & 729 days \\
+Sample & Trading days & 522 \\
+Sample & Average bars per trading day & 396.4 \\
+Sample & Trading hours covered & 0--24 UTC \\
+\midrule
+Liquidity & Median spread, EURNOK & 2.07 bps \\
+Liquidity & Median spread, EURSEK & 1.78 bps \\
+Liquidity & P95 spread, EURNOK & 6.22 bps \\
+Liquidity & P95 spread, EURSEK & 5.58 bps \\
+Liquidity & Median round-trip cost & 3.89 bps \\
+Liquidity & Tightest 4-hour window & 09:00--12:00 UTC \\
+Liquidity & Widest 4-hour window & 20:00--23:00 UTC \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption{Return distribution and pair-dependence diagnostics for EURNOK/EURSEK. Returns are measured in basis points. The Ljung--Box test is applied to squared returns at lag 20.}
+\label{tab:eurnok_eursek_distribution_relationship}
+\small
+\begin{tabularx}{\linewidth}{lrr}
+\toprule
+\textbf{Metric} & \textbf{EURNOK} & \textbf{EURSEK} \\
+\midrule
+Mean return & 0.003 & -0.001 \\
+Volatility & 2.606 & 2.270 \\
+Skewness & 0.178 & -0.128 \\
+Kurtosis & 16.922 & 21.342 \\
+5th percentile & -4.062 & -3.424 \\
+95th percentile & 4.072 & 3.441 \\
+Minimum & -50.892 & -65.402 \\
+Maximum & 70.470 & 44.625 \\
+Ljung--Box $p$-value on $r_t^2$ & 0.000 & 0.000 \\
+\midrule
+\multicolumn{3}{l}{\textbf{Pair relationship}} \\
+\midrule
+Pearson correlation & \multicolumn{2}{r}{0.2038} \\
+Spearman correlation & \multicolumn{2}{r}{0.1576} \\
+OLS hedge ratio $\beta$ & \multicolumn{2}{r}{0.1776} \\
+Rolling correlation, minimum & \multicolumn{2}{r}{-0.221} \\
+Rolling correlation, median & \multicolumn{2}{r}{0.194} \\
+Rolling correlation, maximum & \multicolumn{2}{r}{0.521} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+EURNOK/EURSEK exhibits statistically non-Gaussian behaviour, with strong volatility clustering and high kurtosis in both legs. However, the pair-dependence diagnostics are weak: the full-sample Pearson correlation is only 0.2038 and the median rolling 500-bar correlation is 0.194. This suggests that the pair is exposed to regime-dependent co-movement rather than a stable common stochastic component.
+
+\begin{table}[H]
+\centering
+\caption{Cointegration diagnostics for EURNOK/EURSEK. The full-sample test is compared with rolling 2,000-bar windows stepped every 200 bars.}
+\label{tab:eurnok_eursek_cointegration}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Full sample & Cointegration $p$-value & 0.0140 \\
+Full sample & Half-life & 4597.2 bars \\
+Full sample & Hedge ratio $\beta$ & 0.0714 \\
+\midrule
+Rolling windows & Number of rolling windows & 1025 \\
+Rolling windows & Share with $p < 0.05$ & 13.1\% \\
+Rolling windows & Share with $p < 0.10$ & 21.1\% \\
+Rolling windows & Median half-life & 71.8 bars \\
+Rolling windows & Half-life IQR & 44--125 bars \\
+Rolling windows & Mean rolling $\beta$ & 0.6911 \\
+Rolling windows & Std. dev. rolling $\beta$ & 0.6648 \\
+Rolling windows & Min. rolling $\beta$ & -1.4831 \\
+Rolling windows & Max. rolling $\beta$ & 2.6531 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The full-sample cointegration test rejects the null for EURNOK/EURSEK, but the estimated half-life is 4597.2 bars, which is too slow to support a high-frequency mean-reversion strategy under realistic spread costs. Rolling windows reveal only intermittent local cointegration, with 13.1\% of windows significant at the 5\% level and a median rolling half-life of 71.8 bars. The large dispersion in rolling hedge ratios further indicates that the estimated relationship is unstable. This makes EURNOK/EURSEK a useful example of statistical evidence that is not automatically economically tradable.
+
+\begin{table}[H]
+\centering
+\caption{Walk-forward optimization summary for EURNOK/EURSEK. Each window uses three months for validation and one month for out-of-sample testing, with 100 Optuna trials per window.}
+\label{tab:eurnok_eursek_wfo_summary}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Design & Validation window & 3 months \\
+Design & Test window & 1 month \\
+Design & Trials per window & 100 \\
+Design & Number of OOS windows & 21 \\
+Design & OOS period & 2024-05-10--2025-12-31 \\
+\midrule
+OOS performance & Mean OOS return per window & -4.19\% \\
+OOS performance & Positive OOS windows & 0 / 21 \\
+OOS performance & Zero-return windows & 4 / 21 \\
+OOS performance & Negative OOS windows & 17 / 21 \\
+OOS performance & Best OOS window return & 0.00\% \\
+OOS performance & Worst OOS window return & -23.74\% \\
+\midrule
+Optimized rules & Typical entry threshold & $z \approx 2.5$ \\
+Optimized rules & Typical exit threshold & $z \approx -0.5$--$0.0$ \\
+Optimized rules & Dominant danger threshold & 0.50--0.65 \\
+Optimized rules & Typical AR limit & 0.98--0.99 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The walk-forward procedure consistently selected highly conservative entry thresholds, typically around $z=2.5$, but this did not produce positive out-of-sample performance. Instead, the strategy delivered no positive monthly test windows, with 17 negative and 4 flat windows. The optimization therefore appears to reduce trading frequency without uncovering a persistent exploitable signal.
+
+\begin{table}[H]
+\centering
+\caption{Strategy performance for EURNOK/EURSEK. Performance is reported net of the backtesting assumptions used in the simulation. Returns, volatility, drawdowns, average wins, and losses are reported in basis points.}
+\label{tab:eurnok_eursek_strategy_performance}
+\small
+\begin{tabularx}{\linewidth}{lrrr}
+\toprule
+\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return & -14035.70 & -10581.39 & -8796.04 \\
+Annual return & -8544.23 & -6441.42 & -5354.59 \\
+Positive months & 0.00\% & 0.00\% & 0.00\% \\
+Annual volatility & 803.51 & 632.82 & 550.25 \\
+Max drawdown & -14096.99 & -10613.91 & -8838.14 \\
+Ulcer index & 8439.75 & 6493.59 & 5343.53 \\
+Sharpe ratio & -10.63 & -10.18 & -9.73 \\
+Sortino ratio & -8.10 & -6.51 & -5.52 \\
+Calmar ratio & 0.61 & 0.61 & 0.61 \\
+Profit factor & 0.85 & 0.83 & 0.82 \\
+Number of trades & 1702 & 1233 & 938 \\
+Win rate & 48.82\% & 48.82\% & 48.68\% \\
+Market exposure & 42.70\% & 31.38\% & 25.11\% \\
+Skewness & -1.63 & -2.58 & -3.62 \\
+Kurtosis & 52.00 & 82.88 & 141.09 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For EURNOK/EURSEK, all three strategies produce negative performance. The baseline loses 14,035.70 bps, while the AR and MS-AR variants reduce the loss to 10,581.39 bps and 8,796.04 bps, respectively. The Markov-switching model therefore acts as a defensive exposure filter: it reduces market exposure from 42.70\% to 25.11\% and lowers annual volatility from 803.51 bps to 550.25 bps. However, the model does not generate positive returns, and the profit factor remains below one for all specifications. The pair is therefore not economically viable under the tested trading rules.
+
+
 
 \subsubsection{GBPUSD/EURUSD}
 
 
+GBPUSD/EURUSD has the strongest pair-dependence and lowest transaction costs among the tested pairs, but the Markov-switching filter does not improve performance relative to the simpler baseline and AR specifications. As in the other pairs, the MS-AR model reduces exposure and volatility, but it also reduces total return and worsens drawdown-adjusted performance.
 
+
+\begin{table}[H]
+\centering
+\caption{Data and liquidity diagnostics for GBPUSD/EURUSD. The sample consists of volume bars constructed from Dukascopy bid--ask data over 2024--2025. Spreads are reported in basis points.}
+\label{tab:gbpusd_eurusd_data_liquidity}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Sample & Number of bars & 114,759 \\
+Sample & Calendar span & 729 days \\
+Sample & Trading days & 523 \\
+Sample & Average bars per trading day & 219.4 \\
+Sample & Trading hours covered & 0--24 UTC \\
+\midrule
+Liquidity & Median spread, GBPUSD & 0.32 bps \\
+Liquidity & Median spread, EURUSD & 0.14 bps \\
+Liquidity & P95 spread, GBPUSD & 0.52 bps \\
+Liquidity & P95 spread, EURUSD & 0.35 bps \\
+Liquidity & Median round-trip cost & 0.46 bps \\
+Liquidity & Tightest 4-hour window & 11:00--14:00 UTC \\
+Liquidity & Widest 4-hour window & 20:00--23:00 UTC \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\caption{Return distribution and pair-dependence diagnostics for GBPUSD/EURUSD. Returns are measured in basis points. The Ljung--Box test is applied to squared returns at lag 20.}
+\label{tab:gbpusd_eurusd_distribution_relationship}
+\small
+\begin{tabularx}{\linewidth}{lrr}
+\toprule
+\textbf{Metric} & \textbf{GBPUSD} & \textbf{EURUSD} \\
+\midrule
+Mean return & 0.005 & 0.005 \\
+Volatility & 2.990 & 3.085 \\
+Skewness & -0.325 & -0.269 \\
+Kurtosis & 14.698 & 28.557 \\
+5th percentile & -4.672 & -4.744 \\
+95th percentile & 4.666 & 4.687 \\
+Minimum & -75.882 & -107.932 \\
+Maximum & 46.876 & 63.748 \\
+Ljung--Box $p$-value on $r_t^2$ & 0.000 & 0.000 \\
+\midrule
+\multicolumn{3}{l}{\textbf{Pair relationship}} \\
+\midrule
+Pearson correlation & \multicolumn{2}{r}{0.5230} \\
+Spearman correlation & \multicolumn{2}{r}{0.4940} \\
+OLS hedge ratio $\beta$ & \multicolumn{2}{r}{0.5395} \\
+Rolling correlation, minimum & \multicolumn{2}{r}{0.086} \\
+Rolling correlation, median & \multicolumn{2}{r}{0.535} \\
+Rolling correlation, maximum & \multicolumn{2}{r}{0.810} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+GBPUSD/EURUSD has the strongest pair-dependence among the three tested pairs. The full-sample Pearson correlation is 0.5230, while the median rolling 500-bar correlation is 0.535 and reaches as high as 0.810. The return series nevertheless remain strongly non-Gaussian, with high kurtosis and significant Ljung--Box tests on squared returns. This makes the pair empirically attractive for pairs trading while still motivating volatility- and regime-aware modelling.
+
+
+
+
+\begin{table}[H]
+\centering
+\caption{Cointegration diagnostics for GBPUSD/EURUSD. The full-sample test is compared with rolling 2,000-bar windows stepped every 200 bars.}
+\label{tab:gbpusd_eurusd_cointegration}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Full sample & Cointegration $p$-value & 0.1118 \\
+Full sample & Half-life & 2472.3 bars \\
+Full sample & Hedge ratio $\beta$ & 0.6657 \\
+\midrule
+Rolling windows & Number of rolling windows & 564 \\
+Rolling windows & Share with $p < 0.05$ & 8.2\% \\
+Rolling windows & Share with $p < 0.10$ & 15.6\% \\
+Rolling windows & Median half-life & 72.2 bars \\
+Rolling windows & Half-life IQR & 44--129 bars \\
+Rolling windows & Mean rolling $\beta$ & 0.8672 \\
+Rolling windows & Std. dev. rolling $\beta$ & 0.3686 \\
+Rolling windows & Min. rolling $\beta$ & -0.2662 \\
+Rolling windows & Max. rolling $\beta$ & 1.8176 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+GBPUSD/EURUSD does not reject the full-sample no-cointegration null at conventional levels, with a full-sample $p$-value of 0.1118 and a long estimated half-life of 2472.3 bars. However, the rolling diagnostics suggest intermittent local mean reversion, with 8.2\% of rolling windows significant at the 5\% level and a median rolling half-life of 72.2 bars. The pair therefore appears more suitable for adaptive short-horizon trading than for a static full-sample cointegration strategy.
+
+
+\begin{table}[H]
+\centering
+\caption{Walk-forward optimization summary for GBPUSD/EURUSD. Each window uses three months for validation and one month for out-of-sample testing, with 150 Optuna trials per window.}
+\label{tab:gbpusd_eurusd_wfo_summary}
+\small
+\begin{tabularx}{\linewidth}{lXr}
+\toprule
+\textbf{Category} & \textbf{Metric} & \textbf{Value} \\
+\midrule
+Design & Validation window & 3 months \\
+Design & Test window & 1 month \\
+Design & Trials per window & 150 \\
+Design & Number of OOS windows & 21 \\
+Design & OOS period & 2024-05-09--2025-12-31 \\
+\midrule
+OOS performance & Mean OOS return per window & 0.45\% \\
+OOS performance & Positive OOS windows & 11 / 21 \\
+OOS performance & Zero-return windows & 5 / 21 \\
+OOS performance & Negative OOS windows & 5 / 21 \\
+OOS performance & Best OOS window return & 3.06\% \\
+OOS performance & Worst OOS window return & -1.50\% \\
+\midrule
+Optimized rules & Typical entry threshold & $z \approx 1.1$--$1.5$ \\
+Optimized rules & Typical exit threshold & $z \approx 0.0$--$0.5$ \\
+Optimized rules & Dominant danger threshold & 0.85--0.95 \\
+Optimized rules & Typical AR limit & 0.97--0.99 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+The walk-forward results for GBPUSD/EURUSD are mixed but materially stronger than for EURNOK/EURSEK. The strategy produces positive returns in 11 of 21 out-of-sample windows, with 5 flat and 5 negative windows. The mean monthly test-window return is modest at 0.45\%, but the worst window is limited to -1.50\%, suggesting that the adaptive rule selection is able to avoid catastrophic losses even when the signal is weak.
+
+
+\begin{table}[H]
+\centering
+\caption{Strategy performance for GBPUSD/EURUSD. Performance is reported net of the backtesting assumptions used in the simulation. Returns, volatility, drawdowns, average wins, and losses are reported in basis points.}
+\label{tab:gbpusd_eurusd_strategy_performance}
+\small
+\begin{tabularx}{\linewidth}{lrrr}
+\toprule
+\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return & 2059.43 & 1677.66 & 932.85 \\
+Annual return & 1251.59 & 1019.58 & 566.93 \\
+Positive months & 70.00\% & 55.00\% & 45.00\% \\
+Annual volatility & 572.05 & 478.18 & 458.24 \\
+Max drawdown & -372.00 & -569.59 & -629.09 \\
+Ulcer index & 129.96 & 185.14 & 232.89 \\
+Sharpe ratio & 2.19 & 2.13 & 1.24 \\
+Sortino ratio & 2.51 & 1.99 & 1.12 \\
+Calmar ratio & 3.36 & 1.79 & 0.90 \\
+Profit factor & 1.03 & 1.04 & 1.02 \\
+Number of trades & 2070 & 1484 & 1360 \\
+Win rate & 49.39\% & 49.41\% & 49.22\% \\
+Market exposure & 62.59\% & 41.44\% & 39.17\% \\
+Skewness & -0.05 & -0.02 & -0.19 \\
+Kurtosis & 19.01 & 29.03 & 29.34 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+GBPUSD/EURUSD is economically profitable across all three model specifications, but the simpler strategies dominate the Markov-switching version. The baseline strategy earns 2059.43 bps with a Sharpe ratio of 2.19 and a Calmar ratio of 3.36. The AR model lowers exposure from 62.59\% to 41.44\% while preserving a similar Sharpe ratio of 2.13. The MS-AR model reduces exposure further to 39.17\%, but total return falls to 932.85 bps and the Sharpe ratio declines to 1.24. Thus, the Markov filter again reduces participation, but does not improve the risk-adjusted result.
+
+GBPUSD/EURUSD is the most liquid and most correlated pair in the sample, producing positive trading results across all strategies, but the Markov-switching model again behaves primarily as an exposure-reduction mechanism rather than a source of superior risk-adjusted performance.
+
+\subsection{Summary of results}
+
+The HMM does not consistently outperform simpler trading rules. Instead, it mainly reduces exposure and volatility. This is beneficial in the failing EURNOK/EURSEK case, but costly in the profitable AUDUSD/NZDUSD and GBPUSD/EURUSD cases, where the baseline or AR strategies preserve more upside.
