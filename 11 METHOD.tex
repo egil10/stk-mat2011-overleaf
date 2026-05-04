@@ -1,6 +1,8 @@
 \section{Methods}\label{sec:method}
 
-\subsection{Autoregressive Models}
+In this section I introduce the methods. Namely, we start by introducing autoregressive models, before writing about Hidden Markov Models (HMM), introducing the data used in our simulations, while also presenting the statistical and financial metrics used to score the performance of our trading simulations. 
+
+\subsection{Autoregressive models}
 
 When modeling time series data, a fundamental objective is to capture the linear dependence between current and past observations. The general Autoregressive model of order $p$, denoted as $\text{AR}(p)$, formalizes this intuition by projecting the current value of a variable $Y_t$ as a linear combination of its $p$ most recent past values:
 
@@ -18,15 +20,18 @@ Here, $c$ is the constant intercept (from which the unconditional mean return ca
 
 \subsection{Hidden Markov Models}
 
-While the standard $\text{AR}(1)$ model provides a solid baseline, its primary limitation is the assumption of structural stability; it assumes that the parameters ($c$, $\phi$, and $\sigma^2$) remain constant over time. Real-world financial markets, however, frequently undergo structural breaks and shift between distinct "regimes"—such as transitioning from a low-volatility bull market to a high-volatility bear market. 
+While the standard $\text{AR}(1)$ model provides a solid baseline, its primary limitation is the assumption of structural stability; it assumes that the parameters ($c$, $\phi$, and $\sigma^2$) remain constant over time. Real-world financial markets, however, frequently undergo structural breaks and shift between distinct `regimes'—such as transitioning from a low-volatility bull market to a high-volatility bear market. 
 
-To capture this dynamic behavior, we extend our framework using a Hidden Markov Model (HMM). We introduce an unobserved, discrete-time Markov chain, denoted by $S_t \in \{1,\dots,K\}$, which represents the active market regime at time $t$. The probability of the market transitioning from one state to another is governed by a set of transition probabilities:
+To capture this dynamic behaviour, we extend our framework using a Hidden Markov Model (HMM). We introduce an unobserved, discrete-time Markov chain, denoted by $S_t \in \{1,\dots,K\}$, which represents the active market regime at time $t$. The probability of the market transitioning from one state to another is governed by a set of transition probabilities:
 
 \begin{equation}
     \mathbb{P}(S_t=j \mid S_{t-1}=i) = p_{ij}
 \end{equation}
 
-where $p_{ij} \geq 0$ and the probabilities of transitioning from any state $i$ to all possible states $j$ sum to one ($\sum_{j=1}^{K} p_{ij} = 1 \quad \forall i$). 
+where $p_{ij} \geq 0$ and the probabilities of transitioning from any state $i$ to all possible states $j$ sum to one. 
+\begin{equation}
+    \sum_{j=1}^{K} p_{ij} = 1 \quad \forall i
+\end{equation}
 
 By conditioning our autoregressive process on this hidden state $S_t = k$, we allow the behavior of the returns to adapt to the current market environment. The regime-switching $\text{AR}(1)$ model is therefore defined as:
 
@@ -44,11 +49,29 @@ To fully specify this Hidden Markov Model, we must estimate the complete paramet
 
 where $\pi = (\pi_1,\dots,\pi_K)^\top$ is the initial state distribution representing the probability $\mathbb{P}(S_1=k)$ of starting in state $k$, $\mathbf{P} = (p_{ij})$ is the $K \times K$ transition matrix dictating the regime persistence, and the remaining terms represent the localized AR parameters for each respective state.
 
+\subsection{Model selection}
+
+After defining the structural framework of the Hidden Markov Model, the immediate empirical challenge is determining the optimal hyperparameters—most notably, the number of hidden states, $K$, and the autoregressive order, $p$. Adding more states or lags will invariably increase the model's fit to the training data, but doing so introduces the severe risk of overfitting, where the model captures statistical noise rather than genuine market structure. To resolve this tradeoff, we evaluate competing models using Information Criteria, specifically the Akaike Information Criterion (AIC) and the Bayesian Information Criterion (BIC). Both metrics penalize models for unnecessary complexity while rewarding goodness-of-fit.
+
+The AIC focuses on minimizing the information lost when a given model is used to approximate the true data-generating process, making it highly effective for optimizing predictive accuracy. It evaluates models based on $m$, which represents the total number of estimated parameters in the model, and $\hat{L}$, which is the maximized value of the likelihood function for the given data. The AIC is defined as:
+
+\begin{equation}
+    \text{AIC} = 2m - 2\ln(\hat{L})
+\end{equation}
+
+The BIC introduces a stricter penalty for model complexity by factoring in $T$, the total number of observations in the time series. Because the penalty term $\ln(T)$ scales with the sample size, the BIC aggressively penalizes overfitting in large financial datasets and mathematically favors the most parsimonious model that adequately explains the data. The BIC is defined as:
+
+\begin{equation}
+    \text{BIC} = m\ln(T) - 2\ln(\hat{L})
+\end{equation}
+
+During our hyperparameter sweep, models are estimated across a grid of potential $K$ and $p$ values. The configuration that minimizes the AIC and BIC is selected as the optimal structural architecture for our subsequent trading simulations.
+
 \subsection{Data}
 
 \subsection{Metrics}
 
-In this section I introduce some metrics that are useful when completing the trading simulation, as these will inform us on whether trading strategies are useful and which strengths and weaknesses they inhabit. 
+To rigorously evaluate the performance of the trading strategies generated in this simulation, we must rely on a robust set of quantitative metrics. Simply observing the final account balance is insufficient; a proper evaluation requires us to understand the path taken to achieve those returns, the risks assumed along the way, and the underlying mathematical behavior of the system. In this section, I introduce the comprehensive suite of metrics used to score the models. These indicators allow us to objectively compare different strategies, identifying their specific structural strengths, potential vulnerabilities, and overall viability in a live market context. Before detailing the specific calculations, we define the following standard notations used throughout this section: 
 
 \begin{itemize}
     \item $R_t$: Return of the asset/strategy at time $t$
@@ -56,10 +79,11 @@ In this section I introduce some metrics that are useful when completing the tra
     \item $\sigma$ Standard deviation of returns
     \item $N$: Total number of periods or trades
     \item $V_t$: Portfolio value at time $t$, and $P_t=\max_{s \leq t}V_s$ is the peak value up to time $t$
-    \item $N_\text{trades}$: Number of trades, necessary to assess statistical significance and estimate transaction costs.
 \end{itemize}
 
 \subsubsection{Statistical  metrics}
+
+Statistical metrics form the foundational mathematical profile of our trading strategies. Rather than focusing directly on capital accumulation, these indicators analyze the shape, spread, and probability distribution of the underlying return data. By examining how returns behave on a probabilistic level, we can uncover hidden risks that standard equity curves might obscure—such as the likelihood of extreme market anomalies or structural asymmetries in the strategy's outcomes. The following metrics are utilized to quantify the fundamental risk and distributional nature of the strategy:
 
 \textbf{Annual volatility} quantifies the expected yearly fluctuation in returns, providing a baseline mathematical measure of standard risk.
 \begin{equation}
@@ -71,7 +95,7 @@ In this section I introduce some metrics that are useful when completing the tra
     S=\frac{E[(R-\mu)^3]}{\sigma^3}
 \end{equation}
 
-\textbf{Kurtosis} measures the 'fatness` of the distribution tails, indicating the probability of rare, extreme market events.
+\textbf{Kurtosis} measures the `fatness' of the distribution tails, indicating the probability of rare, extreme market events.
 \begin{equation}
     K=\frac{E[(R-\mu)^4]}{\sigma^4}
 \end{equation}
@@ -92,6 +116,8 @@ In this section I introduce some metrics that are useful when completing the tra
 \end{equation}
 
 \subsubsection{Financial metrics}
+
+While statistical metrics describe the mathematical probability of returns, financial metrics translate those probabilities into practical, capital-based outcomes. These indicators evaluate the actual equity curve, measuring how efficiently a strategy deploys capital, how it navigates periods of historical loss, and its absolute trading profitability. Crucially, these metrics contextualize raw returns against the specific drawdowns and volatility endured to achieve them, providing a holistic view of the strategy's execution quality and the psychological `holding stress' it would impose on an investor. The core financial scoring metrics used in our evaluation are defined as follows:
 
 \textbf{Total return} represents the overall cumulative growth or decline of the invested capital over the entire trading period.
 \begin{equation}
@@ -123,7 +149,7 @@ In this section I introduce some metrics that are useful when completing the tra
     \text{UI} = \sqrt{\frac{1}{N}\sum_{t=1}^{N} D_t^2}
 \end{equation}
 
-\textbf{Sharpe ratio} measures the excess return generated per unit of total volatility, serving as the industry standard for risk-adjusted performance, where $R_f$ is a 'risk-free` asset.
+\textbf{Sharpe ratio} measures the excess return generated per unit of total volatility, serving as the industry standard for risk-adjusted performance, where $R_f$ is a `risk-free' asset.
 \begin{equation}
     \text{SR} = \frac{\mu-R_f}{\sigma}
 \end{equation}
@@ -168,4 +194,17 @@ In this section I introduce some metrics that are useful when completing the tra
     \text{AL} = \frac{1}{N_{\text{losses}}} \sum_{i=1}^{N_\text{losses}} \text{Loss}_i
 \end{equation}
 
+\subsection{Back-testing}
+
+To ensure the empirical validity of our trading simulations, it is necessary to subject the generated strategies to realistic market frictions. Theoretical returns that do not account for the costs of execution often drastically overstate the real-world viability of a model, particularly for high-frequency or regime-switching strategies that may incur significant turnover.
+
+In our back-testing framework, we account for the following primary transaction costs:
+
+\begin{itemize}
+    \item \textbf{Commissions}: A fixed percentage or flat fee applied to the notional value of every executed trade, representing standard brokerage fees.
+    \item \textbf{Bid-Ask Spread}: A penalty applied to the execution price to simulate the cost of crossing the bid-ask spread and the market impact of the trade.
+    \item \textbf{Borrowing Costs/Margin}: If the strategy allows for short selling or utilizes leverage, we apply an annualized borrow rate to account for the cost of maintaining those positions over time.
+\end{itemize}
+
+By embedding these frictions directly into the equity curve calculations, the financial metrics presented in the results represent net-of-fee performance, providing a conservative and robust evaluation of the Hidden Markov Model's predictive edge.
 
