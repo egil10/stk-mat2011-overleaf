@@ -1,18 +1,74 @@
-\section{Appendix}
+\section{Appendix}\label{sec:appendix}
 
-% ------------------------------------------------------------
-\clearpage
-\subsection{Currency pair charts}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Exploratory data analysis}
+
 \subsubsection{AUDUSD/NZDUSD}
-
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_eda.pdf}
+    \includegraphics[width=0.85\textwidth]{plots/AUDUSD_NZDUSD_eda.pdf}
     \caption{Exploratory data analysis for AUDUSD/NZDUSD. The figure summarizes intraday spreads, return volatility, mean returns, activity patterns, weekday effects, rolling realized volatility, rolling correlation, return distributions, normality diagnostics, cross-pair return scatter, autocorrelation, rolling volatility distribution, and the relationship between spread and volatility.}
     \label{fig:AUDUSD_NZDUSD_eda}
 \end{figure}
 
-\clearpage
+\subsubsection{EURNOK/EURSEK}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plots/EURNOK_EURSEK_eda.pdf}
+    \caption{Exploratory data analysis for EURNOK/EURSEK. The figure summarizes intraday spreads, volatility, mean returns, bar counts, weekday effects, rolling realized volatility, rolling correlation, distributional features, normality diagnostics, cross-pair return scatter, autocorrelation, rolling volatility, and the spread-volatility relationship.}
+    \label{fig:EURNOK_EURSEK_eda}
+\end{figure}
+
+\subsubsection{GBPUSD/EURUSD}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{plots/GBPUSD_EURUSD_eda.pdf}
+    \caption{Exploratory data analysis for GBPUSD/EURUSD. The figure summarizes intraday liquidity and volatility patterns, hourly and weekday activity, rolling realized volatility, rolling correlation, return distributions, normality diagnostics, cross-pair return dependence, autocorrelation, and the relationship between spread and volatility.}
+    \label{fig:GBPUSD_EURUSD_eda}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Spread diagnostics}
+
+\subsubsection{AUDUSD/NZDUSD}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{plots/AUDUSD_NZDUSD_spread_diagnostics.pdf}
+    \caption{Spread diagnostics for AUDUSD/NZDUSD. The figure shows the two asset price series, the estimated log spread, asset returns, spread returns, and distributional diagnostics for both returns and spread levels, providing a visual check of the pairs-trading signal construction.}
+    \label{fig:AUDUSD_NZDUSD_spread_diagnostics}
+\end{figure}
+
+\subsubsection{EURNOK/EURSEK}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{plots/EURNOK_EURSEK_spread_diagnostics.pdf}
+    \caption{Spread diagnostics for EURNOK/EURSEK. The figure presents the asset price paths, fitted log spread, asset returns, spread returns, and distributional diagnostics, allowing visual inspection of spread stability, return asymmetry, and tail behaviour.}
+    \label{fig:EURNOK_EURSEK_spread_diagnostics}
+\end{figure}
+
+\subsubsection{GBPUSD/EURUSD}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{plots/GBPUSD_EURUSD_spread_diagnostics.pdf}
+    \caption{Spread diagnostics for GBPUSD/EURUSD. The figure shows the two asset price series, estimated log spread, asset returns, spread returns, and distributional diagnostics, providing a visual basis for assessing the stability and tradability of the constructed spread.}
+    \label{fig:GBPUSD_EURUSD_spread_diagnostics}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Backtest performance}
+
+\subsubsection{AUDUSD/NZDUSD}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_performance.pdf}
@@ -20,43 +76,8 @@
     \label{fig:AUDUSD_NZDUSD_performance}
 \end{figure}
 
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_markov_dynamics.pdf}
-    \caption{Estimated Markov-regime dynamics for AUDUSD/NZDUSD. The figure reports rolling regime-specific variances, rolling expected returns, and regime persistence probabilities, illustrating how the hidden-state model separates relatively safe and dangerous market environments through time.}
-    \label{fig:AUDUSD_NZDUSD_markov_dynamics}
-\end{figure}
-
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_spread_diagnostics.pdf}
-    \caption{Spread diagnostics for AUDUSD/NZDUSD. The figure shows the two asset price series, the estimated log spread, asset returns, spread returns, and distributional diagnostics for both returns and spread levels, providing a visual check of the pairs-trading signal construction.}
-    \label{fig:AUDUSD_NZDUSD_spread_diagnostics}
-\end{figure}
-
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_positions_and_regimes.pdf}
-    \caption{Trading positions and regime overlay for AUDUSD/NZDUSD. The figure compares baseline, AR, and Markov-switching AR exposure through time, together with the smoothed probability of the dangerous regime and the resulting long, flat, and short position states.}
-    \label{fig:AUDUSD_NZDUSD_positions_and_regimes}
-\end{figure}
-
-
-% ------------------------------------------------------------
-\clearpage
 \subsubsection{EURNOK/EURSEK}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_eda.pdf}
-    \caption{Exploratory data analysis for EURNOK/EURSEK. The figure summarizes intraday spreads, volatility, mean returns, bar counts, weekday effects, rolling realized volatility, rolling correlation, distributional features, normality diagnostics, cross-pair return scatter, autocorrelation, rolling volatility, and the spread-volatility relationship.}
-    \label{fig:EURNOK_EURSEK_eda}
-\end{figure}
-
-\clearpage
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_performance.pdf}
@@ -64,43 +85,8 @@
     \label{fig:EURNOK_EURSEK_performance}
 \end{figure}
 
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_markov_dynamics.pdf}
-    \caption{Estimated Markov-regime dynamics for EURNOK/EURSEK. The figure tracks regime-specific variance, expected return, and persistence estimates, showing how the model distinguishes high-risk and low-risk states over the backtest period.}
-    \label{fig:EURNOK_EURSEK_markov_dynamics}
-\end{figure}
-
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_spread_diagnostics.pdf}
-    \caption{Spread diagnostics for EURNOK/EURSEK. The figure presents the asset price paths, fitted log spread, asset returns, spread returns, and distributional diagnostics, allowing visual inspection of spread stability, return asymmetry, and tail behaviour.}
-    \label{fig:EURNOK_EURSEK_spread_diagnostics}
-\end{figure}
-
-\clearpage
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_positions_and_regimes.pdf}
-    \caption{Trading positions and regime overlay for EURNOK/EURSEK. The figure displays strategy exposure for the baseline, AR, and Markov-switching AR models, together with the smoothed dangerous-regime probability and the corresponding trading position states.}
-    \label{fig:EURNOK_EURSEK_positions_and_regimes}
-\end{figure}
-
-
-% ------------------------------------------------------------
-\clearpage
 \subsubsection{GBPUSD/EURUSD}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_eda.pdf}
-    \caption{Exploratory data analysis for GBPUSD/EURUSD. The figure summarizes intraday liquidity and volatility patterns, hourly and weekday activity, rolling realized volatility, rolling correlation, return distributions, normality diagnostics, cross-pair return dependence, autocorrelation, and the relationship between spread and volatility.}
-    \label{fig:GBPUSD_EURUSD_eda}
-\end{figure}
-
-\clearpage
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_performance.pdf}
@@ -108,147 +94,286 @@
     \label{fig:GBPUSD_EURUSD_performance}
 \end{figure}
 
-\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Currency pair tables}
+
+\begin{table}[H]
+\centering
+\caption{Full strategy tearsheets across all currency pairs. Returns, volatility, drawdowns, VaR, CVaR, average wins, and losses are reported in basis points.}
+\label{tab:full_strategy_tearsheets_all_pairs}
+\small
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{2.0}
+
+\begin{adjustbox}{max width=\linewidth, max totalheight=0.90\textheight}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+& \multicolumn{3}{c}{\textbf{AUDUSD/NZDUSD}}
+& \multicolumn{3}{c}{\textbf{EURNOK/EURSEK}}
+& \multicolumn{3}{c}{\textbf{GBPUSD/EURUSD}} \\
+\cmidrule(lr){2-4}
+\cmidrule(lr){5-7}
+\cmidrule(lr){8-10}
+\textbf{Metric}
+& \textbf{Base} & \textbf{AR} & \textbf{MS-AR}
+& \textbf{Base} & \textbf{AR} & \textbf{MS-AR}
+& \textbf{Base} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return              & 9286.14 & 7695.77 & 5567.68 & -14035.70 & -10581.39 & -8796.04 & 2059.43 & 1677.66 & 932.85 \\
+Annual return             & 5643.53 & 4677.00 & 3383.69 & -8544.23 & -6441.42 & -5354.59 & 1251.59 & 1019.58 & 566.93 \\
+Best month                & 1971.98 & 1971.98 & 1297.72 & -79.73 & 0.00 & 0.00 & 431.52 & 410.25 & 311.83 \\
+Worst month               & 62.56 & -73.87 & -70.33 & -3224.25 & -2611.60 & -2504.00 & -277.46 & -130.81 & -140.36 \\
+Positive months           & 100.00\% & 90.00\% & 80.00\% & 0.00\% & 0.00\% & 0.00\% & 70.00\% & 55.00\% & 45.00\% \\
+Annual volatility         & 819.72 & 724.16 & 686.87 & 803.51 & 632.82 & 550.25 & 572.05 & 478.18 & 458.24 \\
+Max drawdown              & -263.67 & -263.67 & -281.26 & -14096.99 & -10613.91 & -8838.14 & -372.00 & -569.59 & -629.09 \\
+Max drawdown duration     & 5525 & 11954 & 12623 & 177619 & 177619 & 177666 & 40516 & 47494 & 56854 \\
+Ulcer index               & 59.56 & 74.47 & 79.16 & 8439.75 & 6493.59 & 5343.53 & 129.96 & 185.14 & 232.89 \\
+VaR 95\%                  & -5.23 & -4.48 & -4.39 & -3.38 & -2.36 & -1.76 & -3.66 & -3.00 & -2.88 \\
+CVaR 95\%                 & -7.99 & -7.28 & -7.11 & -6.62 & -5.24 & -4.50 & -5.65 & -4.98 & -4.83 \\
+Sharpe ratio              & 6.88 & 6.46 & 4.93 & -10.63 & -10.18 & -9.73 & 2.19 & 2.13 & 1.24 \\
+Sortino ratio             & 8.59 & 7.05 & 5.23 & -8.10 & -6.51 & -5.52 & 2.51 & 1.99 & 1.12 \\
+Calmar ratio              & 21.40 & 17.74 & 12.03 & 0.61 & 0.61 & 0.61 & 3.36 & 1.79 & 0.90 \\
+Profit factor             & 1.11 & 1.12 & 1.09 & 0.85 & 0.83 & 0.82 & 1.03 & 1.04 & 1.02 \\
+Payoff ratio              & 1.13 & 1.14 & 1.12 & 0.89 & 0.87 & 0.87 & 1.06 & 1.06 & 1.06 \\
+Tail ratio                & 1.14 & 1.16 & 1.14 & 0.86 & 0.84 & 0.83 & 1.05 & 1.05 & 1.05 \\
+Number of trades          & 3158 & 2452 & 2254 & 1702 & 1233 & 938 & 2070 & 1484 & 1360 \\
+Win rate                  & 49.55\% & 49.62\% & 49.44\% & 48.82\% & 48.82\% & 48.68\% & 49.39\% & 49.41\% & 49.22\% \\
+Market exposure           & 60.97\% & 46.69\% & 45.01\% & 42.70\% & 31.38\% & 25.11\% & 62.59\% & 41.44\% & 39.17\% \\
+Average win               & 3.47 & 3.49 & 3.40 & 2.14 & 1.94 & 1.88 & 2.20 & 2.27 & 2.24 \\
+Average loss              & -3.07 & -3.06 & -3.04 & -2.40 & -2.22 & -2.16 & -2.08 & -2.13 & -2.12 \\
+Skewness                  & 1.17 & 1.48 & 0.76 & -1.63 & -2.58 & -3.62 & -0.05 & -0.02 & -0.19 \\
+Kurtosis                  & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.01 & 29.03 & 29.34 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Markov Dynamics}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_markov_dynamics.pdf}
-    \caption{Estimated Markov-regime dynamics for GBPUSD/EURUSD. The figure reports rolling estimates of regime-specific variance, expected return, and state persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
-    \label{fig:GBPUSD_EURUSD_markov_dynamics}
+    \setlength{\abovecaptionskip}{2pt}
+    \setlength{\belowcaptionskip}{2pt}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_markov_dynamics.pdf}
+        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_markov_dynamics.pdf}
+        \caption*{\scriptsize (b) EURNOK/EURSEK}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_markov_dynamics.pdf}
+        \caption*{\scriptsize (c) GBPUSD/EURUSD}
+    \end{minipage}
+
+    \caption{Estimated Markov-regime dynamics across the three currency pairs. Each panel reports rolling estimates of regime-specific variance, expected return, and regime persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
+    \label{fig:markov_dynamics_all_pairs}
 \end{figure}
 
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Positions and regimes}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_spread_diagnostics.pdf}
-    \caption{Spread diagnostics for GBPUSD/EURUSD. The figure shows the two asset price series, estimated log spread, asset returns, spread returns, and distributional diagnostics, providing a visual basis for assessing the stability and tradability of the constructed spread.}
-    \label{fig:GBPUSD_EURUSD_spread_diagnostics}
+    \setlength{\abovecaptionskip}{2pt}
+    \setlength{\belowcaptionskip}{2pt}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_positions_and_regimes.pdf}
+        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_positions_and_regimes.pdf}
+        \caption*{\scriptsize (b) EURNOK/EURSEK}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_positions_and_regimes.pdf}
+        \caption*{\scriptsize (c) GBPUSD/EURUSD}
+    \end{minipage}
+
+    \caption{Trading positions and regime overlays across the three currency pairs. Each panel shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:positions_and_regimes_all_pairs}
 \end{figure}
 
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Data pipeline}
+
+\begin{table}[H]
+\centering
+\caption{Chronological overview of the data processing and modelling pipeline.}
+\label{tab:data_processing_pipeline}
+\small
+\begin{tabularx}{\linewidth}{clX}
+\toprule
+\textbf{Step} & \textbf{Stage} & \textbf{Description} \\
+\midrule
+1  & Download data & Download monthly Dukascopy tick data for each currency leg. \\
+2  & Separate quote sides & Store bid and ask files separately for each asset and month. \\
+3  & Load files & Load the relevant parquet files into Python. \\
+4  & Filter observations & Restrict the data to the chosen trading days and active trading hours. \\
+5  & Sort timestamps & Sort all bid and ask quote streams chronologically. \\
+6  & Align bid--ask quotes & Merge bid and ask streams within each asset using backward as-of alignment. \\
+7  & Compute mid-prices & Compute mid-prices from bid and ask quotes. \\
+8  & Compute half-spreads & Compute half-spreads in basis points for each asset. \\
+9  & Aggregate bars & Aggregate raw ticks into event-based volume bars. \\
+10 & Preserve continuity & Carry cumulative volume across monthly file boundaries. \\
+11 & Synchronize pair legs & Merge the two assets into synchronized pair-level observations. \\
+12 & Compute log-prices & Transform mid-prices into log-prices. \\
+13 & Compute returns & Compute one-bar log returns for both assets. \\
+14 & Estimate hedge ratio & Estimate static and rolling hedge ratios between the two log-price series. \\
+15 & Construct spread & Construct the log spread using the estimated hedge ratio. \\
+16 & Standardize spread & Compute rolling spread mean, rolling spread volatility, and the spread $z$-score. \\
+17 & Compute spread returns & Compute hedged spread returns using lagged hedge ratios. \\
+18 & Run diagnostics & Produce descriptive, liquidity, correlation, and cointegration diagnostics. \\
+19 & Fit AR model & Estimate the autoregressive benchmark model. \\
+20 & Fit Markov model & Estimate hidden Markov regime probabilities using spread returns. \\
+21 & Walk-forward prediction & Generate out-of-sample signals and regime probabilities. \\
+22 & Optimize rules & Use walk-forward optimization to select trading thresholds. \\
+23 & Backtest strategies & Evaluate baseline, AR-filtered, and MS-AR strategies net of costs. \\
+24 & Summarize performance & Produce tearsheets, figures, and strategy comparison tables. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Cost impact}
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_positions_and_regimes.pdf}
-    \caption{Trading positions and regime overlay for GBPUSD/EURUSD. The figure shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
-    \label{fig:GBPUSD_EURUSD_positions_and_regimes}
+    \setlength{\abovecaptionskip}{2pt}
+    \setlength{\belowcaptionskip}{2pt}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_cost_impact.pdf}
+        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_cost_impact.pdf}
+        \caption*{\scriptsize (b) EURNOK/EURSEK}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_cost_impact.pdf}
+        \caption*{\scriptsize (c) GBPUSD/EURUSD}
+    \end{minipage}
+
+    \caption{Cost impact across the three currency pairs. Each panel shows how transaction costs affect strategy performance for the baseline, AR, and Markov-switching AR strategies, highlighting the sensitivity of cumulative returns to implementation frictions.}
+    \label{fig:cost_impact_all_pairs}
 \end{figure}
 
-\clearpage\subsection{Currency pair tables}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Daily positions and regimes}
+
+\begin{figure}[H]
+    \centering
+    \setlength{\abovecaptionskip}{2pt}
+    \setlength{\belowcaptionskip}{2pt}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_daily_positions_and_regimes.pdf}
+        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_daily_positions_and_regimes.pdf}
+        \caption*{\scriptsize (b) EURNOK/EURSEK}
+    \end{minipage}
+
+    \vspace{0.15cm}
+
+    \begin{minipage}{0.65\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_daily_positions_and_regimes.pdf}
+        \caption*{\scriptsize (c) GBPUSD/EURUSD}
+    \end{minipage}
+
+    \caption{Daily positions and regime overlays across the three currency pairs. Each panel shows daily trading exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:daily_positions_and_regimes_all_pairs}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Daily backtest performance}
 
 \subsubsection{AUDUSD/NZDUSD}
 
-\begin{table}[H]
-\centering
-\caption{Full AUDUSD/NZDUSD strategy tearsheet. Returns, volatility, drawdowns, VaR, CVaR, average wins, and losses are reported in basis points.}
-\label{tab:audnzd_full_tearsheet}
-\scriptsize
-\begin{tabularx}{\linewidth}{lrrr}
-\toprule
-\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
-\midrule
-Total return & 9286.14 & 7695.77 & 5567.68 \\
-Annual return & 5643.53 & 4677.00 & 3383.69 \\
-Best month & 1971.98 & 1971.98 & 1297.72 \\
-Worst month & 62.56 & -73.87 & -70.33 \\
-Positive months & 100.00\% & 90.00\% & 80.00\% \\
-Annual volatility & 819.72 & 724.16 & 686.87 \\
-Max drawdown & -263.67 & -263.67 & -281.26 \\
-Max drawdown duration & 5525 & 11954 & 12623 \\
-Ulcer index & 59.56 & 74.47 & 79.16 \\
-VaR 95\% & -5.23 & -4.48 & -4.39 \\
-CVaR 95\% & -7.99 & -7.28 & -7.11 \\
-Sharpe ratio & 6.88 & 6.46 & 4.93 \\
-Sortino ratio & 8.59 & 7.05 & 5.23 \\
-Calmar ratio & 21.40 & 17.74 & 12.03 \\
-Profit factor & 1.11 & 1.12 & 1.09 \\
-Payoff ratio & 1.13 & 1.14 & 1.12 \\
-Tail ratio & 1.14 & 1.16 & 1.14 \\
-Number of trades & 3158 & 2452 & 2254 \\
-Win rate & 49.55\% & 49.62\% & 49.44\% \\
-Market exposure & 60.97\% & 46.69\% & 45.01\% \\
-Average win & 3.47 & 3.49 & 3.40 \\
-Average loss & -3.07 & -3.06 & -3.04 \\
-Skewness & 1.17 & 1.48 & 0.76 \\
-Kurtosis & 34.41 & 51.53 & 21.08 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_daily_performance.pdf}
+    \caption{Daily backtest performance for AUDUSD/NZDUSD across the baseline, AR, and Markov-switching AR strategies. The figure compares cumulative strategy returns, drawdowns, monthly returns, rolling volatility, rolling Sharpe ratios, active-day return distributions, and tail behaviour on a log-density scale.}
+    \label{fig:AUDUSD_NZDUSD_daily_performance}
+\end{figure}
 
 \subsubsection{EURNOK/EURSEK}
 
-\begin{table}[H]
-\centering
-\caption{Full EURNOK/EURSEK strategy tearsheet. Returns, volatility, drawdowns, VaR, CVaR, average wins, and losses are reported in basis points.}
-\label{tab:eurnok_eursek_full_tearsheet}
-\scriptsize
-\begin{tabularx}{\linewidth}{lrrr}
-\toprule
-\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
-\midrule
-Total return & -14035.70 & -10581.39 & -8796.04 \\
-Annual return & -8544.23 & -6441.42 & -5354.59 \\
-Best month & -79.73 & 0.00 & 0.00 \\
-Worst month & -3224.25 & -2611.60 & -2504.00 \\
-Positive months & 0.00\% & 0.00\% & 0.00\% \\
-Annual volatility & 803.51 & 632.82 & 550.25 \\
-Max drawdown & -14096.99 & -10613.91 & -8838.14 \\
-Max drawdown duration & 177619 & 177619 & 177666 \\
-Ulcer index & 8439.75 & 6493.59 & 5343.53 \\
-VaR 95\% & -3.38 & -2.36 & -1.76 \\
-CVaR 95\% & -6.62 & -5.24 & -4.50 \\
-Sharpe ratio & -10.63 & -10.18 & -9.73 \\
-Sortino ratio & -8.10 & -6.51 & -5.52 \\
-Calmar ratio & 0.61 & 0.61 & 0.61 \\
-Profit factor & 0.85 & 0.83 & 0.82 \\
-Payoff ratio & 0.89 & 0.87 & 0.87 \\
-Tail ratio & 0.86 & 0.84 & 0.83 \\
-Number of trades & 1702 & 1233 & 938 \\
-Win rate & 48.82\% & 48.82\% & 48.68\% \\
-Market exposure & 42.70\% & 31.38\% & 25.11\% \\
-Average win & 2.14 & 1.94 & 1.88 \\
-Average loss & -2.40 & -2.22 & -2.16 \\
-Skewness & -1.63 & -2.58 & -3.62 \\
-Kurtosis & 52.00 & 82.88 & 141.09 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_daily_performance.pdf}
+    \caption{Daily backtest performance for EURNOK/EURSEK across the baseline, AR, and Markov-switching AR strategies. The figure compares cumulative returns, drawdowns, monthly return contributions, rolling volatility, rolling Sharpe ratios, active-day return densities, and tail behaviour.}
+    \label{fig:EURNOK_EURSEK_daily_performance}
+\end{figure}
 
 \subsubsection{GBPUSD/EURUSD}
 
-
-\begin{table}[H]
-\centering
-\caption{Full GBPUSD/EURUSD strategy tearsheet. Returns, volatility, drawdowns, VaR, CVaR, average wins, and losses are reported in basis points.}
-\label{tab:gbpusd_eurusd_full_tearsheet}
-\scriptsize
-\begin{tabularx}{\linewidth}{lrrr}
-\toprule
-\textbf{Metric} & \textbf{Baseline} & \textbf{AR} & \textbf{MS-AR} \\
-\midrule
-Total return & 2059.43 & 1677.66 & 932.85 \\
-Annual return & 1251.59 & 1019.58 & 566.93 \\
-Best month & 431.52 & 410.25 & 311.83 \\
-Worst month & -277.46 & -130.81 & -140.36 \\
-Positive months & 70.00\% & 55.00\% & 45.00\% \\
-Annual volatility & 572.05 & 478.18 & 458.24 \\
-Max drawdown & -372.00 & -569.59 & -629.09 \\
-Max drawdown duration & 40516 & 47494 & 56854 \\
-Ulcer index & 129.96 & 185.14 & 232.89 \\
-VaR 95\% & -3.66 & -3.00 & -2.88 \\
-CVaR 95\% & -5.65 & -4.98 & -4.83 \\
-Sharpe ratio & 2.19 & 2.13 & 1.24 \\
-Sortino ratio & 2.51 & 1.99 & 1.12 \\
-Calmar ratio & 3.36 & 1.79 & 0.90 \\
-Profit factor & 1.03 & 1.04 & 1.02 \\
-Payoff ratio & 1.06 & 1.06 & 1.06 \\
-Tail ratio & 1.05 & 1.05 & 1.05 \\
-Number of trades & 2070 & 1484 & 1360 \\
-Win rate & 49.39\% & 49.41\% & 49.22\% \\
-Market exposure & 62.59\% & 41.44\% & 39.17\% \\
-Average win & 2.20 & 2.27 & 2.24 \\
-Average loss & -2.08 & -2.13 & -2.12 \\
-Skewness & -0.05 & -0.02 & -0.19 \\
-Kurtosis & 19.01 & 29.03 & 29.34 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_daily_performance.pdf}
+    \caption{Daily backtest performance for GBPUSD/EURUSD across the baseline, AR, and Markov-switching AR strategies. The figure compares cumulative returns, drawdowns, monthly returns, rolling volatility, rolling Sharpe ratios, active-day return densities, and tail behaviour under the competing model specifications.}
+    \label{fig:GBPUSD_EURUSD_daily_performance}
+\end{figure}

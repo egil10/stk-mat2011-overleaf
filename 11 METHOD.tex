@@ -67,8 +67,6 @@ The BIC introduces a stricter penalty for model complexity by factoring in $T$, 
 
 During our hyperparameter sweep, models are estimated across a grid of potential $K$ and $p$ values. The configuration that minimizes the AIC and BIC is selected as the optimal structural architecture for our subsequent trading simulations.
 
-\subsection{Data}
-
 \subsection{Metrics}
 
 To rigorously evaluate the performance of the trading strategies generated in this simulation, we must rely on a robust set of quantitative metrics. Simply observing the final account balance is insufficient; a proper evaluation requires us to understand the path taken to achieve those returns, the risks assumed along the way, and the underlying mathematical behavior of the system. In this section, I introduce the comprehensive suite of metrics used to score the models. These indicators allow us to objectively compare different strategies, identifying their specific structural strengths, potential vulnerabilities, and overall viability in a live market context. Before detailing the specific calculations, we define the following standard notations used throughout this section: 
@@ -194,17 +192,86 @@ While statistical metrics describe the mathematical probability of returns, fina
     \text{AL} = \frac{1}{N_{\text{losses}}} \sum_{i=1}^{N_\text{losses}} \text{Loss}_i
 \end{equation}
 
+\subsection{Data}
+
+The empirical analysis is based on high-frequency foreign exchange data downloaded from Dukascopy. For each currency pair, I collect separate bid and ask quote data for both legs of the pair. The raw files are stored as monthly parquet files and loaded into Python through a reproducible data pipeline. The sample covers the period from January 2024 to December 2025, giving two full calendar years of tick-level FX observations.
+
+The three currency-pair constructions used in the project are
+\[
+    \text{AUD/USD--NZD/USD}, 
+    \qquad
+    \text{EUR/NOK--EUR/SEK},
+    \qquad
+    \text{GBP/USD--EUR/USD}.
+\]
+These pairs were selected because they represent economically related exchange rates while differing substantially in liquidity, transaction costs, and empirical dependence. AUD/USD and NZD/USD are both Asia-Pacific currencies quoted against the US dollar. EUR/NOK and EUR/SEK connect two Nordic currencies against the euro, but are less liquid and have materially wider spreads. GBP/USD and EUR/USD are highly liquid major currency pairs sharing the US dollar leg.
+
+Using bid and ask data rather than only mid-prices is important in a high-frequency setting. At low frequencies, the spread may be treated as a small implementation detail, but at the tick level it is central to the economics of the strategy. A model may identify statistically significant mean reversion and still fail economically if the expected move is smaller than the cost of trading. For this reason, the data set is constructed to preserve bid prices, ask prices, mid-prices, and spread-based transaction-cost estimates throughout the pipeline.
+
+\subsection{Pre-processing}
+
+The raw Dukascopy quote data are not used directly in the statistical models. Instead, the data are transformed into synchronized pair-level observations through a custom Python pipeline. This preprocessing is important because high-frequency financial data are irregularly spaced, asynchronous, and strongly affected by bid--ask spreads and microstructure noise. The main preprocessing steps are described below.
+
+\subsubsection{Bid--Ask and Mid prices}
+
+For each currency leg, bid and ask quote streams are first sorted by timestamp. Since bid and ask updates do not necessarily arrive at exactly the same time, they are aligned using a backward as-of merge. This means that, at each timestamp, the most recent available quote is used, avoiding any use of future information.
+
+The mid-price is then computed as
+\begin{equation}
+    P_t=\frac{P_t^{\text{ask}}}{P_t^{\text{bid}}}
+\end{equation}
+which produces a single representative price series for each asset while still preserving the original bid and ask quotes for transaction-cost calculations.
+
+\subsubsection{Spread}
+
+The bid--ask spread is central in HFT because expected profits are often small relative to trading costs. For each asset, the half-spread is measured in basis points as
+\begin{equation}
+    \text{HS}_t = \frac{1}{2}\frac{P_t^{\text{ask}}}{P_t^{\text{bid}}}\times10\space000
+\end{equation}
+
+The half-spread gives an estimate of the cost of crossing the market for one leg of the trade. Since pairs trading requires trading both legs, the combined spread cost is an important part of the later backtest.
+
+\subsection{Pairs trading}
+
+We choose to financial instruments, as AUDUSD and NZDUSD in this paper. Let us define the spread $z_t$ as 
+\begin{equation}
+    z_t = p_t^{(1)} - \beta p_t^{(2)}
+\end{equation}
+where $\beta$ can be estimated by the Engle-Granger method, which means using an Ordinary Least Squares (OLS) regression followed by an Augmented Dickey-Fuller (ADF) test on the residuals to verify that $z_t$ is stationary. It is also possible to esimate this directly in the HMM model, but easier to do so globally at first. 
+
+Thereafter we can fit an AR- or ARCH-HMM on the spread-process
+\begin{equation}
+    z_t = \mu^k + \rho^k(z_{t-1}-\mu^k) + \varepsilon_t^k 
+\end{equation}
+where $\rho^k$ measures how fast we expect the mean reversion to be in regime $k$. Values of $\rho^k$ close to $0$ indicate a faster mean reversion, while values closer to $1$ indicate a slower mean reversion. Negative values of $\rho^k$ would indicate even stronger mean reversion but possibly less realistic empirically. 
+
+The trading rule in pairs trading can be formulated as follows. In a drifting regime we do nothing. In a mean-reverting regime, say for regime $k=2$ we trade by.
+
+\begin{equation}
+    \left\{
+    \begin{aligned}
+        z_t > \mu^2 + c\sigma^2 
+        &\Rightarrow \text{short AUDUSD and long NZDUSD}, \\
+        z_t < \mu^2 - c\sigma^2 
+        &\Rightarrow \text{long AUDUSD and short NZDUSD}, \\
+        z_t \approx \mu^2 
+        &\Rightarrow \text{close the position}.
+    \end{aligned}
+    \right.
+\end{equation}
+
+While for one unit of AUDUSD we trade $\hat{\beta}$ units of NZDUSD, such that the position in main is exposed to the relative movement between AUDUSD and NZDUUSD, and not toward the general level in the currency market. 
+
+For a soft HMM version the positions can be scaled with the probabilites of the model being in a certain mean-reverting regime
+\begin{equation}
+    w(s_t) = \mathbb{P}(s_t \space \text{is in a mean-reverting regime} \mid \mathcal{F_t})
+\end{equation}
+It may also be natural to scale the positions with esitmated volatility.
+ 
 \subsection{Back-testing}
 
-To ensure the empirical validity of our trading simulations, it is necessary to subject the generated strategies to realistic market frictions. Theoretical returns that do not account for the costs of execution often drastically overstate the real-world viability of a model, particularly for high-frequency or regime-switching strategies that may incur significant turnover.
+Back-testing is used to evaluate whether the model signals translate into economically meaningful trading performance. This is important because a model can fit historical returns well without producing a tradable strategy. In high-frequency trading, the expected profit per trade is often small, so even modest execution costs can eliminate an apparent statistical edge.
 
-In our back-testing framework, we account for the following primary transaction costs:
+For this reason, the backtest includes realistic market frictions. The most important is the bid--ask spread: a trader generally buys at the ask and sells at the bid, rather than trading for free at the mid-price. Commissions and other execution costs are also included, since frequent position changes can make small costs accumulate quickly. Financing and margin costs are relevant when the strategy holds short or leveraged positions.
 
-\begin{itemize}
-    \item \textbf{Commissions}: A fixed percentage or flat fee applied to the notional value of every executed trade, representing standard brokerage fees.
-    \item \textbf{Bid-Ask Spread}: A penalty applied to the execution price to simulate the cost of crossing the bid-ask spread and the market impact of the trade.
-    \item \textbf{Borrowing Costs/Margin}: If the strategy allows for short selling or utilizes leverage, we apply an annualized borrow rate to account for the cost of maintaining those positions over time.
-\end{itemize}
-
-By embedding these frictions directly into the equity curve calculations, the financial metrics presented in the results represent net-of-fee performance, providing a conservative and robust evaluation of the Hidden Markov Model's predictive edge.
-
+The strategies are evaluated in a walk-forward structure, where parameters are estimated on past data and then applied to later out-of-sample periods. This avoids look-ahead bias and gives a more realistic test of whether the baseline, AR, and Markov-switching strategies would have worked under implementable trading conditions.
