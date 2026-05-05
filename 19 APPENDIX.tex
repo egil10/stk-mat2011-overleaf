@@ -4,6 +4,49 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{Data pipeline}
+
+\begin{table}[H]
+\centering
+\caption{Chronological overview of the data processing and modelling pipeline.}
+\label{tab:data_processing_pipeline}
+\small
+\begin{tabularx}{\linewidth}{clX}
+\toprule
+\textbf{Step} & \textbf{Stage} & \textbf{Description} \\
+\midrule
+1  & Download data & Download monthly Dukascopy tick data for each currency leg. \\
+2  & Separate quote sides & Store bid and ask files separately for each asset and month. \\
+3  & Load files & Load the relevant parquet files into Python. \\
+4  & Filter observations & Restrict the data to the chosen trading days and active trading hours. \\
+5  & Sort timestamps & Sort all bid and ask quote streams chronologically. \\
+6  & Align bid--ask quotes & Merge bid and ask streams within each asset using backward as-of alignment. \\
+7  & Compute mid-prices & Compute mid-prices from bid and ask quotes. \\
+8  & Compute half-spreads & Compute half-spreads in basis points for each asset. \\
+9  & Aggregate bars & Aggregate raw ticks into event-based volume bars. \\
+10 & Preserve continuity & Carry cumulative volume across monthly file boundaries. \\
+11 & Synchronize pair legs & Merge the two assets into synchronized pair-level observations. \\
+12 & Compute log-prices & Transform mid-prices into log-prices. \\
+13 & Compute returns & Compute one-bar log returns for both assets. \\
+14 & Estimate hedge ratio & Estimate static and rolling hedge ratios between the two log-price series. \\
+15 & Construct spread & Construct the log spread using the estimated hedge ratio. \\
+16 & Standardize spread & Compute rolling spread mean, rolling spread volatility, and the spread $z$-score. \\
+17 & Compute spread returns & Compute hedged spread returns using lagged hedge ratios. \\
+18 & Run diagnostics & Produce descriptive, liquidity, correlation, and cointegration diagnostics. \\
+19 & Fit AR model & Estimate the autoregressive benchmark model. \\
+20 & Fit Markov model & Estimate hidden Markov regime probabilities using spread returns. \\
+21 & Walk-forward prediction & Generate out-of-sample signals and regime probabilities. \\
+22 & Optimize rules & Use walk-forward optimization to select trading thresholds. \\
+23 & Backtest strategies & Evaluate baseline, AR-filtered, and MS-AR strategies net of costs. \\
+24 & Summarize performance & Produce tearsheets, figures, and strategy comparison tables. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Exploratory data analysis}
 
 \subsubsection{AUDUSD/NZDUSD}
@@ -159,35 +202,31 @@ Kurtosis                  & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.
 
 \subsection{Markov Dynamics}
 
+\subsubsection{AUDUSD/NZDUSD}
+
 \begin{figure}[H]
     \centering
-    \setlength{\abovecaptionskip}{2pt}
-    \setlength{\belowcaptionskip}{2pt}
+    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_markov_dynamics.pdf}
+    \caption{Estimated Markov-regime dynamics for AUDUSD/NZDUSD. The figure reports rolling estimates of regime-specific variance, expected return, and regime persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
+    \label{fig:AUDUSD_NZDUSD_markov_dynamics}
+\end{figure}
 
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_markov_dynamics.pdf}
-        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
-    \end{minipage}
+\subsubsection{EURNOK/EURSEK}
 
-    \vspace{0.15cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_markov_dynamics.pdf}
+    \caption{Estimated Markov-regime dynamics for EURNOK/EURSEK. The figure reports rolling estimates of regime-specific variance, expected return, and regime persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
+    \label{fig:EURNOK_EURSEK_markov_dynamics}
+\end{figure}
 
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_markov_dynamics.pdf}
-        \caption*{\scriptsize (b) EURNOK/EURSEK}
-    \end{minipage}
+\subsubsection{GBPUSD/EURUSD}
 
-    \vspace{0.15cm}
-
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_markov_dynamics.pdf}
-        \caption*{\scriptsize (c) GBPUSD/EURUSD}
-    \end{minipage}
-
-    \caption{Estimated Markov-regime dynamics across the three currency pairs. Each panel reports rolling estimates of regime-specific variance, expected return, and regime persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
-    \label{fig:markov_dynamics_all_pairs}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_markov_dynamics.pdf}
+    \caption{Estimated Markov-regime dynamics for GBPUSD/EURUSD. The figure reports rolling estimates of regime-specific variance, expected return, and regime persistence, illustrating how the hidden Markov structure classifies changing market conditions through time.}
+    \label{fig:GBPUSD_EURUSD_markov_dynamics}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -196,79 +235,38 @@ Kurtosis                  & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.
 
 \subsection{Positions and regimes}
 
+\subsubsection{AUDUSD/NZDUSD}
+
 \begin{figure}[H]
     \centering
-    \setlength{\abovecaptionskip}{2pt}
-    \setlength{\belowcaptionskip}{2pt}
+    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_positions_and_regimes.pdf}
+    \caption{Trading positions and regime overlays for AUDUSD/NZDUSD. The figure shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:AUDUSD_NZDUSD_positions_and_regimes}
+\end{figure}
 
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_positions_and_regimes.pdf}
-        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
-    \end{minipage}
+\subsubsection{EURNOK/EURSEK}
 
-    \vspace{0.15cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_positions_and_regimes.pdf}
+    \caption{Trading positions and regime overlays for EURNOK/EURSEK. The figure shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:EURNOK_EURSEK_positions_and_regimes}
+\end{figure}
 
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_positions_and_regimes.pdf}
-        \caption*{\scriptsize (b) EURNOK/EURSEK}
-    \end{minipage}
+\subsubsection{GBPUSD/EURUSD}
 
-    \vspace{0.15cm}
-
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_positions_and_regimes.pdf}
-        \caption*{\scriptsize (c) GBPUSD/EURUSD}
-    \end{minipage}
-
-    \caption{Trading positions and regime overlays across the three currency pairs. Each panel shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
-    \label{fig:positions_and_regimes_all_pairs}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_positions_and_regimes.pdf}
+    \caption{Trading positions and regime overlays for GBPUSD/EURUSD. The figure shows exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:GBPUSD_EURUSD_positions_and_regimes}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Data pipeline}
 
-\begin{table}[H]
-\centering
-\caption{Chronological overview of the data processing and modelling pipeline.}
-\label{tab:data_processing_pipeline}
-\small
-\begin{tabularx}{\linewidth}{clX}
-\toprule
-\textbf{Step} & \textbf{Stage} & \textbf{Description} \\
-\midrule
-1  & Download data & Download monthly Dukascopy tick data for each currency leg. \\
-2  & Separate quote sides & Store bid and ask files separately for each asset and month. \\
-3  & Load files & Load the relevant parquet files into Python. \\
-4  & Filter observations & Restrict the data to the chosen trading days and active trading hours. \\
-5  & Sort timestamps & Sort all bid and ask quote streams chronologically. \\
-6  & Align bid--ask quotes & Merge bid and ask streams within each asset using backward as-of alignment. \\
-7  & Compute mid-prices & Compute mid-prices from bid and ask quotes. \\
-8  & Compute half-spreads & Compute half-spreads in basis points for each asset. \\
-9  & Aggregate bars & Aggregate raw ticks into event-based volume bars. \\
-10 & Preserve continuity & Carry cumulative volume across monthly file boundaries. \\
-11 & Synchronize pair legs & Merge the two assets into synchronized pair-level observations. \\
-12 & Compute log-prices & Transform mid-prices into log-prices. \\
-13 & Compute returns & Compute one-bar log returns for both assets. \\
-14 & Estimate hedge ratio & Estimate static and rolling hedge ratios between the two log-price series. \\
-15 & Construct spread & Construct the log spread using the estimated hedge ratio. \\
-16 & Standardize spread & Compute rolling spread mean, rolling spread volatility, and the spread $z$-score. \\
-17 & Compute spread returns & Compute hedged spread returns using lagged hedge ratios. \\
-18 & Run diagnostics & Produce descriptive, liquidity, correlation, and cointegration diagnostics. \\
-19 & Fit AR model & Estimate the autoregressive benchmark model. \\
-20 & Fit Markov model & Estimate hidden Markov regime probabilities using spread returns. \\
-21 & Walk-forward prediction & Generate out-of-sample signals and regime probabilities. \\
-22 & Optimize rules & Use walk-forward optimization to select trading thresholds. \\
-23 & Backtest strategies & Evaluate baseline, AR-filtered, and MS-AR strategies net of costs. \\
-24 & Summarize performance & Produce tearsheets, figures, and strategy comparison tables. \\
-\bottomrule
-\end{tabularx}
-\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -276,35 +274,31 @@ Kurtosis                  & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.
 
 \subsection{Cost impact}
 
+\subsubsection{AUDUSD/NZDUSD}
+
 \begin{figure}[H]
     \centering
-    \setlength{\abovecaptionskip}{2pt}
-    \setlength{\belowcaptionskip}{2pt}
+    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_cost_impact.pdf}
+    \caption{Cost impact for AUDUSD/NZDUSD. The figure shows how transaction costs affect strategy performance for the baseline, AR, and Markov-switching AR strategies, highlighting the sensitivity of cumulative returns to implementation frictions.}
+    \label{fig:AUDUSD_NZDUSD_cost_impact}
+\end{figure}
 
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_cost_impact.pdf}
-        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
-    \end{minipage}
+\subsubsection{EURNOK/EURSEK}
 
-    \vspace{0.15cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_cost_impact.pdf}
+    \caption{Cost impact for EURNOK/EURSEK. The figure shows how transaction costs affect strategy performance for the baseline, AR, and Markov-switching AR strategies, highlighting the sensitivity of cumulative returns to implementation frictions.}
+    \label{fig:EURNOK_EURSEK_cost_impact}
+\end{figure}
 
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_cost_impact.pdf}
-        \caption*{\scriptsize (b) EURNOK/EURSEK}
-    \end{minipage}
+\subsubsection{GBPUSD/EURUSD}
 
-    \vspace{0.15cm}
-
-    \begin{minipage}{0.6\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_cost_impact.pdf}
-        \caption*{\scriptsize (c) GBPUSD/EURUSD}
-    \end{minipage}
-
-    \caption{Cost impact across the three currency pairs. Each panel shows how transaction costs affect strategy performance for the baseline, AR, and Markov-switching AR strategies, highlighting the sensitivity of cumulative returns to implementation frictions.}
-    \label{fig:cost_impact_all_pairs}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_cost_impact.pdf}
+    \caption{Cost impact for GBPUSD/EURUSD. The figure shows how transaction costs affect strategy performance for the baseline, AR, and Markov-switching AR strategies, highlighting the sensitivity of cumulative returns to implementation frictions.}
+    \label{fig:GBPUSD_EURUSD_cost_impact}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -313,35 +307,31 @@ Kurtosis                  & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.
 
 \subsection{Daily positions and regimes}
 
+\subsubsection{AUDUSD/NZDUSD}
+
 \begin{figure}[H]
     \centering
-    \setlength{\abovecaptionskip}{2pt}
-    \setlength{\belowcaptionskip}{2pt}
+    \includegraphics[width=\textwidth]{plots/AUDUSD_NZDUSD_daily_positions_and_regimes.pdf}
+    \caption{Daily positions and regime overlays for AUDUSD/NZDUSD. The figure shows daily trading exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:AUDUSD_NZDUSD_daily_positions_and_regimes}
+\end{figure}
 
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_daily_positions_and_regimes.pdf}
-        \caption*{\scriptsize (a) AUDUSD/NZDUSD}
-    \end{minipage}
+\subsubsection{EURNOK/EURSEK}
 
-    \vspace{0.15cm}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/EURNOK_EURSEK_daily_positions_and_regimes.pdf}
+    \caption{Daily positions and regime overlays for EURNOK/EURSEK. The figure shows daily trading exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:EURNOK_EURSEK_daily_positions_and_regimes}
+\end{figure}
 
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_daily_positions_and_regimes.pdf}
-        \caption*{\scriptsize (b) EURNOK/EURSEK}
-    \end{minipage}
+\subsubsection{GBPUSD/EURUSD}
 
-    \vspace{0.15cm}
-
-    \begin{minipage}{0.65\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_daily_positions_and_regimes.pdf}
-        \caption*{\scriptsize (c) GBPUSD/EURUSD}
-    \end{minipage}
-
-    \caption{Daily positions and regime overlays across the three currency pairs. Each panel shows daily trading exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
-    \label{fig:daily_positions_and_regimes_all_pairs}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{plots/GBPUSD_EURUSD_daily_positions_and_regimes.pdf}
+    \caption{Daily positions and regime overlays for GBPUSD/EURUSD. The figure shows daily trading exposure across the baseline, AR, and Markov-switching AR strategies, together with the smoothed dangerous-regime probability and the resulting long, flat, and short trading states.}
+    \label{fig:GBPUSD_EURUSD_daily_positions_and_regimes}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
