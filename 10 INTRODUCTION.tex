@@ -18,6 +18,13 @@ This distinction is crucial for high-frequency modelling. At lower frequencies, 
 
 Currency pairs are especially interesting in this regard because they often have economic and geographical links. Pairs such as AUD/USD and NZD/USD are exposed to related regional and commodity-market forces; EUR/NOK and EUR/SEK connect two Nordic currencies against the euro; and GBP/USD and EUR/USD share the US dollar leg and are deeply embedded in global macro trading. These relationships make currency pairs natural candidates for statistical arbitrage and pairs trading: rather than taking an outright directional view on a single exchange rate, one can model the relative movement between two related exchange rates and test whether temporary deviations tend to revert.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{plots/high_frequency_minimal.pdf}
+    \caption{High frequency microstructure}
+    \label{fig:placeholder}
+\end{figure}
+
 \subsection{Non-stationarity and market regimes}
 
 The main statistical difficulty is non-stationarity. A standard time-series model usually assumes that the same parameters govern the full sample, or at least that the estimated relationship is stable enough to remain useful out of sample. In financial markets this assumption is often too strong. Volatility clusters, correlations rise and fall, liquidity varies intraday, and the same trading rule may behave very differently depending on whether the market is calm, trending, news-driven, or illiquid. This is not merely an inconvenience; it is one of the defining mathematical features of financial data \parencite{engle1982arch,cont2001empirical}.
@@ -35,6 +42,13 @@ In this project, the Hidden Markov Model is used as a regime filter for high-fre
 This approach is attractive because it is interpretable. Unlike a black-box classifier, the HMM produces transition probabilities, regime-specific volatilities, regime-specific expected returns, and smoothed state probabilities. These quantities can be inspected directly and connected to financial intuition: a high-variance regime may correspond to unstable market conditions, while a low-variance regime may correspond to a more favourable environment for mean reversion. In this sense, the HMM is not only a predictive model but also a diagnostic tool for studying how microstructural conditions evolve through time.
 
 At the same time, the project is deliberately empirical and sceptical. The purpose is not to assume that a more complex model must outperform a simpler one. In high-frequency finance, additional model complexity can easily overfit noise, especially when trading costs, bid--ask spreads, and walk-forward validation are taken seriously. The key question is therefore comparative: does a Hidden Markov regime filter add value relative to simpler baseline and autoregressive trading rules, or does it mainly reduce exposure without improving risk-adjusted performance?
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{plots/true-and-hidden-states.pdf}
+    \caption{True and hidden states}
+    \label{fig:placeholder}
+\end{figure}
 
 \subsection{Thesis structure}
 
