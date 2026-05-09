@@ -260,13 +260,20 @@ The trading rule in pairs trading can be formulated as follows. In a drifting re
     \right.
 \end{equation}
 
-While for one unit of AUDUSD we trade $\hat{\beta}$ units of NZDUSD, such that the position in main is exposed to the relative movement between AUDUSD and NZDUUSD, and not toward the general level in the currency market. 
+While for one unit of AUDUSD we trade $\hat{\beta}$ units of NZDUSD, such that the position in main is exposed to the relative movement between AUDUSD and NZDUSD, and not toward the general level in the currency market. 
 
 For a soft HMM version the positions can be scaled with the probabilites of the model being in a certain mean-reverting regime
 \begin{equation}
     w(s_t) = \mathbb{P}(s_t \space \text{is in a mean-reverting regime} \mid \mathcal{F_t})
 \end{equation}
-It may also be natural to scale the positions with esitmated volatility.
+It may also be natural to scale the positions with estimated volatility.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/long-short.pdf}
+    \caption{Long-short strategy in pairs trading}
+    \label{fig:placeholder}
+\end{figure}
  
 \subsection{Back-testing}
 
