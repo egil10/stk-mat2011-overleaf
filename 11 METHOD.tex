@@ -222,6 +222,11 @@ The mid-price is then computed as
 \end{equation}
 which produces a single representative price series for each asset while still preserving the original bid and ask quotes for transaction-cost calculations.
 
+For asset $X\in\{A,B\}$ we synthesis a mid price at every tick
+\begin{equation}
+    M_t^x = \frac{B_t^x+A_t^x}{2}
+\end{equation}
+
 \subsubsection{Spread}
 
 The bid--ask spread is central in HFT because expected profits are often small relative to trading costs. For each asset, the half-spread is measured in basis points as
@@ -230,6 +235,41 @@ The bid--ask spread is central in HFT because expected profits are often small r
 \end{equation}
 
 The half-spread gives an estimate of the cost of crossing the market for one leg of the trade. Since pairs trading requires trading both legs, the combined spread cost is an important part of the later backtest.
+
+Two non-stationary log-price series $\log A_t$ and $\log B_t$ are cointegrated if there exists a hedge ratio $\beta$ such that the spread
+\begin{equation}
+    S_t = \log A_t - \beta \log B_t
+\end{equation}
+is stationary.
+
+We model the cointegrating relationship as a slowly-varying linear regression of $\log A$ and $\log B$. We do not assume $\beta$ is constant, we rather estimate $\beta_t$ via rolling OLS with window size $W_b$.
+\begin{equation}
+    \beta_t = \frac{W_\beta \sum_{s=t-W_\beta+1}^{t}x_sy_s-(\sum_sx_s)(\sum_sy_s)}{W_\beta\sum_sx_s^2-(\sum_sx_s)^2}
+\end{equation}
+\begin{equation}
+    \alpha_t = \frac{1}{W_\beta}\left(\sum_sy_s-\beta_t\sum_sx_s\right)
+\end{equation}
+with $x_s=\log B_s$ and $y_s=\log A_s$
+
+The cointegration spread at bar $t$ is then
+\begin{equation}
+    S_t = \log A_t - \beta_t \log B_t - \alpha_t
+\end{equation}
+and the spread return is
+\begin{equation}
+    \Delta S_t = r_t^A - \beta_{t-1}r_t^B
+\end{equation}
+where $r_t^A=\log A_t - \log A_{t-1}$ etc
+
+For the baseline strategy which knows nothing about regimes the trading signal is the rolling z-score of the spread
+\begin{equation}
+    Z_t = \frac{S_t - \mu_t}{\sigma_t}
+    \quad 
+    \mu_t = \frac{1}{W_z}\sum_{s=t-W_z+1}^{t} S_s
+    \quad 
+    \sigma_t^2 = \frac{1}{W_z}\sum_{s=t-W_z+1}^{t}(S_s-\mu_t)^2
+\end{equation}
+with $W_z$ bars.
 
 \subsection{Pairs trading}
 
@@ -282,3 +322,57 @@ Back-testing is used to evaluate whether the model signals translate into econom
 For this reason, the backtest includes realistic market frictions. The most important is the bid--ask spread: a trader generally buys at the ask and sells at the bid, rather than trading for free at the mid-price. Commissions and other execution costs are also included, since frequent position changes can make small costs accumulate quickly. Financing and margin costs are relevant when the strategy holds short or leveraged positions.
 
 The strategies are evaluated in a walk-forward structure, where parameters are estimated on past data and then applied to later out-of-sample periods. This avoids look-ahead bias and gives a more realistic test of whether the baseline, AR, and Markov-switching strategies would have worked under implementable trading conditions.
+
+\subsection{Models}
+
+\subsubsection{The Buy \& Hold model}
+
+\subsubsection{The Baseline model}
+
+\subsubsection{The Autoregressive (AR) model}
+
+\subsubsection{The Markov-Switching Autoregressive (MS-AR) model}
+
+Let us denote $S_t$ as the spread and $K_t\in\{1,2\}$ a latent discrete regime indicator. The joint generative model is
+\begin{equation}
+    S_t \mid S_{t-1}, K_t = k \sim N\left( c^{(k)} + \rho^{(k)}S_{t-1}, \left( \sigma^{(k)} \right)^2 \right)
+\end{equation}
+\begin{equation}
+    P(K_t=j \mid K_{t-1} = i) = p_{ij} 
+    \quad
+    P = \left( p_{11} \quad p_{12} \quad p_{21} \quad p_{22} \right)
+    \quad
+    p_{i1} + p_{i2} = 1
+\end{equation}
+
+This is an $\text{AR}(1)$ on the spread with all three parameters switching, the constant $c^{(k)}$, the AR coefficient $\rho^{(k)}$ and the innovation variance $\left(\sigma^{(k)}\right)^2$. 
+
+The unconditional mean of regime $k$ when $|\rho^{(k)}|<1$ is 
+\begin{equation}
+    \mu^{(k)} = \frac{c^{(k)}}{1-\rho^{(k)}}
+\end{equation}
+
+We fit the maxmium likelihood with the $\text{EM}$ algorithm, which alternate between the E-step, where we compute regime posteriors $\gamma_t^{(k)}=\mathbb{P}(K_t=k|S_1,\dots,S_t)$ via the forward-backward algorithm. And the M-step, where we update the regime-specific parameters $\left( c^{(k)}, \rho^{(k)}, \sigma^{(k)} \right)$ and the transition matrix $P$ to maximise the expected complete-data log-likelihood given the posteriors. 
+
+Winsorisation, we clip $S_t$ at $\text{median}(S)\pm4 \times \text{std}(S)$ before fitting. Also we scale by multiplying $S_t$ by $10^4$ before fitting. 
+
+The regime classification labelling is done as either 
+\begin{equation}
+    \text{MR index} = \arg\max_k\sigma^{(k)}
+\end{equation}
+\begin{equation}
+    \text{DR index} = \arg\max_k\sigma^{(k)}
+\end{equation}
+
+The in-sample regime probabilities are then found by
+\begin{equation}
+    \pi_t^{\text{MR}} 
+    = 
+    \gamma_t^{\text{(MR)}}
+    =
+    \mathbb{P}(K_t=\text{MR}|S_1,\dots,S_T)
+\end{equation}
+\begin{equation}
+    \pi_t^{\text{DR}} = 1-\pi_t^{\text{MR}}
+\end{equation}
+

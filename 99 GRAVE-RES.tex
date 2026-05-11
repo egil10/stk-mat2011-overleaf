@@ -1,0 +1,182 @@
+\subsection{Training the HMM}
+
+The Hidden Markov Model is trained on the hedged spread-return series constructed from each currency pair. The regimes are sorted by estimated variance, so that the low-variance state is interpreted as a relatively safe trading environment and the high-variance state as a dangerous or stressed environment. This gives the model a direct economic interpretation: it is not primarily used to forecast the direction of the exchange rate, but to decide whether the current market state is suitable for applying a mean-reversion trading rule.
+
+Across the experiments, the Markov model generally identifies periods of elevated spread-return variance and reduces exposure during these episodes. The key empirical question is therefore whether this regime filter improves trading performance, or whether it merely removes both downside and upside. The results below show that the HMM is useful as a defensive exposure filter, but does not consistently outperform simpler strategies.
+
+\subsection{Data and pair diagnostics}
+
+Table~\ref{tab:sample_liquidity_all_pairs} summarizes the constructed volume-bar samples and liquidity conditions across the three tested currency pairs. The pairs differ substantially in trading costs. GBPUSD/EURUSD is by far the cheapest pair to trade, with a median round-trip cost of only 0.46 bps. AUDUSD/NZDUSD is still relatively liquid, while EURNOK/EURSEK is materially more expensive, with a median round-trip cost of 3.89 bps. This difference becomes important in the backtest, since high-frequency mean-reversion strategies are highly sensitive to spread costs.
+
+\begin{table}[H]
+\centering
+\caption{Sample and liquidity diagnostics across currency pairs. The sample consists of volume bars constructed from Dukascopy bid--ask data over 2024--2025. Spreads are reported in basis points. Note that AUDNZD is short for AUDUSD/NZD, NOKSEK is short for EURNOK/EURSEK, and GBPEUR is short for GBPUSD/EURUSD.}
+\label{tab:sample_liquidity_all_pairs}
+\small
+\begin{tabularx}{\linewidth}{Xrrr}
+\toprule
+\textbf{Metric} & \textbf{AUDNZD} & \textbf{NOKSEK} & \textbf{GBPEUR} \\
+\midrule
+Number of bars & 108,093 & 206,937 & 114,759 \\
+Calendar span & 729 days & 729 days & 729 days \\
+Trading days & 523 & 522 & 523 \\
+Average bars per day & 206.7 & 396.4 & 219.4 \\
+Trading hours covered & 0--24 UTC & 0--24 UTC & 0--24 UTC \\
+\midrule
+Median spread, leg A & 0.76 & 2.07 & 0.32 \\
+Median spread, leg B & 0.89 & 1.78 & 0.14 \\
+P95 spread, leg A & 1.04 & 6.22 & 0.52 \\
+P95 spread, leg B & 1.21 & 5.58 & 0.35 \\
+Median round-trip cost & 1.63 & 3.89 & 0.46 \\
+Tightest 4-hour window & 11:00--14:00 & 09:00--12:00 & 11:00--14:00 \\
+Widest 4-hour window & 20:00--23:00 & 20:00--23:00 & 20:00--23:00 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:dependence_all_pairs} reports the main return-distribution and pair-dependence diagnostics. All six currency return series exhibit strong non-Gaussian behaviour, with high kurtosis and significant Ljung--Box tests on squared returns. This confirms the presence of volatility clustering and motivates regime-aware modelling. GBPUSD/EURUSD has the strongest dependence, with a Pearson correlation of 0.5230 and a median rolling correlation of 0.535. EURNOK/EURSEK has the weakest dependence, despite having the largest number of bars.
+
+\begin{table}[H]
+\centering
+\caption{Return and pair-dependence diagnostics. Returns are measured in basis points. The Ljung--Box test is applied to squared returns at lag 20. Note that AUDNZD is short for AUDUSD/NZD, NOKSEK is short for EURNOK/EURSEK, and GBPEUR is short for GBPUSD/EURUSD.}
+\label{tab:dependence_all_pairs}
+\scriptsize
+\begin{tabularx}{\linewidth}{Xrrrrrr}
+\toprule
+& \multicolumn{2}{c}{\textbf{AUDNZD}}
+& \multicolumn{2}{c}{\textbf{NOKSEK}}
+& \multicolumn{2}{c}{\textbf{GBPEUR}} \\
+\cmidrule(lr){2-3}
+\cmidrule(lr){4-5}
+\cmidrule(lr){6-7}
+\textbf{Metric} & \textbf{AUDUSD} & \textbf{NZDUSD} & \textbf{EURNOK} & \textbf{EURSEK} & \textbf{GBPUSD} & \textbf{EURUSD} \\
+\midrule
+Mean return & -0.002 & -0.009 & 0.003 & -0.001 & 0.005 & 0.005 \\
+Volatility & 4.106 & 4.076 & 2.606 & 2.270 & 2.990 & 3.085 \\
+Skewness & -0.176 & -0.342 & 0.178 & -0.128 & -0.325 & -0.269 \\
+Kurtosis & 17.533 & 22.076 & 16.922 & 21.342 & 14.698 & 28.557 \\
+5th percentile & -6.346 & -6.569 & -4.062 & -3.424 & -4.672 & -4.744 \\
+95th percentile & 6.249 & 6.547 & 4.072 & 3.441 & 4.666 & 4.687 \\
+Minimum & -115.391 & -122.287 & -50.892 & -65.402 & -75.882 & -107.932 \\
+Maximum & 69.711 & 76.045 & 70.470 & 44.625 & 46.876 & 63.748 \\
+Ljung--Box $p$ on $r_t^2$ & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+\midrule
+\multicolumn{7}{l}{\textbf{Pair relationship}} \\
+\midrule
+Pearson correlation & \multicolumn{2}{r}{0.3720} & \multicolumn{2}{r}{0.2038} & \multicolumn{2}{r}{0.5230} \\
+Spearman correlation & \multicolumn{2}{r}{0.3308} & \multicolumn{2}{r}{0.1576} & \multicolumn{2}{r}{0.4940} \\
+OLS hedge ratio $\beta$ & \multicolumn{2}{r}{0.3693} & \multicolumn{2}{r}{0.1776} & \multicolumn{2}{r}{0.5395} \\
+Rolling corr, min. & \multicolumn{2}{r}{-0.041} & \multicolumn{2}{r}{-0.221} & \multicolumn{2}{r}{0.086} \\
+Rolling corr, median & \multicolumn{2}{r}{0.357} & \multicolumn{2}{r}{0.194} & \multicolumn{2}{r}{0.535} \\
+Rolling corr, max. & \multicolumn{2}{r}{0.768} & \multicolumn{2}{r}{0.521} & \multicolumn{2}{r}{0.810} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cointegration and walk-forward optimization}
+
+Table~\ref{tab:coint_wfo_all_pairs} combines the main cointegration and walk-forward optimization results. The full-sample cointegration tests are not sufficient on their own. AUDUSD/NZDUSD and GBPUSD/EURUSD do not reject the no-cointegration null at conventional levels, but both show intermittent local mean reversion in rolling windows. EURNOK/EURSEK rejects the full-sample null, but its estimated half-life is extremely long, making the relationship economically weak for high-frequency trading.
+
+The walk-forward results reinforce this distinction. AUDUSD/NZDUSD produces the strongest out-of-sample profile, with 17 positive windows out of 21 and an average OOS return of 2.65\%. GBPUSD/EURUSD is profitable but weaker, with 11 positive windows and a mean OOS return of 0.45\%. EURNOK/EURSEK fails completely, producing no positive OOS windows and an average OOS return of -4.19\%.
+
+\begin{table}[H]
+\centering
+\caption{Cointegration and walk-forward optimization summary across currency pairs. Rolling cointegration uses 2,000-bar windows stepped every 200 bars. Note that AUDNZD is short for AUDUSD/NZD, NOKSEK is short for EURNOK/EURSEK, and GBPEUR is short for GBPUSD/EURUSD.}
+\label{tab:coint_wfo_all_pairs}
+\small
+\begin{tabularx}{\linewidth}{Xrrr}
+\toprule
+\textbf{Metric} & \textbf{AUDNZD} & \textbf{NOKSEK} & \textbf{GBPEUR} \\
+\midrule
+\multicolumn{4}{l}{\textbf{Full-sample cointegration}} \\
+\midrule
+Cointegration $p$-value & 0.8657 & 0.0140 & 0.1118 \\
+Half-life & 2415.8 bars & 4597.2 bars & 2472.3 bars \\
+Hedge ratio $\beta$ & 0.6641 & 0.0714 & 0.6657 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Rolling cointegration}} \\
+\midrule
+Number of rolling windows & 531 & 1025 & 564 \\
+Share with $p<0.05$ & 9.8\% & 13.1\% & 8.2\% \\
+Share with $p<0.10$ & 16.8\% & 21.1\% & 15.6\% \\
+Median half-life & 32.5 bars & 71.8 bars & 72.2 bars \\
+Half-life IQR & 19--65 & 44--125 & 44--129 \\
+Mean rolling $\beta$ & 0.8363 & 0.6911 & 0.8672 \\
+Std. dev. rolling $\beta$ & 0.2857 & 0.6648 & 0.3686 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Walk-forward optimization}} \\
+\midrule
+Validation / test design & 3m / 1m & 3m / 1m & 3m / 1m \\
+Trials per window & 100 & 100 & 150 \\
+Number of OOS windows & 21 & 21 & 21 \\
+Mean OOS return per window & 2.65\% & -4.19\% & 0.45\% \\
+Positive OOS windows & 17 / 21 & 0 / 21 & 11 / 21 \\
+Zero-return OOS windows & 2 / 21 & 4 / 21 & 5 / 21 \\
+Negative OOS windows & 2 / 21 & 17 / 21 & 5 / 21 \\
+Best OOS window & 12.30\% & 0.00\% & 3.06\% \\
+Worst OOS window & -0.66\% & -23.74\% & -1.50\% \\
+Typical entry threshold & $z\approx1.4$ & $z\approx2.5$ & $z\approx1.1$--$1.5$ \\
+Typical exit threshold & $z\approx0.2$--$0.5$ & $z\approx-0.5$--$0.0$ & $z\approx0.0$--$0.5$ \\
+Typical danger threshold & 0.95 & 0.50--0.65 & 0.85--0.95 \\
+Typical AR limit & 0.96--0.97 & 0.98--0.99 & 0.97--0.99 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Trading performance}
+
+Table~\ref{tab:strategy_performance_all_pairs} reports the core performance metrics for the baseline, AR-filtered, and Markov-switching AR strategies. The main result is clear: the HMM does not consistently improve performance relative to simpler rules. Instead, it primarily reduces market exposure. This is useful when the pair is losing money, but costly when the baseline strategy is profitable.
+
+For AUDUSD/NZDUSD, all strategies are profitable, but the baseline dominates. It earns 9286.14 bps with a Sharpe ratio of 6.88 and a Calmar ratio of 21.40. The AR and MS-AR filters reduce volatility and exposure, but also reduce total return. The Markov-switching model therefore acts as a conservative filter rather than a return enhancer.
+
+EURNOK/EURSEK is not economically viable under the tested rules. All three strategies lose money. The MS-AR model reduces the loss from -14035.70 bps to -8796.04 bps and lowers exposure from 42.70\% to 25.11\%, but it does not convert the pair into a profitable strategy. This confirms that statistical structure is not enough when transaction costs and weak dependence dominate the signal.
+
+GBPUSD/EURUSD is the most liquid and most correlated pair in the sample. It produces positive returns across all three model specifications, but again the simpler models perform best. The baseline achieves the highest total return and best Calmar ratio, while the AR model preserves a similar Sharpe ratio with lower exposure. The MS-AR model reduces exposure further, but total return falls to 932.85 bps and the Sharpe ratio declines to 1.24.
+
+\begin{table}[H]
+\centering
+\caption{Core strategy performance across currency pairs. Performance is reported net of the backtesting assumptions used in the simulation. Returns, volatility, and drawdowns are reported in basis points.}
+\label{tab:strategy_performance_all_pairs}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+& \multicolumn{3}{c}{\textbf{AUDUSD/NZDUSD}}
+& \multicolumn{3}{c}{\textbf{EURNOK/EURSEK}}
+& \multicolumn{3}{c}{\textbf{GBPUSD/EURUSD}} \\
+\cmidrule(lr){2-4}
+\cmidrule(lr){5-7}
+\cmidrule(lr){8-10}
+\textbf{Metric}
+& \textbf{Base.} & \textbf{AR} & \textbf{MS-AR}
+& \textbf{Base.} & \textbf{AR} & \textbf{MS-AR}
+& \textbf{Base.} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return & 9286.14 & 7695.77 & 5567.68 & -14035.70 & -10581.39 & -8796.04 & 2059.43 & 1677.66 & 932.85 \\
+Annual return & 5643.53 & 4677.00 & 3383.69 & -8544.23 & -6441.42 & -5354.59 & 1251.59 & 1019.58 & 566.93 \\
+Positive months & 100.00\% & 90.00\% & 80.00\% & 0.00\% & 0.00\% & 0.00\% & 70.00\% & 55.00\% & 45.00\% \\
+Annual volatility & 819.72 & 724.16 & 686.87 & 803.51 & 632.82 & 550.25 & 572.05 & 478.18 & 458.24 \\
+Max drawdown & -263.67 & -263.67 & -281.26 & -14096.99 & -10613.91 & -8838.14 & -372.00 & -569.59 & -629.09 \\
+Ulcer index & 59.56 & 74.47 & 79.16 & 8439.75 & 6493.59 & 5343.53 & 129.96 & 185.14 & 232.89 \\
+Sharpe ratio & 6.88 & 6.46 & 4.93 & -10.63 & -10.18 & -9.73 & 2.19 & 2.13 & 1.24 \\
+Sortino ratio & 8.59 & 7.05 & 5.23 & -8.10 & -6.51 & -5.52 & 2.51 & 1.99 & 1.12 \\
+Calmar ratio & 21.40 & 17.74 & 12.03 & 0.61 & 0.61 & 0.61 & 3.36 & 1.79 & 0.90 \\
+Profit factor & 1.11 & 1.12 & 1.09 & 0.85 & 0.83 & 0.82 & 1.03 & 1.04 & 1.02 \\
+Number of trades & 3158 & 2452 & 2254 & 1702 & 1233 & 938 & 2070 & 1484 & 1360 \\
+Win rate & 49.55\% & 49.62\% & 49.44\% & 48.82\% & 48.82\% & 48.68\% & 49.39\% & 49.41\% & 49.22\% \\
+Market exposure & 60.97\% & 46.69\% & 45.01\% & 42.70\% & 31.38\% & 25.11\% & 62.59\% & 41.44\% & 39.17\% \\
+Skewness & 1.17 & 1.48 & 0.76 & -1.63 & -2.58 & -3.62 & -0.05 & -0.02 & -0.19 \\
+Kurtosis & 34.41 & 51.53 & 21.08 & 52.00 & 82.88 & 141.09 & 19.01 & 29.03 & 29.34 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\subsection{Summary of results}
+
+The empirical results show that Hidden Markov regime filtering is more effective at reducing exposure than at improving returns. In all three pairs, the MS-AR strategy trades less than the baseline and usually produces lower volatility. However, this defensive behaviour does not translate into superior risk-adjusted performance.
+
+The strongest pair is AUDUSD/NZDUSD, where the baseline strategy performs best and the Markov model removes too much profitable exposure. GBPUSD/EURUSD is also profitable, but the MS-AR filter again underperforms the simpler alternatives. EURNOK/EURSEK fails economically across all specifications; here the HMM is useful only in the limited sense that it reduces the size of the loss.
+
+Overall, the results suggest that the HMM identifies high-risk market states, but the identified regimes are not sufficiently aligned with profitable trading opportunities. The model is therefore valuable as a diagnostic and defensive tool, but not as a standalone source of superior high-frequency pairs-trading performance.
