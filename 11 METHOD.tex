@@ -1,6 +1,6 @@
 \section{Methods}\label{sec:method}
 
-In this section we develop the statistical and financial framework used to detect and trade short-term regimes in high-frequency currency-pair data. We begin with the data set and the pre-processing pipeline that turns raw bid--ask tick streams into synchronized observations. We then construct the cointegration spread that drives the trading signal. With the data in place, we introduce the autoregressive baseline, the general Hidden Markov Model, and the Markov-switching autoregressive specification that combines them. We discuss parameter estimation by the EM algorithm and how the recovered regimes are classified, before specifying the trading strategies, the walk-forward back-testing protocol, and the statistical and financial metrics used to evaluate performance.
+In this section we develop the statistical and financial framework used to detect and trade short-term regimes in high-frequency currency-pair data. We begin with the data set and the pre-processing pipeline that turns raw bid--ask tick streams into synchronized observations. We then construct the cointegration spread that drives the trading signal. With the data in place, we introduce the autoregressive baseline, the general Hidden Markov Model, and the Markov-switching autoregressive specification that combines them. We then describe how the model is fit by the EM algorithm, how its hyperparameters are chosen by information criteria, and how the recovered regimes are classified. Finally, we specify the trading strategies, the walk-forward back-testing protocol, and the statistical and financial metrics used to evaluate performance.
 
 \subsection{Data}\label{sec:data}
 
@@ -147,9 +147,19 @@ The HMM parameters $\theta$ are estimated by maximum likelihood with the Expecta
 \end{itemize}
 The two steps are iterated until the log-likelihood change between successive iterations falls below a small tolerance.
 
+\subsection{Model selection}\label{sec:modelselection}
+
+After defining the structural family, the immediate empirical question is the choice of hyperparameters---most notably the number of hidden states $K$ and the autoregressive order $p$. Adding more states or lags will mechanically improve the in-sample likelihood but introduces the risk of overfitting to statistical noise rather than to genuine market structure. We resolve this trade-off by selecting models with information criteria that penalize complexity. Let $m$ be the total number of estimated parameters, $T$ the number of observations, and $\hat{L}$ the maximized likelihood. The Akaike and Bayesian Information Criteria are
+\begin{equation}
+    \mathrm{AIC} = 2m - 2\ln \hat{L},
+    \qquad
+    \mathrm{BIC} = m \ln T - 2\ln \hat{L}.
+\end{equation}
+The AIC focuses on minimizing the information lost when the candidate model approximates the true data-generating process and is generally effective for optimizing predictive accuracy. The BIC scales its complexity penalty with $\ln T$, which is more aggressive in large samples and mathematically favours the most parsimonious model that adequately explains the data. During the hyperparameter sweep, models are estimated over a grid of $(K, p)$ values and the configuration that minimizes AIC and BIC is retained as the structural choice for the trading simulations.
+
 \subsection{Regime classification}\label{sec:regimes}
 
-Once the parameters are estimated, the two regimes are labelled by their innovation variance. We define the mean-reverting (MR) regime as the one with lower volatility and the drifting (DR) regime as the one with higher volatility:
+Once $K$ has been fixed by model selection and the parameters estimated, the two regimes are labelled by their innovation variance. We define the mean-reverting (MR) regime as the one with lower volatility and the drifting (DR) regime as the one with higher volatility:
 \begin{equation}
     k_{\mathrm{MR}} = \arg\min_{k}\, \sigma^{(k)},
     \qquad
@@ -167,20 +177,6 @@ A natural soft extension is to scale positions directly by the probability of be
     w(K_t) = \mathbb{P}\!\left(K_t \in \mathrm{MR} \,\big|\, \mathcal{F}_t\right),
 \end{equation}
 where $\mathcal{F}_t$ denotes the information set available at time $t$. It is also natural to combine this with volatility scaling. In the strategies developed below, we use either a binary regime gate or a probability-weighted entry threshold rather than continuous position sizing.
-
-\subsection{Model selection}\label{sec:modelselection}
-
-After defining the structural family, the immediate empirical question is the choice of hyperparameters---most notably the number of hidden states $K$ and the autoregressive order $p$. Adding more states or lags will mechanically improve the in-sample likelihood but introduces the risk of overfitting to statistical noise rather than to genuine market structure. We resolve this trade-off by selecting models with information criteria that penalize complexity.
-
-Let $m$ be the total number of estimated parameters, $T$ the number of observations, and $\hat{L}$ the maximized likelihood. The Akaike Information Criterion is
-\begin{equation}
-    \mathrm{AIC} = 2m - 2\ln \hat{L},
-\end{equation}
-and the Bayesian Information Criterion is
-\begin{equation}
-    \mathrm{BIC} = m \ln T - 2\ln \hat{L}.
-\end{equation}
-The AIC focuses on minimizing the information lost when the candidate model approximates the true data-generating process and is generally effective for optimizing predictive accuracy. The BIC scales its complexity penalty with $\ln T$, which is more aggressive in large samples and mathematically favours the most parsimonious model that adequately explains the data. During the hyperparameter sweep, models are estimated over a grid of $(K, p)$ values and the configuration that minimizes AIC and BIC is retained as the structural choice for the trading simulations.
 
 \subsection{Trading strategies}\label{sec:strategies}
 
@@ -325,113 +321,62 @@ To rigorously evaluate the trading strategies generated in the simulation we rel
 
 \subsubsection{Statistical metrics}
 
-Statistical metrics form the foundational mathematical profile of a trading strategy. Rather than focusing directly on capital accumulation, they analyze the shape, spread, and probability distribution of the underlying return data. By examining how returns behave on a probabilistic level we can uncover hidden risks that standard equity curves might obscure---such as the likelihood of extreme market anomalies or structural asymmetries in the strategy's outcomes.
-
-\textbf{Annual volatility} quantifies the expected yearly fluctuation in returns, providing a baseline measure of standard risk:
+Statistical metrics describe the shape, spread, and tail behaviour of the return distribution, exposing risks that an equity curve alone can hide. The \emph{annual volatility} $\sigma_{\mathrm{ann}}$ gives a baseline measure of yearly fluctuation, while \emph{skewness} $S$ and \emph{kurtosis} $K$ describe distributional asymmetry and tail fatness:
 \begin{equation}
-    \sigma_{\mathrm{ann}} = \sigma \sqrt{T}.
+    \sigma_{\mathrm{ann}} = \sigma\sqrt{T},
+    \qquad
+    S = \frac{\mathbb{E}\!\left[(R-\mu)^{3}\right]}{\sigma^{3}},
+    \qquad
+    K = \frac{\mathbb{E}\!\left[(R-\mu)^{4}\right]}{\sigma^{4}}.
 \end{equation}
-
-\textbf{Skewness} measures the asymmetry of the return distribution, helping to identify the likelihood of outsized positive or negative outliers:
+Tail risk is then summarised by the \emph{Value at Risk} $\mathrm{VaR}_\alpha$ at confidence level $\alpha$, its conditional counterpart $\mathrm{CVaR}_\alpha$, and the \emph{tail factor} $\mathrm{TF}$ that compares them:
 \begin{equation}
-    S = \frac{\mathbb{E}\!\left[(R - \mu)^{3}\right]}{\sigma^{3}}.
-\end{equation}
-
-\textbf{Kurtosis} measures the ``fatness'' of the distribution tails, indicating the probability of rare, extreme market events:
-\begin{equation}
-    K = \frac{\mathbb{E}\!\left[(R - \mu)^{4}\right]}{\sigma^{4}}.
-\end{equation}
-
-\textbf{Value at Risk} estimates the maximum expected loss over a specific time frame at a given confidence level $\alpha$, acting as a standard gauge of the worst-case scenario:
-\begin{equation}
-    \mathrm{VaR}_{\alpha} = -Q_{1-\alpha}(R).
-\end{equation}
-
-\textbf{Conditional Value at Risk} is the expected loss conditional on the VaR threshold being breached, providing a more comprehensive picture of extreme tail risk:
-\begin{equation}
-    \mathrm{CVaR}_{\alpha} = -\mathbb{E}\!\left[R \,\big|\, R \leq -\mathrm{VaR}_{\alpha}\right].
-\end{equation}
-
-\textbf{Tail factor} quantifies the severity of tail risk by comparing the average extreme loss to the baseline extreme loss threshold:
-\begin{equation}
+    \mathrm{VaR}_{\alpha} = -Q_{1-\alpha}(R),
+    \qquad
+    \mathrm{CVaR}_{\alpha} = -\mathbb{E}\!\left[R \,\big|\, R \leq -\mathrm{VaR}_{\alpha}\right],
+    \qquad
     \mathrm{TF} = \frac{\mathrm{CVaR}_{\alpha}}{\mathrm{VaR}_{\alpha}}.
 \end{equation}
 
 \subsubsection{Financial metrics}
 
-While statistical metrics describe the mathematical probability of returns, financial metrics translate those probabilities into practical, capital-based outcomes. These indicators evaluate the actual equity curve, measuring how efficiently a strategy deploys capital, how it navigates periods of historical loss, and its absolute trading profitability. They contextualize raw returns against the specific drawdowns and volatility endured to achieve them, providing a holistic view of execution quality and the psychological ``holding stress'' the strategy would impose on an investor.
-
-\textbf{Total return} is the overall cumulative growth or decline of the invested capital over the trading period:
+Financial metrics translate the distributional properties of returns into capital-based outcomes by evaluating the equity curve directly---how efficiently capital is deployed, how the strategy navigates historical losses, and how profitable it is in absolute terms. \emph{Total return} $\mathrm{TR}$ is the overall cumulative growth; \emph{annual return} $\mathrm{AR}$ standardizes it to a yearly figure (with $Y$ the number of years); \emph{positive months} $N_{\mathrm{pos}}$ counts profitable periods:
 \begin{equation}
-    \mathrm{TR} = \prod_{t=1}^{N}\!\left(1 + R_t\right) - 1.
-\end{equation}
-
-\textbf{Annual return} standardizes the cumulative return into a yearly figure, allowing direct comparison across strategies and timeframes:
-\begin{equation}
-    \mathrm{AR} = \left(1 + \mathrm{TR}\right)^{1/Y} - 1.
-\end{equation}
-
-\textbf{Positive months} counts the number of profitable months, offering a straightforward measure of performance consistency over time:
-\begin{equation}
+    \mathrm{TR} = \prod_{t=1}^{N}\!\left(1 + R_t\right) - 1,
+    \qquad
+    \mathrm{AR} = \left(1 + \mathrm{TR}\right)^{1/Y} - 1,
+    \qquad
     N_{\mathrm{pos}} = \sum_{t=1}^{N} \mathbbm{1}\!\left\{R_t > 0\right\}.
 \end{equation}
-
-\textbf{Maximum drawdown} measures the largest peak-to-trough percentage drop in equity, revealing the worst historical losing streak:
+The \emph{drawdown family} captures the worst peak-to-trough drop $\mathrm{MDD}$, the longest recovery time $\mathrm{MDD}_{\mathrm{dur}}$, and the Ulcer index $\mathrm{UI}$ that combines depth and duration (with $D_t = (P_t - V_t)/P_t$):
 \begin{equation}
-    \mathrm{MDD} = \max_{t}\!\left( \frac{P_t - V_t}{P_t} \right).
-\end{equation}
-
-\textbf{Maximum drawdown duration} is the longest time required to recover from a peak-to-trough loss, indicating capital recovery speed:
-\begin{equation}
-    \mathrm{MDD}_{\mathrm{dur}} = \max\!\left(t_{\mathrm{recovery}} - t_{\mathrm{peak}}\right).
-\end{equation}
-
-\textbf{Ulcer index} combines the depth and duration of drawdowns into a single composite metric of holding stress, where $D_t = (P_t - V_t)/P_t$:
-\begin{equation}
+    \mathrm{MDD} = \max_{t}\!\left( \frac{P_t - V_t}{P_t} \right),
+    \qquad
+    \mathrm{MDD}_{\mathrm{dur}} = \max\!\left(t_{\mathrm{recovery}} - t_{\mathrm{peak}}\right),
+    \qquad
     \mathrm{UI} = \sqrt{\frac{1}{N}\sum_{t=1}^{N} D_t^{2}}.
 \end{equation}
-
-\textbf{Sharpe ratio} measures excess return per unit of total volatility, serving as the industry standard for risk-adjusted performance:
+\emph{Risk-adjusted ratios} relate average excess return to a measure of risk: the Sharpe ratio penalizes all volatility, the Sortino ratio penalizes only downside volatility $\sigma_d$, and the Calmar ratio uses the maximum drawdown,
 \begin{equation}
-    \mathrm{SR} = \frac{\mu - R_f}{\sigma}.
-\end{equation}
-
-\textbf{Sortino ratio} modifies the Sharpe ratio to penalize only downside volatility $\sigma_d$, making it suitable for investors who view only negative fluctuations as true risk:
-\begin{equation}
-    \mathrm{Sortino} = \frac{\mu - R_f}{\sigma_d}.
-\end{equation}
-
-\textbf{Calmar ratio} evaluates the annualized return relative to the maximum drawdown, highlighting the trade-off between reward and severe equity drops:
-\begin{equation}
+    \mathrm{SR} = \frac{\mu - R_f}{\sigma},
+    \qquad
+    \mathrm{Sortino} = \frac{\mu - R_f}{\sigma_d},
+    \qquad
     \mathrm{Calmar} = \frac{\mathrm{AR}}{\mathrm{MDD}}.
 \end{equation}
-
-\textbf{Profit factor} is the ratio of gross profits to gross losses, a direct measure of absolute trading profitability:
+The \emph{profit factor} $\mathrm{PF}$ compares total gains to total losses, while the \emph{payoff factor} compares the average sizes:
 \begin{equation}
-    \mathrm{PF} = \frac{\sum \text{Gross Profits}}{\sum |\text{Gross Losses}|}.
-\end{equation}
-
-\textbf{Payoff factor} compares the average winning trade to the average losing trade, indicating risk-to-reward efficiency:
-\begin{equation}
+    \mathrm{PF} = \frac{\sum \text{Gross Profits}}{\sum |\text{Gross Losses}|},
+    \qquad
     \mathrm{Payoff} = \frac{\text{Average Win}}{|\text{Average Loss}|}.
 \end{equation}
-
-\textbf{Win rate} is the fraction of trades that result in a profit, reflecting the accuracy of the strategy's entry and exit signals:
+Finally, trade-level diagnostics summarize the frequency and size of trades. The \emph{win rate} $W$ measures signal accuracy, \emph{market exposure} measures the fraction of time capital is deployed, and \emph{average win} $\mathrm{AW}$ and \emph{average loss} $\mathrm{AL}$ describe the typical magnitudes:
 \begin{equation}
-    W = \frac{N_{\mathrm{wins}}}{N_{\mathrm{trades}}}.
-\end{equation}
-
-\textbf{Market exposure} is the fraction of time capital is actively deployed in the market as opposed to sitting in cash:
-\begin{equation}
-    \mathrm{Exposure} = \frac{T_{\mathrm{invested}}}{T_{\mathrm{total}}}.
-\end{equation}
-
-\textbf{Average win} is the typical gain realized on a successful trade:
-\begin{equation}
-    \mathrm{AW} = \frac{1}{N_{\mathrm{wins}}} \sum_{i=1}^{N_{\mathrm{wins}}} \text{Profit}_i.
-\end{equation}
-
-\textbf{Average loss} is the typical capital deficit incurred on an unsuccessful trade:
-\begin{equation}
-    \mathrm{AL} = \frac{1}{N_{\mathrm{losses}}} \sum_{i=1}^{N_{\mathrm{losses}}} \text{Loss}_i.
+    W = \frac{N_{\mathrm{wins}}}{N_{\mathrm{trades}}},
+    \quad
+    \mathrm{Exposure} = \frac{T_{\mathrm{invested}}}{T_{\mathrm{total}}},
+    \quad
+    \mathrm{AW} = \frac{1}{N_{\mathrm{wins}}} \sum_{i=1}^{N_{\mathrm{wins}}} \mathrm{Profit}_i,
+    \quad
+    \mathrm{AL} = \frac{1}{N_{\mathrm{losses}}} \sum_{i=1}^{N_{\mathrm{losses}}} \mathrm{Loss}_i.
 \end{equation}
