@@ -327,9 +327,48 @@ The strategies are evaluated in a walk-forward structure, where parameters are e
 
 \subsubsection{The Buy \& Hold model}
 
+The do-nothing strategy, the position is always long the spread. 
+\begin{equation}
+    P_t^{\text{BH}} = +\space 1 \quad \text{for every bar} 
+\end{equation}
+and it earns $\Delta S_t$ every bar and pays \textit{no transaction costs.}
+
+The purpose of the Buy \& Hold is diagnostic, if $\sum_t \Delta S_t > 0$ for a given month, the spread drifter in our favour and a trading strategy needs to do better than that passive drift to add value, and if $\sum_t \Delta S_t < 0$ the spread drifted against us. 
+
 \subsubsection{The Baseline model}
 
+The textbook $z-\text{score}$ strategy, with two parameters, $z_q = \text{``quiet entry threshold''}$ and $z_x = \text{``exit threshold''}$. 
+
+Position rules, applied bar-by-bar:
+\begin{equation}
+    P_t = 
+    \begin{cases}
+        +1 & \quad\text{if}\quad P_{t-1} = 0 \quad&\text{and}\quad Z_t < -z_q \\
+        -1 & \quad\text{if}\quad P_{t-1} = 0 \quad&\text{and}\quad Z_t > +z_q \\
+        0 & \quad\text{if}\quad P_{t-1} = +1 \quad&\text{and}\quad Z_t \geq -z_q \\
+        0 & \quad\text{if}\quad P_{t-1} = -1 \quad&\text{and}\quad Z_t \leq -z_q \\
+        P_{t-1} & \quad\text{otherwise}\quad &
+    \end{cases}
+\end{equation}
+
 \subsubsection{The Autoregressive (AR) model}
+
+Here we use the same entry/exit \textit{direction} rules as the Baseline model with one extra binary condition, the gate
+\begin{equation}
+    G_t = 1 \{ \pi_t^{\text{MR}} \geq 1-\delta \}
+\end{equation}
+where $\delta$ is the danger threshold parameter. The modified ruled is therefore 
+\begin{equation}
+    P_t =
+    \begin{cases}
+        0 & \quad&\text{if}\quad G_t=0 \text{(panic liquidation, no new entires)} \\
+        \text{(same as baseline)} &\quad&\text{if}\quad G_t = 1
+    \end{cases}
+\end{equation}
+
+The kill switch is binary, we either trade normally or sit in cash, with no middle ground. Moreso the kill applies to existing positions too, not just to new entreis, if we aer long the spread and the HMM suddenly flags danger, we close out and go flag at the next bar.
+
+
 
 \subsubsection{The Markov-Switching Autoregressive (MS-AR) model}
 
@@ -376,3 +415,60 @@ The in-sample regime probabilities are then found by
     \pi_t^{\text{DR}} = 1-\pi_t^{\text{MR}}
 \end{equation}
 
+
+Same entry/exit direction rules as Baseline, but the entry threshold itself is dynamic and probability-weighted
+\begin{equation}
+    z_q^{\text{eff}}(t) = \pi_t^{\text{MR}} \cdot z_q + \pi_t^{\text{DR}}\cdot z_v
+\end{equation}
+where $z_v$ is the ``volatile entry threshold''. The position rule is as follows
+\begin{equation}
+    P_t = 
+    \begin{cases}
+        +1 \quad&\text{if}\ P_{t-1}=0 &\text{and}\quad Z_t < -z_q^{\text{eff}}(t) \\
+        -1 \quad&\text{if}\quad P_{t-1}=0 &\text{and}\quad Z_t > +z_q^{\text{eff}}(t) \\
+        0 \quad&\text{if}\quad P_{t-1}=\neq0 &\text{and}\quad     |Z_t| \leq z_x \\
+        +1 \quad&\text{otherwise}\quad &\text{}\quad         
+    \end{cases}
+\end{equation}
+
+\subsubsection{Model summary}
+
+\begin{table}[H]
+\centering
+\caption{Strategy definitions and HMM usage.}
+\label{tab:strategy_definitions}
+\small
+\begin{tabular}{lllll}
+\toprule
+\textbf{Strategy} 
+& \textbf{Always long?} 
+& \textbf{Entry threshold} ($E_t$) 
+& \textbf{Gate} ($G_t$) 
+& \textbf{Reads HMM?} \\
+\midrule
+Buy \& Hold 
+& Yes 
+& -- 
+& -- 
+& No \\
+
+Baseline 
+& No 
+& $z_q$ 
+& $1$ 
+& No \\
+
+AR 
+& No 
+& $z_q$ 
+& $\mathbbm{1}\{\pi_t^{\mathrm{MR}} \geq 1-\delta\}$ 
+& Yes, binary \\
+
+MS-AR 
+& No 
+& $\pi_t^{\mathrm{MR}} z_q + \pi_t^{\mathrm{DR}} z_v$ 
+& $1$ 
+& Yes, continuous \\
+\bottomrule
+\end{tabular}
+\end{table}
