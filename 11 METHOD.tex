@@ -1,437 +1,267 @@
 \section{Methods}\label{sec:method}
 
-In this section I introduce the methods. Namely, we start by introducing autoregressive models, before writing about Hidden Markov Models (HMM), introducing the data used in our simulations, while also presenting the statistical and financial metrics used to score the performance of our trading simulations. 
+In this section we develop the statistical and financial framework used to detect and trade short-term regimes in high-frequency currency-pair data. We begin with the data set and the pre-processing pipeline that turns raw bid--ask tick streams into synchronized observations. We then construct the cointegration spread that drives the trading signal. With the data in place, we introduce the autoregressive baseline, the general Hidden Markov Model, and the Markov-switching autoregressive specification that combines them. We discuss parameter estimation by the EM algorithm and how the recovered regimes are classified, before specifying the trading strategies, the walk-forward back-testing protocol, and the statistical and financial metrics used to evaluate performance.
 
-\subsection{Autoregressive models}
+\subsection{Data}\label{sec:data}
 
-When modeling time series data, a fundamental objective is to capture the linear dependence between current and past observations. The general Autoregressive model of order $p$, denoted as $\text{AR}(p)$, formalizes this intuition by projecting the current value of a variable $Y_t$ as a linear combination of its $p$ most recent past values:
-
-\begin{equation}
-    Y_t = c + \phi_1Y_{t-1} + \phi_2Y_{t-2} + \dots + \phi_pY_{t-p} + \epsilon_t
-\end{equation}
-
-In the context of financial returns, we establish our benchmark using the simplest form of this process: a single-regime autoregressive model of order one, or $\text{AR}(1)$. This model serves as a robust baseline because it efficiently captures short-term serial dependence, such as market momentum or immediate mean-reversion. The $\text{AR}(1)$ process for returns $r_t$ is defined as:
-
-\begin{equation}
-    r_t = c + \phi r_{t-1} + \epsilon_t
-\end{equation}
-
-Here, $c$ is the constant intercept (from which the unconditional mean return can be derived as $\frac{c}{1-\phi}$), $\phi$ measures the strength and direction of the linear serial dependence, and $\epsilon_t$ represents the stochastic innovation term, strictly assumed to be independent and identically distributed as Gaussian white noise, where $\epsilon_t \sim \mathcal{N}(0,\sigma^2)$.
-
-\subsection{Hidden Markov Models}
-
-While the standard $\text{AR}(1)$ model provides a solid baseline, its primary limitation is the assumption of structural stability; it assumes that the parameters ($c$, $\phi$, and $\sigma^2$) remain constant over time. Real-world financial markets, however, frequently undergo structural breaks and shift between distinct `regimes'—such as transitioning from a low-volatility bull market to a high-volatility bear market. 
-
-To capture this dynamic behaviour, we extend our framework using a Hidden Markov Model (HMM). We introduce an unobserved, discrete-time Markov chain, denoted by $S_t \in \{1,\dots,K\}$, which represents the active market regime at time $t$. The probability of the market transitioning from one state to another is governed by a set of transition probabilities:
-
-\begin{equation}
-    \mathbb{P}(S_t=j \mid S_{t-1}=i) = p_{ij}
-\end{equation}
-
-where $p_{ij} \geq 0$ and the probabilities of transitioning from any state $i$ to all possible states $j$ sum to one. 
-\begin{equation}
-    \sum_{j=1}^{K} p_{ij} = 1 \quad \forall i
-\end{equation}
-
-By conditioning our autoregressive process on this hidden state $S_t = k$, we allow the behavior of the returns to adapt to the current market environment. The regime-switching $\text{AR}(1)$ model is therefore defined as:
-
-\begin{equation}
-    r_t = \mu_k + \phi_k r_{t-1} + \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0,\sigma_k^2)
-\end{equation}
-
-This formulation is significantly more flexible than the single-regime benchmark. The parameter $\mu_k$ acts as the regime-specific drift, $\phi_k$ captures how the short-term memory of the market changes depending on the environment, and $\sigma_k^2$ models regime-specific volatility, effectively accommodating the volatility clustering frequently observed in financial time series.
-
-To fully specify this Hidden Markov Model, we must estimate the complete parameter set $\theta$, which encapsulates both the state-transition dynamics and the regime-dependent autoregressive parameters:
-
-\begin{equation}
-    \theta = \{ \pi, \mathbf{P}, \mu_k, \phi_k, \sigma_k^2 : k = 1,\dots,K \}
-\end{equation}
-
-where $\pi = (\pi_1,\dots,\pi_K)^\top$ is the initial state distribution representing the probability $\mathbb{P}(S_1=k)$ of starting in state $k$, $\mathbf{P} = (p_{ij})$ is the $K \times K$ transition matrix dictating the regime persistence, and the remaining terms represent the localized AR parameters for each respective state.
-
-\subsection{Model selection}
-
-After defining the structural framework of the Hidden Markov Model, the immediate empirical challenge is determining the optimal hyperparameters—most notably, the number of hidden states, $K$, and the autoregressive order, $p$. Adding more states or lags will invariably increase the model's fit to the training data, but doing so introduces the severe risk of overfitting, where the model captures statistical noise rather than genuine market structure. To resolve this tradeoff, we evaluate competing models using Information Criteria, specifically the Akaike Information Criterion (AIC) and the Bayesian Information Criterion (BIC). Both metrics penalize models for unnecessary complexity while rewarding goodness-of-fit.
-
-The AIC focuses on minimizing the information lost when a given model is used to approximate the true data-generating process, making it highly effective for optimizing predictive accuracy. It evaluates models based on $m$, which represents the total number of estimated parameters in the model, and $\hat{L}$, which is the maximized value of the likelihood function for the given data. The AIC is defined as:
-
-\begin{equation}
-    \text{AIC} = 2m - 2\ln(\hat{L})
-\end{equation}
-
-The BIC introduces a stricter penalty for model complexity by factoring in $T$, the total number of observations in the time series. Because the penalty term $\ln(T)$ scales with the sample size, the BIC aggressively penalizes overfitting in large financial datasets and mathematically favors the most parsimonious model that adequately explains the data. The BIC is defined as:
-
-\begin{equation}
-    \text{BIC} = m\ln(T) - 2\ln(\hat{L})
-\end{equation}
-
-During our hyperparameter sweep, models are estimated across a grid of potential $K$ and $p$ values. The configuration that minimizes the AIC and BIC is selected as the optimal structural architecture for our subsequent trading simulations.
-
-\subsection{Metrics}
-
-To rigorously evaluate the performance of the trading strategies generated in this simulation, we must rely on a robust set of quantitative metrics. Simply observing the final account balance is insufficient; a proper evaluation requires us to understand the path taken to achieve those returns, the risks assumed along the way, and the underlying mathematical behavior of the system. In this section, I introduce the comprehensive suite of metrics used to score the models. These indicators allow us to objectively compare different strategies, identifying their specific structural strengths, potential vulnerabilities, and overall viability in a live market context. Before detailing the specific calculations, we define the following standard notations used throughout this section: 
-
-\begin{itemize}
-    \item $R_t$: Return of the asset/strategy at time $t$
-    \item $\mu$: Mean return $\mathbb{E}(R)$
-    \item $\sigma$ Standard deviation of returns
-    \item $N$: Total number of periods or trades
-    \item $V_t$: Portfolio value at time $t$, and $P_t=\max_{s \leq t}V_s$ is the peak value up to time $t$
-\end{itemize}
-
-\subsubsection{Statistical  metrics}
-
-Statistical metrics form the foundational mathematical profile of our trading strategies. Rather than focusing directly on capital accumulation, these indicators analyze the shape, spread, and probability distribution of the underlying return data. By examining how returns behave on a probabilistic level, we can uncover hidden risks that standard equity curves might obscure—such as the likelihood of extreme market anomalies or structural asymmetries in the strategy's outcomes. The following metrics are utilized to quantify the fundamental risk and distributional nature of the strategy:
-
-\textbf{Annual volatility} quantifies the expected yearly fluctuation in returns, providing a baseline mathematical measure of standard risk.
-\begin{equation}
-    \sigma_{\text{ann}} = \sigma\sqrt{T}
-\end{equation}
-
-\textbf{Skewness} measures the assymetry of the return distribution, helping to identify the likelihood of outsized positive or negative outliers.
-\begin{equation}
-    S=\frac{E[(R-\mu)^3]}{\sigma^3}
-\end{equation}
-
-\textbf{Kurtosis} measures the `fatness' of the distribution tails, indicating the probability of rare, extreme market events.
-\begin{equation}
-    K=\frac{E[(R-\mu)^4]}{\sigma^4}
-\end{equation}
-
-\textbf{Value at risk} estimates the maximum expected loss over a specific time frame at a given confidence level $\alpha$, acting as a standard gauge of the worst-case scenario.
-\begin{equation}
-    \text{VaR}_{\alpha} = -Q_{1-\alpha}(R)
-\end{equation}
-
-\textbf{Conditional value at risk} calculates the average expected loss assuming the VaR threshold is breached, providing a more comprehensive picture of extreme tail risk. 
-\begin{equation}
-    \text{CVaR}_{\alpha} = -E[R \mid R \leq -\text{VaR}_{\alpha}]
-\end{equation}
-
-\textbf{Tail factor} quantifies the severy of tail risk by comparing the average extreme loss to the baseline extreme loss threshold. 
-\begin{equation}
-    \text{TF} = \frac{\text{CVaR}_{\alpha}}{\text{VaR}_{\alpha}}
-\end{equation}
-
-\subsubsection{Financial metrics}
-
-While statistical metrics describe the mathematical probability of returns, financial metrics translate those probabilities into practical, capital-based outcomes. These indicators evaluate the actual equity curve, measuring how efficiently a strategy deploys capital, how it navigates periods of historical loss, and its absolute trading profitability. Crucially, these metrics contextualize raw returns against the specific drawdowns and volatility endured to achieve them, providing a holistic view of the strategy's execution quality and the psychological `holding stress' it would impose on an investor. The core financial scoring metrics used in our evaluation are defined as follows:
-
-\textbf{Total return} represents the overall cumulative growth or decline of the invested capital over the entire trading period.
-\begin{equation}
-    \text{TR} = \prod_{t=1}^{N}\left( 1+ R_t \right) - 1
-\end{equation}
-
-\textbf{Annual return} standardises the cumulative return into a yearly figure, allowing for direct comparison across different strategies and timeframes.
-\begin{equation}
-    \text{AR} = \left( 1+\text{TR} \right)^{\frac{1}{Y}} - 1
-\end{equation}
-
-\textbf{Positive months} counts the total number of profitable months, offering a straightforward measure of performance consistency over time.
-\begin{equation}
-    \text{N}_\text{pos} = \sum_{t=1}^{N} \mathbb{I}(R_t>0)
-\end{equation}
-
-\textbf{Max drawdown} measures the largest peak-to-trough percentage drop in equity, revealing the strategy's worst historical losing streak.
-\begin{equation}
-    \text{MDD} = \max_t\left( \frac{P_t-V_t}{P_t} \right)
-\end{equation}
-
-\textbf{Max drawdown duration} measures the longest time required to recover from a peak-to-trough loss, indicating capital recovery speed.
-\begin{equation}
-    \text{MDD}_{\text{dur}} = \max(t_\text{recovery} - t_\text{peak})
-\end{equation}
-
-\textbf{Ulcer index} combines the depth and duration of drawdowns into a single composite metric to evaluate the holding stress of the investment.
-\begin{equation}
-    \text{UI} = \sqrt{\frac{1}{N}\sum_{t=1}^{N} D_t^2}
-\end{equation}
-
-\textbf{Sharpe ratio} measures the excess return generated per unit of total volatility, serving as the industry standard for risk-adjusted performance, where $R_f$ is a `risk-free' asset.
-\begin{equation}
-    \text{SR} = \frac{\mu-R_f}{\sigma}
-\end{equation}
-
-\textbf{Sortino ratio} modifies the Sharpe ratio to penalise only downside volatility, making it ideal for investors who view only negative fluctuations as true risk.
-\begin{equation}
-    \text{Sortino} = \frac{\mu-R_f}{\sigma_d}
-\end{equation}
-
-\textbf{Calmar ratio} evaluates the annualised return relative to the meaxmium drawdown, highlighting the specific tradeoff between reward and severe equity drops.
-\begin{equation}
-    \text{Calmar} = \frac{\text{AR}}{\text{MDD}}
-\end{equation}
-
-\textbf{Profit factor} shows the total money made for every dollar lost, acting as a pure, direct measure of absolute trading profitability.
-\begin{equation}
-    \text{PF} = \frac{\sum\text{Gross Profits}}{\sum|\text{Gross Losses}|}
-\end{equation}
-
-\textbf{Payoff factor} compares the absolute size of the average winning trade to the average losing trade, indicating the system's risk-to-reward efficiency. 
-\begin{equation}
-    \text{Payoff} = \frac{\text{Average Win}}{|\text{Average Loss}|}
-\end{equation}
-
-\textbf{Win rate} calculates the percentage of trades that result in a profit, reflecting the core accuracy of the strategy's entry and exit signals. 
-\begin{equation}
-    W=\frac{N_\text{wins}}{N_\text{trades}}
-\end{equation}
-
-\textbf{Market exposure} measures the fraction of time capital is actively deployed in the market as opposed to sitting safely in cash.
-\begin{equation}
-    \text{Exposure} = \frac{T_{\text{invested}}}{T_{\text{total}}}
-\end{equation}
-
-\textbf{Average win} calculates the typical gain realised on a successful transaction.
-\begin{equation}
-    \text{AW} = \frac{1}{N_{\text{wins}}} \sum_{i=1}^{N_\text{wins}} \text{Profit}_i
-\end{equation}
-
-\textbf{Average loss} calculates the typical capital deficit incurred on an unsuccessful transaction. 
-\begin{equation}
-    \text{AL} = \frac{1}{N_{\text{losses}}} \sum_{i=1}^{N_\text{losses}} \text{Loss}_i
-\end{equation}
-
-\subsection{Data}
-
-The empirical analysis is based on high-frequency foreign exchange data downloaded from Dukascopy. For each currency pair, I collect separate bid and ask quote data for both legs of the pair. The raw files are stored as monthly parquet files and loaded into Python through a reproducible data pipeline. The sample covers the period from January 2024 to December 2025, giving two full calendar years of tick-level FX observations.
+The empirical analysis is based on high-frequency foreign exchange data downloaded from Dukascopy. For each currency pair we collect separate bid and ask quote streams for both legs of the pair. The raw files are stored as monthly parquet files and loaded into Python through a reproducible data pipeline. The sample covers the period from January 2024 to December 2025, giving two full calendar years of tick-level FX observations.
 
 The three currency-pair constructions used in the project are
 \[
-    \text{AUD/USD--NZD/USD}, 
+    \text{AUD/USD--NZD/USD},
     \qquad
     \text{EUR/NOK--EUR/SEK},
     \qquad
     \text{GBP/USD--EUR/USD}.
 \]
-These pairs were selected because they represent economically related exchange rates while differing substantially in liquidity, transaction costs, and empirical dependence. AUD/USD and NZD/USD are both Asia-Pacific currencies quoted against the US dollar. EUR/NOK and EUR/SEK connect two Nordic currencies against the euro, but are less liquid and have materially wider spreads. GBP/USD and EUR/USD are highly liquid major currency pairs sharing the US dollar leg.
+These pairs were selected because they represent economically related exchange rates while differing substantially in liquidity, transaction costs, and empirical dependence. AUD/USD and NZD/USD are both Asia-Pacific currencies quoted against the US dollar. EUR/NOK and EUR/SEK connect two Nordic currencies against the euro but are less liquid and have materially wider spreads. GBP/USD and EUR/USD are highly liquid major pairs sharing the US dollar leg.
 
-Using bid and ask data rather than only mid-prices is important in a high-frequency setting. At low frequencies, the spread may be treated as a small implementation detail, but at the tick level it is central to the economics of the strategy. A model may identify statistically significant mean reversion and still fail economically if the expected move is smaller than the cost of trading. For this reason, the data set is constructed to preserve bid prices, ask prices, mid-prices, and spread-based transaction-cost estimates throughout the pipeline.
+Using bid and ask data rather than only mid-prices is important in a high-frequency setting. At low frequencies, the spread may be treated as a small implementation detail, but at the tick level it is central to the economics of the strategy. A model may identify statistically significant mean reversion and still fail economically if the expected move is smaller than the cost of trading. For this reason the data set is constructed to preserve bid prices, ask prices, mid-prices, and spread-based transaction-cost estimates throughout the pipeline.
 
-\subsection{Pre-processing}
+\subsection{Pre-processing}\label{sec:preproc}
 
-The raw Dukascopy quote data are not used directly in the statistical models. Instead, the data are transformed into synchronized pair-level observations through a custom Python pipeline. This preprocessing is important because high-frequency financial data are irregularly spaced, asynchronous, and strongly affected by bid--ask spreads and microstructure noise. The main preprocessing steps are described below.
+The raw Dukascopy quote data are not used directly in the statistical models. Instead, they are transformed into synchronized pair-level observations through a custom Python pipeline. This step is important because high-frequency financial data are irregularly spaced, asynchronous, and strongly affected by bid--ask spreads and microstructure noise. The main pre-processing operations are described below.
 
-\subsubsection{Bid--Ask and Mid prices}
+\subsubsection{Bid--ask and mid prices}
 
-For each currency leg, bid and ask quote streams are first sorted by timestamp. Since bid and ask updates do not necessarily arrive at exactly the same time, they are aligned using a backward as-of merge. This means that, at each timestamp, the most recent available quote is used, avoiding any use of future information.
+For each currency leg, bid and ask quote streams are first sorted by timestamp. Since bid and ask updates do not necessarily arrive at exactly the same time, they are aligned using a backward as-of merge: at each timestamp, the most recent available quote is used, which avoids any use of future information.
 
-The mid-price is then computed as
+For asset $x \in \{A, B\}$ we then synthesize a mid-price at every tick as
 \begin{equation}
-    P_t=\frac{P_t^{\text{ask}}}{P_t^{\text{bid}}}
+    M_t^{x} = \frac{B_t^{x} + A_t^{x}}{2},
 \end{equation}
-which produces a single representative price series for each asset while still preserving the original bid and ask quotes for transaction-cost calculations.
+where $B_t^{x}$ and $A_t^{x}$ are the bid and ask quotes of asset $x$ at time $t$. The mid-price produces a single representative price series for each asset while still preserving the original bid and ask quotes for transaction-cost calculations.
 
-For asset $X\in\{A,B\}$ we synthesis a mid price at every tick
+\subsubsection{Bid--ask spread}
+
+The bid--ask spread is central in HFT because expected profits are often small relative to trading costs. For each asset we measure the half-spread in basis points as
 \begin{equation}
-    M_t^x = \frac{B_t^x+A_t^x}{2}
+    \mathrm{HS}_t = \frac{1}{2}\,\frac{A_t - B_t}{M_t}\times 10^{4}.
 \end{equation}
+The half-spread approximates the cost of crossing the market for one leg of the trade. Since pairs trading requires trading both legs, the combined spread cost is an essential component of the back-test in Section~\ref{sec:backtest}.
 
-\subsubsection{Spread}
+\subsection{Cointegration spread}\label{sec:spread}
 
-The bid--ask spread is central in HFT because expected profits are often small relative to trading costs. For each asset, the half-spread is measured in basis points as
-\begin{equation}
-    \text{HS}_t = \frac{1}{2}\frac{P_t^{\text{ask}}}{P_t^{\text{bid}}}\times10\space000
-\end{equation}
-
-The half-spread gives an estimate of the cost of crossing the market for one leg of the trade. Since pairs trading requires trading both legs, the combined spread cost is an important part of the later backtest.
-
-Two non-stationary log-price series $\log A_t$ and $\log B_t$ are cointegrated if there exists a hedge ratio $\beta$ such that the spread
+Two non-stationary log-price series $\log A_t$ and $\log B_t$ are said to be cointegrated if there exists a hedge ratio $\beta$ such that the linear combination
 \begin{equation}
     S_t = \log A_t - \beta \log B_t
 \end{equation}
-is stationary.
-
-We model the cointegrating relationship as a slowly-varying linear regression of $\log A$ and $\log B$. We do not assume $\beta$ is constant, we rather estimate $\beta_t$ via rolling OLS with window size $W_b$.
+is stationary. The hedge ratio $\beta$ can be estimated globally by the Engle--Granger procedure, which combines an Ordinary Least Squares (OLS) regression with an Augmented Dickey--Fuller (ADF) test on the residuals to verify stationarity. In a high-frequency context, however, $\beta$ is unlikely to remain constant over the full sample. We therefore model the cointegrating relationship as a slowly varying linear regression and estimate $\beta_t$ by rolling OLS with window length $W_\beta$:
 \begin{equation}
-    \beta_t = \frac{W_\beta \sum_{s=t-W_\beta+1}^{t}x_sy_s-(\sum_sx_s)(\sum_sy_s)}{W_\beta\sum_sx_s^2-(\sum_sx_s)^2}
+    \beta_t = \frac{W_\beta \sum_{s} x_s y_s - \left(\sum_{s} x_s\right)\!\left(\sum_{s} y_s\right)}{W_\beta \sum_{s} x_s^{2} - \left(\sum_{s} x_s\right)^{2}},
 \end{equation}
 \begin{equation}
-    \alpha_t = \frac{1}{W_\beta}\left(\sum_sy_s-\beta_t\sum_sx_s\right)
+    \alpha_t = \frac{1}{W_\beta}\!\left(\sum_{s} y_s - \beta_t \sum_{s} x_s\right),
 \end{equation}
-with $x_s=\log B_s$ and $y_s=\log A_s$
+where the sums run over $s \in \{t-W_\beta+1, \ldots, t\}$ and $x_s = \log B_s$, $y_s = \log A_s$.
 
 The cointegration spread at bar $t$ is then
 \begin{equation}
-    S_t = \log A_t - \beta_t \log B_t - \alpha_t
+    S_t = \log A_t - \beta_t \log B_t - \alpha_t,
 \end{equation}
 and the spread return is
 \begin{equation}
-    \Delta S_t = r_t^A - \beta_{t-1}r_t^B
+    \Delta S_t = r_t^{A} - \beta_{t-1}\, r_t^{B},
 \end{equation}
-where $r_t^A=\log A_t - \log A_{t-1}$ etc
+where $r_t^{A} = \log A_t - \log A_{t-1}$ and similarly for $r_t^{B}$. The lag in $\beta_{t-1}$ ensures the hedge ratio is observable at the time the return is realized.
 
-For the baseline strategy which knows nothing about regimes the trading signal is the rolling z-score of the spread
+For the baseline strategy, which makes no use of regime information, the trading signal is the rolling $z$-score of the spread over a window of length $W_z$:
 \begin{equation}
-    Z_t = \frac{S_t - \mu_t}{\sigma_t}
-    \quad 
-    \mu_t = \frac{1}{W_z}\sum_{s=t-W_z+1}^{t} S_s
-    \quad 
-    \sigma_t^2 = \frac{1}{W_z}\sum_{s=t-W_z+1}^{t}(S_s-\mu_t)^2
+    Z_t = \frac{S_t - \mu_t}{\sigma_t},
+    \qquad
+    \mu_t = \frac{1}{W_z}\!\sum_{s=t-W_z+1}^{t}\! S_s,
+    \qquad
+    \sigma_t^{2} = \frac{1}{W_z}\!\sum_{s=t-W_z+1}^{t}\! \left(S_s - \mu_t\right)^{2}.
 \end{equation}
-with $W_z$ bars.
 
-\subsection{Pairs trading}
+\subsection{Autoregressive baseline}\label{sec:ar}
 
-We choose to financial instruments, as AUDUSD and NZDUSD in this paper. Let us define the spread $z_t$ as 
+When modelling a time series, a fundamental objective is to capture the linear dependence between current and past observations. The autoregressive model of order $p$, denoted $\mathrm{AR}(p)$, formalizes this intuition by projecting the current value of a variable $Y_t$ as a linear combination of its $p$ most recent past values:
 \begin{equation}
-    z_t = p_t^{(1)} - \beta p_t^{(2)}
+    Y_t = c + \phi_{1} Y_{t-1} + \phi_{2} Y_{t-2} + \cdots + \phi_{p} Y_{t-p} + \epsilon_t.
 \end{equation}
-where $\beta$ can be estimated by the Engle-Granger method, which means using an Ordinary Least Squares (OLS) regression followed by an Augmented Dickey-Fuller (ADF) test on the residuals to verify that $z_t$ is stationary. It is also possible to esimate this directly in the HMM model, but easier to do so globally at first. 
 
-Thereafter we can fit an AR- or ARCH-HMM on the spread-process
+In the context of financial returns, our benchmark is the simplest non-trivial special case: a single-regime $\mathrm{AR}(1)$ on the returns $r_t$,
 \begin{equation}
-    z_t = \mu^k + \rho^k(z_{t-1}-\mu^k) + \varepsilon_t^k 
+    r_t = c + \phi\, r_{t-1} + \epsilon_t, \qquad \epsilon_t \sim \mathcal{N}(0, \sigma^{2}).
 \end{equation}
-where $\rho^k$ measures how fast we expect the mean reversion to be in regime $k$. Values of $\rho^k$ close to $0$ indicate a faster mean reversion, while values closer to $1$ indicate a slower mean reversion. Negative values of $\rho^k$ would indicate even stronger mean reversion but possibly less realistic empirically. 
+Here $c$ is the constant intercept (from which the unconditional mean is $c/(1-\phi)$ for $|\phi|<1$), $\phi$ measures the strength and direction of the linear serial dependence, and $\epsilon_t$ is a Gaussian white-noise innovation. This model captures short-term serial dependence such as momentum or immediate mean reversion under a strict assumption of structural stability.
 
-The trading rule in pairs trading can be formulated as follows. In a drifting regime we do nothing. In a mean-reverting regime, say for regime $k=2$ we trade by.
+\subsection{Hidden Markov Models}\label{sec:hmm}
 
+The main limitation of the single-regime $\mathrm{AR}(1)$ is precisely that assumption of structural stability: the parameters $c$, $\phi$, and $\sigma^{2}$ are taken to be constant. Real markets frequently undergo structural breaks and switch between distinct \emph{regimes}, such as transitioning from a low-volatility mean-reverting environment to a high-volatility directional one.
+
+To capture this we introduce an unobserved discrete-time Markov chain $K_t \in \{1, \ldots, K\}$ representing the active regime at time $t$. The dynamics of $K_t$ are governed by a $K \times K$ transition matrix $\mathbf{P} = (p_{ij})$,
+\begin{equation}
+    p_{ij} = \mathbb{P}\!\left(K_t = j \mid K_{t-1} = i\right),
+\end{equation}
+with non-negative entries that satisfy the row-sum constraint
+\begin{equation}
+    \sum_{j=1}^{K} p_{ij} = 1 \qquad \forall\, i.
+\end{equation}
+
+Conditioning the AR process on the hidden state $K_t = k$ allows the dynamics of the returns to adapt to the prevailing regime. The regime-switching $\mathrm{AR}(1)$ for returns is therefore
+\begin{equation}
+    r_t = \mu_k + \phi_k\, r_{t-1} + \epsilon_t, \qquad \epsilon_t \sim \mathcal{N}(0, \sigma_k^{2}).
+\end{equation}
+The parameter $\mu_k$ is a regime-specific drift, $\phi_k$ captures how short-term memory of the market changes with the environment, and $\sigma_k^{2}$ models regime-specific volatility, naturally accommodating the volatility clustering frequently observed in financial time series.
+
+To fully specify the Hidden Markov Model we must estimate the parameter set $\theta$, which encapsulates both the state-transition dynamics and the regime-dependent autoregressive parameters:
+\begin{equation}
+    \theta = \left\{\, \pi_0,\; \mathbf{P},\; \mu_k,\; \phi_k,\; \sigma_k^{2} \;:\; k = 1, \ldots, K \,\right\},
+\end{equation}
+where $\pi_0 = (\pi_{0,1}, \ldots, \pi_{0,K})^{\top}$ is the initial state distribution with $\pi_{0,k} = \mathbb{P}(K_1 = k)$, $\mathbf{P}$ dictates regime persistence, and the remaining terms are the regime-localized AR parameters.
+
+\subsection{Markov-switching AR on the spread}\label{sec:msar}
+
+For pairs trading we apply the Markov-switching framework directly to the cointegration spread $S_t$ rather than to the returns of a single asset. Let $K_t \in \{1, 2\}$ be a latent regime indicator. We assume the joint generative model
+\begin{equation}
+    S_t \mid S_{t-1},\; K_t = k \;\sim\; \mathcal{N}\!\left(c^{(k)} + \rho^{(k)} S_{t-1},\; \bigl(\sigma^{(k)}\bigr)^{2}\right),
+\end{equation}
+\begin{equation}
+    \mathbb{P}\!\left(K_t = j \mid K_{t-1} = i\right) = p_{ij}, \qquad p_{i1} + p_{i2} = 1, \qquad \mathbf{P} = \begin{pmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{pmatrix}.
+\end{equation}
+This is an $\mathrm{AR}(1)$ on the spread with all three parameters switching: the intercept $c^{(k)}$, the autoregressive coefficient $\rho^{(k)}$, and the innovation variance $\bigl(\sigma^{(k)}\bigr)^{2}$. When $|\rho^{(k)}| < 1$, the unconditional regime mean is
+\begin{equation}
+    \mu^{(k)} = \frac{c^{(k)}}{1 - \rho^{(k)}},
+\end{equation}
+which yields the equivalent mean-deviation parameterization
+\begin{equation}
+    S_t = \mu^{(k)} + \rho^{(k)}\!\left(S_{t-1} - \mu^{(k)}\right) + \varepsilon_t^{(k)}, \qquad \varepsilon_t^{(k)} \sim \mathcal{N}\!\left(0, \bigl(\sigma^{(k)}\bigr)^{2}\right).
+\end{equation}
+Values of $\rho^{(k)}$ close to zero correspond to fast mean reversion within the regime, values close to one correspond to slow mean reversion, and values close to unity correspond to near-random-walk behaviour.
+
+Before estimation we apply two pre-processing steps that improve numerical stability. We winsorize the spread at $\mathrm{median}(S) \pm 4\cdot\mathrm{std}(S)$, and we rescale it by a factor of $10^{4}$ so that the innovation variance is not numerically negligible.
+
+\subsection{Parameter estimation}\label{sec:em}
+
+The HMM parameters $\theta$ are estimated by maximum likelihood with the Expectation--Maximization (EM) algorithm \parencite{dempster1977}. The procedure alternates between:
+
+\begin{itemize}
+    \item \textbf{E-step.} Compute the smoothed regime posteriors
+    \begin{equation}
+        \gamma_t(k) = \mathbb{P}\!\left(K_t = k \mid S_1, \ldots, S_T;\; \theta\right)
+    \end{equation}
+    via the forward--backward algorithm.
+    \item \textbf{M-step.} Update the regime-specific parameters $\bigl(c^{(k)}, \rho^{(k)}, \sigma^{(k)}\bigr)$ and the transition matrix $\mathbf{P}$ to maximize the expected complete-data log-likelihood given the posteriors.
+\end{itemize}
+The two steps are iterated until the log-likelihood change between successive iterations falls below a small tolerance.
+
+\subsection{Regime classification}\label{sec:regimes}
+
+Once the parameters are estimated, the two regimes are labelled by their innovation variance. We define the mean-reverting (MR) regime as the one with lower volatility and the drifting (DR) regime as the one with higher volatility:
+\begin{equation}
+    k_{\mathrm{MR}} = \arg\min_{k}\, \sigma^{(k)},
+    \qquad
+    k_{\mathrm{DR}} = \arg\max_{k}\, \sigma^{(k)}.
+\end{equation}
+The in-sample regime probabilities used by the trading rules are the corresponding smoothed posteriors
+\begin{equation}
+    \gamma_t^{\mathrm{MR}} = \mathbb{P}\!\left(K_t = k_{\mathrm{MR}} \,\big|\, S_1, \ldots, S_T\right),
+    \qquad
+    \gamma_t^{\mathrm{DR}} = 1 - \gamma_t^{\mathrm{MR}}.
+\end{equation}
+
+A natural soft extension is to scale positions directly by the probability of being in the mean-reverting regime,
+\begin{equation}
+    w(K_t) = \mathbb{P}\!\left(K_t \in \mathrm{MR} \,\big|\, \mathcal{F}_t\right),
+\end{equation}
+where $\mathcal{F}_t$ denotes the information set available at time $t$. It is also natural to combine this with volatility scaling. In the strategies developed below, we use either a binary regime gate or a probability-weighted entry threshold rather than continuous position sizing.
+
+\subsection{Model selection}\label{sec:modelselection}
+
+After defining the structural family, the immediate empirical question is the choice of hyperparameters---most notably the number of hidden states $K$ and the autoregressive order $p$. Adding more states or lags will mechanically improve the in-sample likelihood but introduces the risk of overfitting to statistical noise rather than to genuine market structure. We resolve this trade-off by selecting models with information criteria that penalize complexity.
+
+Let $m$ be the total number of estimated parameters, $T$ the number of observations, and $\hat{L}$ the maximized likelihood. The Akaike Information Criterion is
+\begin{equation}
+    \mathrm{AIC} = 2m - 2\ln \hat{L},
+\end{equation}
+and the Bayesian Information Criterion is
+\begin{equation}
+    \mathrm{BIC} = m \ln T - 2\ln \hat{L}.
+\end{equation}
+The AIC focuses on minimizing the information lost when the candidate model approximates the true data-generating process and is generally effective for optimizing predictive accuracy. The BIC scales its complexity penalty with $\ln T$, which is more aggressive in large samples and mathematically favours the most parsimonious model that adequately explains the data. During the hyperparameter sweep, models are estimated over a grid of $(K, p)$ values and the configuration that minimizes AIC and BIC is retained as the structural choice for the trading simulations.
+
+\subsection{Trading strategies}\label{sec:strategies}
+
+We compare four strategies that share the same cointegration spread $S_t$ and rolling $z$-score $Z_t$ as inputs but differ in whether and how they use the regime posteriors $\gamma_t^{\mathrm{MR}}$ and $\gamma_t^{\mathrm{DR}}$.
+
+\subsubsection{Buy \& Hold}
+
+The do-nothing strategy is always long the spread:
+\begin{equation}
+    P_t^{\mathrm{BH}} = +1 \qquad \text{for every bar},
+\end{equation}
+earning $\Delta S_t$ at each step and paying \emph{no transaction costs}. Its role is diagnostic: if $\sum_t \Delta S_t > 0$ in a given month, the spread drifted in our favour and any active strategy must outperform that passive drift to add value; if $\sum_t \Delta S_t < 0$, the spread drifted against us.
+
+\subsubsection{Baseline ($z$-score)}
+
+The textbook pairs-trading rule uses two parameters: a quiet entry threshold $z_q$ and an exit threshold $z_x$. The position is updated bar by bar according to
+\begin{equation}
+    P_t =
+    \begin{cases}
+        +1       & \text{if } P_{t-1} = 0 \text{ and } Z_t < -z_q, \\
+        -1       & \text{if } P_{t-1} = 0 \text{ and } Z_t > +z_q, \\
+        \phantom{+}0 & \text{if } P_{t-1} \neq 0 \text{ and } |Z_t| \leq z_x, \\
+        P_{t-1}  & \text{otherwise}.
+    \end{cases}
+\end{equation}
+A long position is opened when the spread is sufficiently below its rolling mean and closed when it returns toward zero; the short rule is symmetric.
+
+In words, for a pair such as AUD/USD--NZD/USD the rule reads
 \begin{equation}
     \left\{
     \begin{aligned}
-        z_t > \mu^2 + c\sigma^2 
-        &\Rightarrow \text{short AUDUSD and long NZDUSD}, \\
-        z_t < \mu^2 - c\sigma^2 
-        &\Rightarrow \text{long AUDUSD and short NZDUSD}, \\
-        z_t \approx \mu^2 
-        &\Rightarrow \text{close the position}.
+        Z_t > +z_q       &\;\Rightarrow\; \text{short AUD/USD and long NZD/USD,} \\
+        Z_t < -z_q       &\;\Rightarrow\; \text{long AUD/USD and short NZD/USD,} \\
+        |Z_t| \leq z_x   &\;\Rightarrow\; \text{close the position.}
     \end{aligned}
     \right.
 \end{equation}
+For every unit of the first leg we trade $\hat{\beta}$ units of the second leg, so that the resulting portfolio is exposed to the relative movement between the two currencies rather than to the overall level of the FX market.
 
-While for one unit of AUDUSD we trade $\hat{\beta}$ units of NZDUSD, such that the position in main is exposed to the relative movement between AUDUSD and NZDUSD, and not toward the general level in the currency market. 
+\subsubsection{Autoregressive (AR) with regime gate}
 
-For a soft HMM version the positions can be scaled with the probabilites of the model being in a certain mean-reverting regime
+The AR strategy uses the same entry/exit \emph{directions} as the Baseline but adds a binary regime gate
 \begin{equation}
-    w(s_t) = \mathbb{P}(s_t \space \text{is in a mean-reverting regime} \mid \mathcal{F_t})
+    G_t = \mathbbm{1}\!\left\{\gamma_t^{\mathrm{MR}} \geq 1 - \delta\right\},
 \end{equation}
-It may also be natural to scale the positions with estimated volatility.
+where $\delta \in (0,1)$ is a danger-threshold parameter. The modified position rule is
+\begin{equation}
+    P_t =
+    \begin{cases}
+        0                  & \text{if } G_t = 0 \quad (\text{panic liquidation, no new entries}), \\
+        \text{baseline rule} & \text{if } G_t = 1.
+    \end{cases}
+\end{equation}
+The kill switch is binary: we either trade normally or sit in cash, with no middle ground. Moreover, the kill switch applies to existing positions, not only to new entries---if we are long the spread and the HMM suddenly flags danger, we close out and go flat at the next bar.
+
+\subsubsection{Markov-Switching AR (MS-AR)}
+
+The MS-AR strategy uses the same entry/exit directions as the Baseline but lets the entry threshold itself be dynamic and probability-weighted. With $z_v$ a wider ``volatile entry threshold'' that is active in the drifting regime, the effective entry threshold is
+\begin{equation}
+    z_q^{\mathrm{eff}}(t) = \gamma_t^{\mathrm{MR}}\, z_q + \gamma_t^{\mathrm{DR}}\, z_v.
+\end{equation}
+The position rule is then
+\begin{equation}
+    P_t =
+    \begin{cases}
+        +1       & \text{if } P_{t-1} = 0 \text{ and } Z_t < -z_q^{\mathrm{eff}}(t), \\
+        -1       & \text{if } P_{t-1} = 0 \text{ and } Z_t > +z_q^{\mathrm{eff}}(t), \\
+        \phantom{+}0 & \text{if } P_{t-1} \neq 0 \text{ and } |Z_t| \leq z_x, \\
+        P_{t-1}  & \text{otherwise}.
+    \end{cases}
+\end{equation}
+When the MR regime is highly probable, the threshold collapses to the tighter $z_q$ and the strategy trades like the Baseline; when the DR regime dominates, the threshold widens toward $z_v$, requiring a larger deviation before entering.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{plots/long-short.pdf}
-    \caption{Long-short strategy in pairs trading}
-    \label{fig:placeholder}
+    \caption{Long--short positioning in pairs trading.}
+    \label{fig:longshort}
 \end{figure}
- 
-\subsection{Back-testing}
 
-Back-testing is used to evaluate whether the model signals translate into economically meaningful trading performance. This is important because a model can fit historical returns well without producing a tradable strategy. In high-frequency trading, the expected profit per trade is often small, so even modest execution costs can eliminate an apparent statistical edge.
-
-For this reason, the backtest includes realistic market frictions. The most important is the bid--ask spread: a trader generally buys at the ask and sells at the bid, rather than trading for free at the mid-price. Commissions and other execution costs are also included, since frequent position changes can make small costs accumulate quickly. Financing and margin costs are relevant when the strategy holds short or leveraged positions.
-
-The strategies are evaluated in a walk-forward structure, where parameters are estimated on past data and then applied to later out-of-sample periods. This avoids look-ahead bias and gives a more realistic test of whether the baseline, AR, and Markov-switching strategies would have worked under implementable trading conditions.
-
-\subsection{Models}
-
-\subsubsection{The Buy \& Hold model}
-
-The do-nothing strategy, the position is always long the spread. 
-\begin{equation}
-    P_t^{\text{BH}} = +\space 1 \quad \text{for every bar} 
-\end{equation}
-and it earns $\Delta S_t$ every bar and pays \textit{no transaction costs.}
-
-The purpose of the Buy \& Hold is diagnostic, if $\sum_t \Delta S_t > 0$ for a given month, the spread drifter in our favour and a trading strategy needs to do better than that passive drift to add value, and if $\sum_t \Delta S_t < 0$ the spread drifted against us. 
-
-\subsubsection{The Baseline model}
-
-The textbook $z-\text{score}$ strategy, with two parameters, $z_q = \text{``quiet entry threshold''}$ and $z_x = \text{``exit threshold''}$. 
-
-Position rules, applied bar-by-bar:
-\begin{equation}
-    P_t = 
-    \begin{cases}
-        +1 & \quad\text{if}\quad P_{t-1} = 0 \quad&\text{and}\quad Z_t < -z_q \\
-        -1 & \quad\text{if}\quad P_{t-1} = 0 \quad&\text{and}\quad Z_t > +z_q \\
-        0 & \quad\text{if}\quad P_{t-1} = +1 \quad&\text{and}\quad Z_t \geq -z_q \\
-        0 & \quad\text{if}\quad P_{t-1} = -1 \quad&\text{and}\quad Z_t \leq -z_q \\
-        P_{t-1} & \quad\text{otherwise}\quad &
-    \end{cases}
-\end{equation}
-
-\subsubsection{The Autoregressive (AR) model}
-
-Here we use the same entry/exit \textit{direction} rules as the Baseline model with one extra binary condition, the gate
-\begin{equation}
-    G_t = 1 \{ \pi_t^{\text{MR}} \geq 1-\delta \}
-\end{equation}
-where $\delta$ is the danger threshold parameter. The modified ruled is therefore 
-\begin{equation}
-    P_t =
-    \begin{cases}
-        0 & \quad&\text{if}\quad G_t=0 \text{(panic liquidation, no new entires)} \\
-        \text{(same as baseline)} &\quad&\text{if}\quad G_t = 1
-    \end{cases}
-\end{equation}
-
-The kill switch is binary, we either trade normally or sit in cash, with no middle ground. Moreso the kill applies to existing positions too, not just to new entreis, if we aer long the spread and the HMM suddenly flags danger, we close out and go flag at the next bar.
-
-
-
-\subsubsection{The Markov-Switching Autoregressive (MS-AR) model}
-
-Let us denote $S_t$ as the spread and $K_t\in\{1,2\}$ a latent discrete regime indicator. The joint generative model is
-\begin{equation}
-    S_t \mid S_{t-1}, K_t = k \sim N\left( c^{(k)} + \rho^{(k)}S_{t-1}, \left( \sigma^{(k)} \right)^2 \right)
-\end{equation}
-\begin{equation}
-    P(K_t=j \mid K_{t-1} = i) = p_{ij} 
-    \quad
-    P = \left( p_{11} \quad p_{12} \quad p_{21} \quad p_{22} \right)
-    \quad
-    p_{i1} + p_{i2} = 1
-\end{equation}
-
-This is an $\text{AR}(1)$ on the spread with all three parameters switching, the constant $c^{(k)}$, the AR coefficient $\rho^{(k)}$ and the innovation variance $\left(\sigma^{(k)}\right)^2$. 
-
-The unconditional mean of regime $k$ when $|\rho^{(k)}|<1$ is 
-\begin{equation}
-    \mu^{(k)} = \frac{c^{(k)}}{1-\rho^{(k)}}
-\end{equation}
-
-We fit the maxmium likelihood with the $\text{EM}$ algorithm, which alternate between the E-step, where we compute regime posteriors $\gamma_t^{(k)}=\mathbb{P}(K_t=k|S_1,\dots,S_t)$ via the forward-backward algorithm. And the M-step, where we update the regime-specific parameters $\left( c^{(k)}, \rho^{(k)}, \sigma^{(k)} \right)$ and the transition matrix $P$ to maximise the expected complete-data log-likelihood given the posteriors. 
-
-Winsorisation, we clip $S_t$ at $\text{median}(S)\pm4 \times \text{std}(S)$ before fitting. Also we scale by multiplying $S_t$ by $10^4$ before fitting. 
-
-The regime classification labelling is done as either 
-\begin{equation}
-    \text{MR index} = \arg\max_k\sigma^{(k)}
-\end{equation}
-\begin{equation}
-    \text{DR index} = \arg\max_k\sigma^{(k)}
-\end{equation}
-
-The in-sample regime probabilities are then found by
-\begin{equation}
-    \pi_t^{\text{MR}} 
-    = 
-    \gamma_t^{\text{(MR)}}
-    =
-    \mathbb{P}(K_t=\text{MR}|S_1,\dots,S_T)
-\end{equation}
-\begin{equation}
-    \pi_t^{\text{DR}} = 1-\pi_t^{\text{MR}}
-\end{equation}
-
-
-Same entry/exit direction rules as Baseline, but the entry threshold itself is dynamic and probability-weighted
-\begin{equation}
-    z_q^{\text{eff}}(t) = \pi_t^{\text{MR}} \cdot z_q + \pi_t^{\text{DR}}\cdot z_v
-\end{equation}
-where $z_v$ is the ``volatile entry threshold''. The position rule is as follows
-\begin{equation}
-    P_t = 
-    \begin{cases}
-        +1 \quad&\text{if}\ P_{t-1}=0 &\text{and}\quad Z_t < -z_q^{\text{eff}}(t) \\
-        -1 \quad&\text{if}\quad P_{t-1}=0 &\text{and}\quad Z_t > +z_q^{\text{eff}}(t) \\
-        0 \quad&\text{if}\quad P_{t-1}=\neq0 &\text{and}\quad     |Z_t| \leq z_x \\
-        +1 \quad&\text{otherwise}\quad &\text{}\quad         
-    \end{cases}
-\end{equation}
-
-\subsubsection{Model summary}
+\subsubsection{Strategy summary}
 
 \begin{table}[H]
 \centering
@@ -440,35 +270,168 @@ where $z_v$ is the ``volatile entry threshold''. The position rule is as follows
 \small
 \begin{tabular}{lllll}
 \toprule
-\textbf{Strategy} 
-& \textbf{Always long?} 
-& \textbf{Entry threshold} ($E_t$) 
-& \textbf{Gate} ($G_t$) 
+\textbf{Strategy}
+& \textbf{Always long?}
+& \textbf{Entry threshold} ($E_t$)
+& \textbf{Gate} ($G_t$)
 & \textbf{Reads HMM?} \\
 \midrule
-Buy \& Hold 
-& Yes 
-& -- 
-& -- 
+Buy \& Hold
+& Yes
+& --
+& --
 & No \\
 
-Baseline 
-& No 
-& $z_q$ 
-& $1$ 
+Baseline
+& No
+& $z_q$
+& $1$
 & No \\
 
-AR 
-& No 
-& $z_q$ 
-& $\mathbbm{1}\{\pi_t^{\mathrm{MR}} \geq 1-\delta\}$ 
+AR
+& No
+& $z_q$
+& $\mathbbm{1}\{\gamma_t^{\mathrm{MR}} \geq 1-\delta\}$
 & Yes, binary \\
 
-MS-AR 
-& No 
-& $\pi_t^{\mathrm{MR}} z_q + \pi_t^{\mathrm{DR}} z_v$ 
-& $1$ 
+MS-AR
+& No
+& $\gamma_t^{\mathrm{MR}} z_q + \gamma_t^{\mathrm{DR}} z_v$
+& $1$
 & Yes, continuous \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Back-testing}\label{sec:backtest}
+
+Back-testing is used to evaluate whether the model signals translate into economically meaningful trading performance. This step is important because a model can fit historical returns well without producing a tradable strategy. In high-frequency trading, expected profit per trade is often small, so even modest execution costs can eliminate an apparent statistical edge.
+
+For this reason, the back-test includes realistic market frictions. The most important is the bid--ask spread itself: a trader generally buys at the ask and sells at the bid, rather than trading for free at the mid-price. Commissions and other execution costs are also included, since frequent position changes let small costs accumulate quickly. Financing and margin costs are relevant whenever the strategy holds short or leveraged positions.
+
+The strategies are evaluated in a walk-forward structure, where parameters are estimated on past data and then applied to later out-of-sample periods. This protocol avoids look-ahead bias and provides a more realistic test of whether the Baseline, AR, and Markov-switching strategies would have worked under implementable trading conditions.
+
+\subsection{Performance metrics}\label{sec:metrics}
+
+To rigorously evaluate the trading strategies generated in the simulation we rely on a robust set of quantitative metrics. Simply observing the final account balance is insufficient; a proper evaluation requires us to understand the path taken to achieve those returns, the risks assumed along the way, and the underlying distributional behaviour of the system. These indicators allow us to objectively compare strategies, identifying their specific structural strengths, vulnerabilities, and overall viability in a live market context. Throughout this subsection we use the following notation:
+\begin{itemize}
+    \item $R_t$: return of the asset or strategy at time $t$;
+    \item $\mu = \mathbb{E}[R]$: mean return;
+    \item $\sigma$: standard deviation of returns;
+    \item $N$: total number of periods (or trades);
+    \item $V_t$: portfolio value at time $t$, with running peak $P_t = \max_{s \leq t} V_s$;
+    \item $R_f$: a benchmark ``risk-free'' rate.
+\end{itemize}
+
+\subsubsection{Statistical metrics}
+
+Statistical metrics form the foundational mathematical profile of a trading strategy. Rather than focusing directly on capital accumulation, they analyze the shape, spread, and probability distribution of the underlying return data. By examining how returns behave on a probabilistic level we can uncover hidden risks that standard equity curves might obscure---such as the likelihood of extreme market anomalies or structural asymmetries in the strategy's outcomes.
+
+\textbf{Annual volatility} quantifies the expected yearly fluctuation in returns, providing a baseline measure of standard risk:
+\begin{equation}
+    \sigma_{\mathrm{ann}} = \sigma \sqrt{T}.
+\end{equation}
+
+\textbf{Skewness} measures the asymmetry of the return distribution, helping to identify the likelihood of outsized positive or negative outliers:
+\begin{equation}
+    S = \frac{\mathbb{E}\!\left[(R - \mu)^{3}\right]}{\sigma^{3}}.
+\end{equation}
+
+\textbf{Kurtosis} measures the ``fatness'' of the distribution tails, indicating the probability of rare, extreme market events:
+\begin{equation}
+    K = \frac{\mathbb{E}\!\left[(R - \mu)^{4}\right]}{\sigma^{4}}.
+\end{equation}
+
+\textbf{Value at Risk} estimates the maximum expected loss over a specific time frame at a given confidence level $\alpha$, acting as a standard gauge of the worst-case scenario:
+\begin{equation}
+    \mathrm{VaR}_{\alpha} = -Q_{1-\alpha}(R).
+\end{equation}
+
+\textbf{Conditional Value at Risk} is the expected loss conditional on the VaR threshold being breached, providing a more comprehensive picture of extreme tail risk:
+\begin{equation}
+    \mathrm{CVaR}_{\alpha} = -\mathbb{E}\!\left[R \,\big|\, R \leq -\mathrm{VaR}_{\alpha}\right].
+\end{equation}
+
+\textbf{Tail factor} quantifies the severity of tail risk by comparing the average extreme loss to the baseline extreme loss threshold:
+\begin{equation}
+    \mathrm{TF} = \frac{\mathrm{CVaR}_{\alpha}}{\mathrm{VaR}_{\alpha}}.
+\end{equation}
+
+\subsubsection{Financial metrics}
+
+While statistical metrics describe the mathematical probability of returns, financial metrics translate those probabilities into practical, capital-based outcomes. These indicators evaluate the actual equity curve, measuring how efficiently a strategy deploys capital, how it navigates periods of historical loss, and its absolute trading profitability. They contextualize raw returns against the specific drawdowns and volatility endured to achieve them, providing a holistic view of execution quality and the psychological ``holding stress'' the strategy would impose on an investor.
+
+\textbf{Total return} is the overall cumulative growth or decline of the invested capital over the trading period:
+\begin{equation}
+    \mathrm{TR} = \prod_{t=1}^{N}\!\left(1 + R_t\right) - 1.
+\end{equation}
+
+\textbf{Annual return} standardizes the cumulative return into a yearly figure, allowing direct comparison across strategies and timeframes:
+\begin{equation}
+    \mathrm{AR} = \left(1 + \mathrm{TR}\right)^{1/Y} - 1.
+\end{equation}
+
+\textbf{Positive months} counts the number of profitable months, offering a straightforward measure of performance consistency over time:
+\begin{equation}
+    N_{\mathrm{pos}} = \sum_{t=1}^{N} \mathbbm{1}\!\left\{R_t > 0\right\}.
+\end{equation}
+
+\textbf{Maximum drawdown} measures the largest peak-to-trough percentage drop in equity, revealing the worst historical losing streak:
+\begin{equation}
+    \mathrm{MDD} = \max_{t}\!\left( \frac{P_t - V_t}{P_t} \right).
+\end{equation}
+
+\textbf{Maximum drawdown duration} is the longest time required to recover from a peak-to-trough loss, indicating capital recovery speed:
+\begin{equation}
+    \mathrm{MDD}_{\mathrm{dur}} = \max\!\left(t_{\mathrm{recovery}} - t_{\mathrm{peak}}\right).
+\end{equation}
+
+\textbf{Ulcer index} combines the depth and duration of drawdowns into a single composite metric of holding stress, where $D_t = (P_t - V_t)/P_t$:
+\begin{equation}
+    \mathrm{UI} = \sqrt{\frac{1}{N}\sum_{t=1}^{N} D_t^{2}}.
+\end{equation}
+
+\textbf{Sharpe ratio} measures excess return per unit of total volatility, serving as the industry standard for risk-adjusted performance:
+\begin{equation}
+    \mathrm{SR} = \frac{\mu - R_f}{\sigma}.
+\end{equation}
+
+\textbf{Sortino ratio} modifies the Sharpe ratio to penalize only downside volatility $\sigma_d$, making it suitable for investors who view only negative fluctuations as true risk:
+\begin{equation}
+    \mathrm{Sortino} = \frac{\mu - R_f}{\sigma_d}.
+\end{equation}
+
+\textbf{Calmar ratio} evaluates the annualized return relative to the maximum drawdown, highlighting the trade-off between reward and severe equity drops:
+\begin{equation}
+    \mathrm{Calmar} = \frac{\mathrm{AR}}{\mathrm{MDD}}.
+\end{equation}
+
+\textbf{Profit factor} is the ratio of gross profits to gross losses, a direct measure of absolute trading profitability:
+\begin{equation}
+    \mathrm{PF} = \frac{\sum \text{Gross Profits}}{\sum |\text{Gross Losses}|}.
+\end{equation}
+
+\textbf{Payoff factor} compares the average winning trade to the average losing trade, indicating risk-to-reward efficiency:
+\begin{equation}
+    \mathrm{Payoff} = \frac{\text{Average Win}}{|\text{Average Loss}|}.
+\end{equation}
+
+\textbf{Win rate} is the fraction of trades that result in a profit, reflecting the accuracy of the strategy's entry and exit signals:
+\begin{equation}
+    W = \frac{N_{\mathrm{wins}}}{N_{\mathrm{trades}}}.
+\end{equation}
+
+\textbf{Market exposure} is the fraction of time capital is actively deployed in the market as opposed to sitting in cash:
+\begin{equation}
+    \mathrm{Exposure} = \frac{T_{\mathrm{invested}}}{T_{\mathrm{total}}}.
+\end{equation}
+
+\textbf{Average win} is the typical gain realized on a successful trade:
+\begin{equation}
+    \mathrm{AW} = \frac{1}{N_{\mathrm{wins}}} \sum_{i=1}^{N_{\mathrm{wins}}} \text{Profit}_i.
+\end{equation}
+
+\textbf{Average loss} is the typical capital deficit incurred on an unsuccessful trade:
+\begin{equation}
+    \mathrm{AL} = \frac{1}{N_{\mathrm{losses}}} \sum_{i=1}^{N_{\mathrm{losses}}} \text{Loss}_i.
+\end{equation}
