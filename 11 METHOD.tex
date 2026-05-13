@@ -149,11 +149,11 @@ via the forward--backward algorithm. The M-step updates $(c^{(k)},\rho^{(k)},\si
 
 \subsection{Model selection}\label{sec:modelselection}
 
-The number of states $K$ and AR order $p$ are chosen by information criteria \parencite{akaike1974aic,schwarz1978bic,esl,tsay2010}. With $m$ free parameters, $T$ observations, and maximised likelihood $\hat L$,
-\begin{equation}\label{eq:aicbic}
-    \mathrm{AIC} \;=\; 2m - 2\ln\hat L, \qquad \mathrm{BIC} \;=\; m\ln T - 2\ln\hat L.
+The number of states $K$ and AR order $p$ are chosen by the Bayesian Information Criterion \parencite{schwarz1978bic}. With $m$ free parameters, $T$ observations, and maximised likelihood $\hat L$,
+\begin{equation}\label{eq:bic}
+    \mathrm{BIC} \;=\; m\ln T - 2\ln\hat L.
 \end{equation}
-The AIC targets predictive accuracy; the BIC penalises complexity more aggressively in large $T$ and favours parsimony. We sweep over a grid of $(K,p)$ and retain the configuration that minimises both criteria for the trading simulations.
+The BIC penalises complexity with a term that scales in $\ln T$, which is aggressive in the large samples produced by high-frequency tick data and is asymptotically consistent for the true model when it exists \parencite{esl,tsay2010}. It is also the standard choice for hidden Markov order selection \parencite{cappe2005,krolzig1997msvar}, which is prone to over-fit when more lenient criteria are used. We sweep over a grid of $(K,p)$ and retain the configuration that minimises $\mathrm{BIC}$ for the trading simulations.
 
 \subsection{Regime classification}\label{sec:regimes}
 
