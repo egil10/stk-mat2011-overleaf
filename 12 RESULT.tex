@@ -1,37 +1,68 @@
 \section{Empirical results and discussion}\label{sec:result}
 
-This section reports the empirical results. Following the structure of Sections~\ref{sec:pairsbaseline}--\ref{sec:regimemodels}, we first inspect the data and pair-level diagnostics, then back-test the baseline rule, then add the regime-aware extensions. All numbers are reported net of the transaction-cost assumptions of Section~\ref{sec:walkforward} \parencite{aldridge2013hft,lopezdeprado2018advances}.
+This section reports the empirical results. Following the structure of Sections~\ref{sec:pairsbaseline}--\ref{sec:regimemodels}, we first inspect the data and pair-level diagnostics, then back-test the baseline rule, then add the regime-aware extensions. All numbers are net of the half-spread-plus-commission cost model of Section~\ref{sec:walkforward} \parencite{aldridge2013hft,lopezdeprado2018advances}. For each of the three pair constructions we report three monthly episodes side by side---\emph{August 2024}, \emph{December 2024}, and \emph{April 2025}---to keep cross-episode robustness visible at all times \parencite{lopezdeprado2018advances}.
 
 \subsection{Data and pair diagnostics}\label{sec:result-pairdiag}
 
-The three pairs differ substantially in liquidity and round-trip cost \parencite{roll1984spread,hasbrouck2007microstructure}: GBP/USD--EUR/USD is the cheapest, AUD/USD--NZD/USD is moderately liquid, and EUR/NOK--EUR/SEK is materially more expensive. All six leg-level return series are strongly non-Gaussian, with high kurtosis and significant Ljung--Box statistics on squared returns, consistent with conditional heteroskedasticity \parencite{engle1982arch,bollerslev1986garch,cont2001empirical}.
+The three pairs differ substantially in liquidity and per-leg round-trip cost \parencite{roll1984spread,hasbrouck2007microstructure}: GBP/USD--EUR/USD is the cheapest, AUD/USD--NZD/USD is moderately liquid, and EUR/NOK--EUR/SEK is materially more expensive. All six leg-level return series are strongly non-Gaussian, with high kurtosis and significant Ljung--Box statistics on squared returns, consistent with conditional heteroskedasticity \parencite{engle1982arch,bollerslev1986garch,cont2001empirical}. Rolling cointegration tests \parencite{engle1987cointegration,dickey1979distribution,said1984testing} reject the no-cointegration null intermittently for AUD/USD--NZD/USD and GBP/USD--EUR/USD; EUR/NOK--EUR/SEK rejects globally but with a long implied half-life, which makes it economically weak for high-frequency mean reversion \parencite{krauss2017statarb}.
 
-Rolling cointegration tests \parencite{engle1987cointegration,dickey1979distribution,said1984testing} reject the no-cointegration null only intermittently for AUD/USD--NZD/USD and GBP/USD--EUR/USD; EUR/NOK--EUR/SEK rejects globally but has a very long estimated half-life, which makes it economically weak for high-frequency mean reversion \parencite{krauss2017statarb}.
+\subsection{Cross-pair performance}\label{sec:result-baseline}
 
-\subsection{Baseline back-test performance}\label{sec:result-baseline}
+Figures~\ref{fig:audnzd-3m}--\ref{fig:noksek-3m} show the cumulative profit-and-loss (in basis points) of the four strategies, stacked across the three months, for each pair. The visual story is consistent across all nine pair-month panels: passive Buy \& Hold drifts mildly; the cointegration Baseline (rolling $z$-score with $z_q = 2.0$, $z_x = 0$) loses heavily; and the two HMM-aware strategies, AR and MS-AR, sit between the two, losing less than the baseline but never crossing into profit \parencite{gatev2006pairs,vidyamurthy2004pairs,krauss2017statarb}.
 
-We back-test the baseline rule \eqref{eq:baselinerule} under the walk-forward protocol of Section~\ref{sec:walkforward}. This is the benchmark that any regime-aware extension must beat to justify the added complexity \parencite{gatev2006pairs,vidyamurthy2004pairs}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_three_month_strategy_panel.pdf}
+    \caption{AUD/USD--NZD/USD, three-month strategy comparison. Each panel stacks the four cumulative-PnL curves for one month; cost model is half-spread $+$ $0.05$ bps commission. The Baseline (blue) leaks steadily; the AR gate (green) and MS-AR threshold (red) follow a much flatter, less negative trajectory.}
+    \label{fig:audnzd-3m}
+\end{figure}
 
-The baseline separates the three pairs cleanly. AUD/USD--NZD/USD is strongly profitable on a risk-adjusted basis, with a high Sharpe ratio and a small maximum drawdown \parencite{sharpe1994ratio,magdonismail2004drawdown}. GBP/USD--EUR/USD is mildly profitable, with modest Sharpe and Calmar ratios. EUR/NOK--EUR/SEK loses money across the sample: weak rolling cointegration and wide spreads destroy any apparent statistical edge, exactly the scenario \textcite{krauss2017statarb} flag for high-cost statistical-arbitrage pairs.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_three_month_strategy_panel.pdf}
+    \caption{GBP/USD--EUR/USD, three-month strategy comparison. The cheapest of the three pairs in per-leg cost, yet the Baseline rule still leaks across all three months; AR and MS-AR damp the loss to a fraction of the Baseline path.}
+    \label{fig:gbpeur-3m}
+\end{figure}
 
-This is itself a useful first result: the baseline back-test is a tradeability filter. Two of the three pairs pass; one fails, before any regime-aware machinery is applied.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_three_month_strategy_panel.pdf}
+    \caption{EUR/NOK--EUR/SEK, three-month strategy comparison. The high-spread Scandi pair: Baseline losses are an order of magnitude larger than on the other pairs, and even the gated strategies only contain---not reverse---the damage \parencite{krauss2017statarb}.}
+    \label{fig:noksek-3m}
+\end{figure}
 
-\subsection{Regime-aware extensions}\label{sec:result-regime}
+Three findings emerge clearly from the panels.
 
-We add the AR-gated and MS-AR strategies of Section~\ref{sec:regimestrategies} on top of the baseline. Both reuse the baseline's directional rule and only change when it is allowed to trade, so any difference in performance is attributable to the regime gate alone.
+\textbf{(i) The cointegration baseline is unprofitable at realistic costs.} On every pair-month, the Baseline ends the period at a substantial negative cumulative bps. The mechanism is the same in all nine cells: the rolling $z$-score generates a steady stream of round-trips ($\sim 200$--$1{,}100$ per month) at a small per-trade alpha, and the half-spread plus commission per flip exceeds that alpha on average. This is the standard cost-of-mean-reversion-on-FX result of \textcite{krauss2017statarb}: the textbook signal carries information, but not enough to clear basic frictions at tick scale \parencite{lopezdeprado2018advances}. Sharpe ratios for the Baseline are large and negative across the board.
 
-Three findings emerge.
+\textbf{(ii) The HMM gate is a defensive filter, not a return enhancer.} Across all three pairs and all three months, both regime-aware strategies sharply reduce market exposure (typically from $\sim 30\%$ for the Baseline to $5$--$15\%$ for AR and $6$--$17\%$ for MS-AR) and the round-trip count (typically by a factor of three to five). The result is that the cumulative-PnL curves of AR and MS-AR are pulled toward zero relative to the Baseline---in the language of \textcite{hamilton1989new} and \textcite{krolzig1997msvar}, the HMM correctly identifies and side-steps high-variance, low-mean-reversion episodes of the spread. Annual volatility and Ulcer index fall in tandem with exposure. What the gate does \emph{not} do is convert reduced exposure into a positive risk-adjusted return: Sharpe ratios for AR and MS-AR are still strongly negative, just less negative than for the Baseline \parencite{sharpe1994ratio,sortino1991downside}. The gate buys insurance, not alpha.
 
-\textbf{(i) The HMM functions as a defensive filter.} Across all three pairs, the regime gate sharply reduces market exposure, the number of trades, and annual volatility. The HMM is doing what \textcite{hamilton1989new} and \textcite{krolzig1997msvar} would predict it should do: it identifies high-variance episodes of the spread, and the strategy spends less time in the market during those episodes.
+\textbf{(iii) MS-AR does not earn its complexity over AR.} The continuous, regime-weighted entry threshold of \eqref{eq:msarthreshold} and the binary danger gate of \eqref{eq:argate} produce nearly indistinguishable equity curves on every panel. Where they differ, MS-AR is mildly \emph{worse}: the softened threshold admits a few more entries than the binary gate, and at this cost level those marginal entries are net-negative. The extra free parameter $z_v$ therefore fails to justify itself at this resolution, consistent with the warning in \textcite{cappe2005} that adding smoothness to a regime decision rule is only beneficial when the marginal entries it admits are profitable in expectation.
 
-\textbf{(ii) Defensive behaviour does not translate into higher risk-adjusted return.} On the two pairs where the baseline is already profitable, the Sharpe ratio falls when the gate is added: removing the high-variance regime removes profitable exposure as well as dangerous exposure. This is the empirical version of an old observation about regime models: the regime that is bad for variance is not always bad for expected return \parencite{cappe2005,rabiner1989tutorial}. On GBP/USD--EUR/USD the gate even \emph{increases} the maximum drawdown, by stripping out profitable exposure that would otherwise have offset losing periods.
+\subsection{Passive drift as a reference}\label{sec:result-buyhold}
 
-\textbf{(iii) On the broken pair, the HMM only limits the damage.} On EUR/NOK--EUR/SEK the regime gate reduces the size of the loss and the maximum drawdown but cannot manufacture a profitable strategy where the underlying microstructural signal does not exist \parencite{krauss2017statarb}.
+A Buy \& Hold position on the spread ($\pi_t^{\mathrm{BH}} = +1$, zero costs) is a useful passive reference \parencite{tsay2010}. In several months it is the only strategy with a positive cumulative PnL: notably on April 2025, where the spring 2025 tariff-driven episode produced strong directional moves on AUD/USD--NZD/USD and on EUR/NOK--EUR/SEK, the passive drift earned what the active rules paid out in transaction costs. This is itself an instructive observation: at these frictions, taking many small mean-reverting positions on a noisy spread is dominated by simply doing nothing.
+
+\subsection{Regime dynamics}\label{sec:result-regime}
+
+Figure~\ref{fig:regime-dynamics} shows the per-day HMM fits for a representative month: regime-specific innovation variances $\sigma^{(k)}$ are clearly separated, persistence probabilities $p_{ii}$ are close to one for the mean-reverting state, and the smoothed posteriors $\gamma_t^{\mathrm{MR}}$ track quiet versus turbulent periods within each session. These dynamics are qualitatively consistent with the textbook regime-switching picture of \textcite{rabiner1989tutorial,cappe2005}, and confirm that the model identifies what it is designed to identify; what it does \emph{not} do is turn that identification into additional return at this cost level.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202408_markov_dynamics.pdf}
+    \caption{Per-day HMM regime dynamics on AUD/USD--NZD/USD, August 2024. Innovation variance, persistence probability, and regime mean for the mean-reverting (MR) and drifting (DR) regimes are well separated and behave as the textbook regime-switching picture predicts \parencite{rabiner1989tutorial,krolzig1997msvar,cappe2005}.}
+    \label{fig:regime-dynamics}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202408_positions_and_regimes.pdf}
+    \caption{Baseline positions and the HMM-implied regime gate, AUD/USD--NZD/USD, August 2024. Shaded windows are bars in which $\gamma_t^{\mathrm{MR}} < 1 - \delta$ and the AR gate $G_t = 0$ liquidates the Baseline position; the figure makes the defensive nature of the gate visible bar by bar.}
+    \label{fig:positions-regimes}
+\end{figure}
 
 \subsection{Synthesis}\label{sec:result-comparison}
 
-Bringing these observations together: the HMM identifies high-risk states correctly, the smoothed posteriors and regime-specific variances behave qualitatively as expected \parencite{rabiner1989tutorial,cappe2005}, but the identified regimes are not perfectly aligned with profitable opportunities. The MS-AR variant produces a smoothed version of the binary AR gate and does not add value on top.
+Posed as in Section~\ref{sec:roleofhmm}---does the regime gate add value relative to the baseline, or mainly reduce exposure?---the empirical answer in this sample is unambiguous: the gate reduces exposure, but the underlying Baseline does not carry enough net alpha at this cost level for that reduction to translate into positive risk-adjusted returns. The HMM is therefore best read here as a \emph{costed risk-reduction device}: it cuts drawdowns and volatility, it makes the strategy easier to live with, and it provides interpretable, mathematically structured information about the local environment of the spread \parencite{cappe2005}. What it does not do, on its own, is manufacture profitability where the underlying micro\-structural signal is too weak to clear frictions.
 
-Posed as in Section~\ref{sec:roleofhmm}---does the regime gate add value relative to the baseline, or mainly reduce exposure?---the empirical answer is the latter, in this sample and under these costs. The HMM is a valuable diagnostic and a useful defensive device. It is not, on its own, a source of additional risk-adjusted return.
-
-This is a constructive answer rather than a negative one. The HMM provides interpretable, mathematically structured information about the local environment of the spread; what it does not do is automatically convert that information into superior trading performance. A natural direction for future work, discussed in Section~\ref{sec:conclusion}, is to combine the regime posteriors with a different entry signal (for example, a momentum signal active in the drifting regime, as in \textcite{avellaneda2010statarb}) rather than only as a gate on a mean-reversion signal.
+This is a constructive negative result rather than a failure. It locates the boundary at which classical pairs-trading reasoning runs out of room on FX tick data and gives a clear direction for future work: combine the regime posteriors with an entry signal that is itself profitable after costs, rather than asking the HMM to rescue a baseline that is not \parencite{krauss2017statarb,avellaneda2010statarb}.
