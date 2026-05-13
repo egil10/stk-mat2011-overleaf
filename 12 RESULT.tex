@@ -1,2 +1,183 @@
-\section{Results}\label{sec:result}
+\section{Empirical results and discussion}\label{sec:result}
 
+This section reports the empirical results. Following the structure set up in Sections~\ref{sec:pairsbaseline}--\ref{sec:regimemodels}, we first describe the data and pair-level diagnostics; we then report the baseline back-test performance for the three currency-pair constructions; and we then ask whether the regime-aware extensions (AR-gated and MS-AR) improve on the baseline. All results are reported net of the transaction-cost assumptions of Section~\ref{sec:costs} and under the walk-forward protocol of Section~\ref{sec:walkforward}. Detailed per-pair tearsheets are collected in the appendix.
+
+\subsection{Data and pair diagnostics}\label{sec:result-pairdiag}
+
+Table~\ref{tab:pair_diagnostics} summarises the constructed volume-bar samples and liquidity conditions across the three pairs. The pairs differ substantially in trading cost: GBP/USD--EUR/USD is by far the cheapest, with a median round-trip cost of $0.46$~bps; AUD/USD--NZD/USD is still relatively liquid, with $1.63$~bps; EUR/NOK--EUR/SEK is materially more expensive, with $3.89$~bps. This difference becomes important in the back-test because high-frequency mean-reversion strategies are highly sensitive to spread costs.
+
+\begin{table}[H]
+\centering
+\caption{Sample and liquidity diagnostics across currency pairs. The sample consists of volume bars constructed from Dukascopy bid--ask data over 2024--2025. Spreads are reported in basis points. AUDNZD is short for AUD/USD--NZD/USD, NOKSEK for EUR/NOK--EUR/SEK, and GBPEUR for GBP/USD--EUR/USD.}
+\label{tab:pair_diagnostics}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Metric} & \textbf{AUDNZD} & \textbf{NOKSEK} & \textbf{GBPEUR} \\
+\midrule
+Number of bars             & 108\,093     & 206\,937     & 114\,759 \\
+Calendar span              & 729 days     & 729 days     & 729 days \\
+Trading days               & 523          & 522          & 523 \\
+Average bars per day       & 206.7        & 396.4        & 219.4 \\
+Trading hours covered      & 0--24 UTC    & 0--24 UTC    & 0--24 UTC \\
+\midrule
+Median spread, leg A       & 0.76         & 2.07         & 0.32 \\
+Median spread, leg B       & 0.89         & 1.78         & 0.14 \\
+P95 spread, leg A          & 1.04         & 6.22         & 0.52 \\
+P95 spread, leg B          & 1.21         & 5.58         & 0.35 \\
+Median round-trip cost     & 1.63         & 3.89         & 0.46 \\
+Tightest 4-hour window     & 11:00--14:00 & 09:00--12:00 & 11:00--14:00 \\
+Widest 4-hour window       & 20:00--23:00 & 20:00--23:00 & 20:00--23:00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:return_diagnostics} reports the main return-distribution and pair-dependence diagnostics. All six currency return series exhibit strong non-Gaussian behaviour, with high kurtosis and significant Ljung--Box tests on squared returns. This confirms the presence of volatility clustering \parencite{engle1982arch,bollerslev1986garch,cont2001empirical} and motivates the regime-aware modelling of Section~\ref{sec:regimemodels}. GBP/USD--EUR/USD has the strongest dependence, with a Pearson correlation of $0.523$ and a median rolling correlation of $0.535$; EUR/NOK--EUR/SEK has the weakest, despite having the largest number of bars.
+
+\begin{table}[H]
+\centering
+\caption{Return and pair-dependence diagnostics. Returns are measured in basis points. The Ljung--Box test is applied to squared returns at lag $20$.}
+\label{tab:return_diagnostics}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+                 & \multicolumn{2}{c}{\textbf{AUDNZD}} & \multicolumn{2}{c}{\textbf{NOKSEK}} & \multicolumn{2}{c}{\textbf{GBPEUR}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+\textbf{Metric}  & \textbf{AUDUSD} & \textbf{NZDUSD} & \textbf{EURNOK} & \textbf{EURSEK} & \textbf{GBPUSD} & \textbf{EURUSD} \\
+\midrule
+Mean return            & $-0.002$ & $-0.009$ & $\phantom{-}0.003$ & $-0.001$ & $\phantom{-}0.005$ & $\phantom{-}0.005$ \\
+Volatility             & 4.106    & 4.076    & 2.606    & 2.270    & 2.990    & 3.085 \\
+Skewness               & $-0.176$ & $-0.342$ & $\phantom{-}0.178$ & $-0.128$ & $-0.325$ & $-0.269$ \\
+Kurtosis               & 17.533   & 22.076   & 16.922   & 21.342   & 14.698   & 28.557 \\
+5th percentile         & $-6.346$ & $-6.569$ & $-4.062$ & $-3.424$ & $-4.672$ & $-4.744$ \\
+95th percentile        & 6.249    & 6.547    & 4.072    & 3.441    & 4.666    & 4.687 \\
+Minimum                & $-115.391$ & $-122.287$ & $-50.892$ & $-65.402$ & $-75.882$ & $-107.932$ \\
+Maximum                & 69.711   & 76.045   & 70.470   & 44.625   & 46.876   & 63.748 \\
+Ljung--Box $p$ on $r_t^{2}$ & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 \\
+\midrule
+\multicolumn{7}{l}{\textbf{Pair relationship}} \\
+Pearson correlation       & \multicolumn{2}{c}{0.3720} & \multicolumn{2}{c}{0.2038} & \multicolumn{2}{c}{0.5230} \\
+Spearman correlation      & \multicolumn{2}{c}{0.3308} & \multicolumn{2}{c}{0.1576} & \multicolumn{2}{c}{0.4940} \\
+OLS hedge ratio $\beta$   & \multicolumn{2}{c}{0.3693} & \multicolumn{2}{c}{0.1776} & \multicolumn{2}{c}{0.5395} \\
+Rolling corr., min.       & \multicolumn{2}{c}{$-0.041$} & \multicolumn{2}{c}{$-0.221$} & \multicolumn{2}{c}{$\phantom{-}0.086$} \\
+Rolling corr., median     & \multicolumn{2}{c}{0.357}  & \multicolumn{2}{c}{0.194}  & \multicolumn{2}{c}{0.535} \\
+Rolling corr., max.       & \multicolumn{2}{c}{0.768}  & \multicolumn{2}{c}{0.521}  & \multicolumn{2}{c}{0.810} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cointegration and walk-forward optimisation}\label{sec:result-coint}
+
+Table~\ref{tab:cointegration} combines the main cointegration and walk-forward optimisation results. The full-sample cointegration tests are not sufficient on their own: AUD/USD--NZD/USD and GBP/USD--EUR/USD do not reject the no-cointegration null at conventional levels, but both show intermittent local mean reversion in rolling windows; EUR/NOK--EUR/SEK rejects the full-sample null, but its estimated half-life is extremely long, making the relationship economically weak for high-frequency trading.
+
+The walk-forward results reinforce this distinction. AUD/USD--NZD/USD produces the strongest out-of-sample profile, with $17$ positive windows out of $21$ and an average out-of-sample (OOS) return of $2.65\%$ per window. GBP/USD--EUR/USD is profitable but weaker, with $11$ positive windows and a mean OOS return of $0.45\%$. EUR/NOK--EUR/SEK fails completely, producing zero positive OOS windows and an average OOS return of $-4.19\%$.
+
+\begin{table}[H]
+\centering
+\caption{Cointegration and walk-forward optimisation summary across currency pairs. Rolling cointegration uses 2\,000-bar windows stepped every 200 bars.}
+\label{tab:cointegration}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Metric} & \textbf{AUDNZD} & \textbf{NOKSEK} & \textbf{GBPEUR} \\
+\midrule
+\multicolumn{4}{l}{\textbf{Full-sample cointegration}} \\
+Cointegration $p$-value         & 0.8657 & 0.0140 & 0.1118 \\
+Half-life                        & 2415.8 bars & 4597.2 bars & 2472.3 bars \\
+Hedge ratio $\beta$              & 0.6641 & 0.0714 & 0.6657 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Rolling cointegration}} \\
+Number of rolling windows        & 531    & 1025   & 564 \\
+Share with $p<0.05$              & 9.8\%  & 13.1\% & 8.2\% \\
+Share with $p<0.10$              & 16.8\% & 21.1\% & 15.6\% \\
+Median half-life                 & 32.5 bars & 71.8 bars & 72.2 bars \\
+Half-life IQR                    & 19--65 & 44--125 & 44--129 \\
+Mean rolling $\beta$             & 0.8363 & 0.6911 & 0.8672 \\
+Std.\ dev.\ rolling $\beta$      & 0.2857 & 0.6648 & 0.3686 \\
+\midrule
+\multicolumn{4}{l}{\textbf{Walk-forward optimisation}} \\
+Validation / test design         & 3m / 1m & 3m / 1m & 3m / 1m \\
+Trials per window                & 100   & 100   & 150 \\
+Number of OOS windows            & 21    & 21    & 21 \\
+Mean OOS return per window       & 2.65\% & $-4.19$\% & 0.45\% \\
+Positive OOS windows             & 17 / 21 & 0 / 21 & 11 / 21 \\
+Zero-return OOS windows          & 2 / 21  & 4 / 21 & 5 / 21 \\
+Negative OOS windows             & 2 / 21  & 17 / 21 & 5 / 21 \\
+Best OOS window                  & 12.30\% & 0.00\%   & 3.06\% \\
+Worst OOS window                 & $-0.66$\% & $-23.74$\% & $-1.50$\% \\
+Typical entry threshold          & $z \approx 1.4$ & $z \approx 2.5$ & $z \approx 1.1$--$1.5$ \\
+Typical exit threshold           & $z \approx 0.2$--$0.5$ & $z \approx -0.5$--$0.0$ & $z \approx 0.0$--$0.5$ \\
+Typical danger threshold         & 0.95 & 0.50--0.65 & 0.85--0.95 \\
+Typical AR limit                 & 0.96--0.97 & 0.98--0.99 & 0.97--0.99 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Baseline back-test performance}\label{sec:result-baseline}
+
+We now report the baseline pairs-trading rule of Section~\ref{sec:baseline} for each of the three pairs. As discussed in Section~\ref{sec:roleofhmm}, this is the benchmark that any regime-aware extension must beat in order to justify the added complexity. The first three columns of Table~\ref{tab:perf_main} (labelled \textbf{Base.}) summarise the baseline performance; the equity curves and drawdown paths are in Figures~\ref{fig:bt_audnzd_main}--\ref{fig:bt_gbpeur_main} in the appendix.
+
+The baseline already separates the three pairs cleanly.
+
+\begin{itemize}
+    \item \textbf{AUD/USD--NZD/USD.} The baseline is strongly profitable: total return of $9286.14$~bps over the two-year sample with an annualised Sharpe ratio of $6.88$ and a Calmar ratio of $21.40$. Every calendar month is positive ($100\%$ positive months), maximum drawdown is only $263.67$~bps, and market exposure is moderate at $60.97\%$. The cointegration $z$-score signal is, on this pair, a strong source of mean-reversion alpha.
+    \item \textbf{GBP/USD--EUR/USD.} The baseline is profitable but mild: total return of $2059.43$~bps, Sharpe ratio of $2.19$, Calmar of $3.36$. Wins are modest ($\mathrm{AW} = 2.20$~bps), and exposure is high at $62.59\%$. The pair is the most highly correlated of the three but the cointegration spread itself is more directional, leaving less mean-reversion opportunity per unit of exposure.
+    \item \textbf{EUR/NOK--EUR/SEK.} The baseline loses money: total return of $-14035.70$~bps, Sharpe ratio of $-10.63$, no profitable months at all. Maximum drawdown reaches $-14096.99$~bps. The pair's combination of weak dependence, slow half-life ($71.8$~bars median), and wide spreads ($3.89$~bps median round-trip) destroys any apparent statistical edge.
+\end{itemize}
+
+A first observation already follows. The baseline back-test is itself diagnostic: it tells us which pairs are economically tradeable under realistic frictions before any regime-aware machinery is applied. AUD/USD--NZD/USD passes, GBP/USD--EUR/USD passes more weakly, and EUR/NOK--EUR/SEK fails. The regime-aware extensions cannot recover a non-cointegrated, high-cost pair; what they can attempt is to improve the risk profile of the two pairs that the baseline already trades profitably.
+
+\subsection{Regime-aware extensions: AR-gated and MS-AR}\label{sec:result-regime}
+
+We now add the AR-gated and MS-AR strategies of Section~\ref{sec:regimestrategies} on top of the baseline. Both reuse the baseline's directional entry rule and only modify when the rule is allowed to trade; in particular, neither changes the cointegration spread $S_t$ or the rolling $z$-score $Z_t$.
+
+\begin{table}[H]
+\centering
+\caption{Core strategy performance across currency pairs. Performance is reported net of the back-test transaction-cost assumptions of Section~\ref{sec:costs}. Returns, volatility, and drawdowns are reported in basis points.}
+\label{tab:perf_main}
+\small
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+& \multicolumn{3}{c}{\textbf{AUD/USD--NZD/USD}} & \multicolumn{3}{c}{\textbf{EUR/NOK--EUR/SEK}} & \multicolumn{3}{c}{\textbf{GBP/USD--EUR/USD}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+\textbf{Metric} & \textbf{Base.} & \textbf{AR} & \textbf{MS-AR} & \textbf{Base.} & \textbf{AR} & \textbf{MS-AR} & \textbf{Base.} & \textbf{AR} & \textbf{MS-AR} \\
+\midrule
+Total return       &  9286.14 &  7695.77 &  5567.68 & -14035.70 & -10581.39 & -8796.04 &  2059.43 &  1677.66 &   932.85 \\
+Annual return      &  5643.53 &  4677.00 &  3383.69 &  -8544.23 &  -6441.42 & -5354.59 &  1251.59 &  1019.58 &   566.93 \\
+Positive months    &  100.00\% & 90.00\% & 80.00\% &   0.00\% &  0.00\% &  0.00\% & 70.00\% & 55.00\% & 45.00\% \\
+Annual volatility  &   819.72 &   724.16 &   686.87 &    803.51 &    632.82 &   550.25 &   572.05 &   478.18 &   458.24 \\
+Max drawdown       &  -263.67 &  -263.67 &  -281.26 & -14096.99 & -10613.91 & -8838.14 &  -372.00 &  -569.59 &  -629.09 \\
+Ulcer index        &    59.56 &    74.47 &    79.16 &   8439.75 &   6493.59 &  5343.53 &   129.96 &   185.14 &   232.89 \\
+Sharpe ratio       &     6.88 &     6.46 &     4.93 &    -10.63 &    -10.18 &    -9.73 &     2.19 &     2.13 &     1.24 \\
+Sortino ratio      &     8.59 &     7.05 &     5.23 &     -8.10 &     -6.51 &    -5.52 &     2.51 &     1.99 &     1.12 \\
+Calmar ratio       &    21.40 &    17.74 &    12.03 &      0.61 &      0.61 &     0.61 &     3.36 &     1.79 &     0.90 \\
+Profit factor      &     1.11 &     1.12 &     1.09 &      0.85 &      0.83 &     0.82 &     1.03 &     1.04 &     1.02 \\
+Number of trades   &     3158 &     2452 &     2254 &      1702 &      1233 &      938 &     2070 &     1484 &     1360 \\
+Win rate           &   49.55\% & 49.62\% & 49.44\% &  48.82\% & 48.82\% & 48.68\% & 49.39\% & 49.41\% & 49.22\% \\
+Market exposure    &   60.97\% & 46.69\% & 45.01\% &  42.70\% & 31.38\% & 25.11\% & 62.59\% & 41.44\% & 39.17\% \\
+Skewness           &     1.17 &     1.48 &     0.76 &     -1.63 &     -2.58 &    -3.62 &    -0.05 &    -0.02 &    -0.19 \\
+Kurtosis           &    34.41 &    51.53 &    21.08 &     52.00 &     82.88 &   141.09 &    19.01 &    29.03 &    29.34 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three observations follow from Table~\ref{tab:perf_main}.
+
+\textbf{(i) The HMM is primarily a defensive filter.} Across all three pairs and both extensions, the regime gate sharply reduces market exposure (from $60.97\%$ to $45.01\%$ on AUD/USD--NZD/USD; from $42.70\%$ to $25.11\%$ on EUR/NOK--EUR/SEK; from $62.59\%$ to $39.17\%$ on GBP/USD--EUR/USD) and the number of trades. Annual volatility is reduced in every case. The HMM is doing what it is designed to do: it is identifying high-variance episodes of the spread and pulling the strategy out of those periods.
+
+\textbf{(ii) Defensive behaviour does not translate into higher risk-adjusted return.} On AUD/USD--NZD/USD, the Sharpe ratio falls slightly from $6.88$ (Base) to $6.46$ (AR) and $4.93$ (MS-AR); on GBP/USD--EUR/USD, it falls from $2.19$ to $1.24$. The regime gate also \emph{enlarges} the maximum drawdown on GBP/USD--EUR/USD, from $-372.00$~bps to $-629.09$~bps, by removing some of the profitable exposure that would otherwise have offset the losing periods. In other words, the HMM correctly removes both upside and downside; on the two pairs where the baseline already works, removing exposure on average removes more profitable exposure than dangerous exposure.
+
+\textbf{(iii) On the broken pair, the HMM only limits the damage.} On EUR/NOK--EUR/SEK the MS-AR strategy reduces the loss from $-14035.70$~bps to $-8796.04$~bps and the maximum drawdown from $-14097$ to $-8838$~bps. The HMM is therefore useful as a damage-control device on this pair, but it cannot convert the strategy into a profitable one: the underlying signal does not exist.
+
+\subsection{Strategy comparison and synthesis}\label{sec:result-comparison}
+
+Bringing Sections~\ref{sec:result-baseline} and~\ref{sec:result-regime} together yields a coherent picture of what the HMM contributes.
+
+\begin{itemize}
+    \item \textbf{The HMM identifies high-risk market states.} The smoothed regime posteriors, the regime-specific innovation variances, and the regime-conditional return distributions all behave qualitatively as one would expect: the MR regime is associated with low $\sigma^{(k)}$, fast mean reversion ($|\rho^{(k)}|$ small), and tight $z$-score ranges, while the DR regime is associated with high $\sigma^{(k)}$, $|\rho^{(k)}|$ close to unity, and wide $z$-score ranges. Figure~\ref{fig:regime-dynamics} in the appendix illustrates this on the three pairs.
+    \item \textbf{The identified regimes are not perfectly aligned with profitable trading opportunities.} On the two profitable pairs, removing the high-variance regime removes profitable trades as well as losing ones. The risk-adjusted ratios are correspondingly degraded by the gate, not improved.
+    \item \textbf{The MS-AR variant trades less than the AR-gated variant, but its threshold widening does not add value on top of simply removing exposure.} On AUD/USD--NZD/USD, MS-AR has the lowest Sharpe ($4.93$) of the three strategies; on EUR/NOK--EUR/SEK, MS-AR has the smallest loss but also the smallest information ratio; on GBP/USD--EUR/USD, MS-AR's Sharpe falls below the AR-gated variant. The continuous probability-weighting of \eqref{eq:msarthreshold} therefore looks more like a smoothed version of the AR gate than a genuinely different signal.
+    \item \textbf{The economic test of the HMM is therefore comparative.} Posed as in Section~\ref{sec:roleofhmm}, the question was: does the regime gate add value relative to the baseline, or does it mainly reduce exposure without improving risk-adjusted performance? The empirical answer is that, in this sample and under these costs, the gate primarily reduces exposure. It is a valuable diagnostic and a useful defensive tool, but not, on its own, a source of additional risk-adjusted return.
+\end{itemize}
+
+This is a constructive answer rather than a negative one. The HMM provides interpretable, mathematically structured information about the local environment of the spread; what it does \emph{not} do is automatically convert that information into superior trading performance. A natural direction for future work, discussed briefly in Section~\ref{sec:conclusion}, is to combine the regime posteriors with a different entry signal (for example, a momentum signal active in the drifting regime) rather than only as a gate on a mean-reversion signal. That direction lies outside the scope of the present thesis, whose aim is to establish what the HMM contributes in a clean, single-signal pairs-trading setting.
