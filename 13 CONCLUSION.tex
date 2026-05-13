@@ -13,6 +13,6 @@ The findings are summarised as follows.
 
 The central contribution is not a claim that HMMs universally outperform simpler models, but a careful, costed, walk-forward test of when regime awareness helps, when it fails, and how mathematical models behave when confronted with noisy, costly, non-stationary tick data \parencite{cont2001empirical,hautsch2012econometrics}.
 
-\paragraph{Limitations.} The exercise is restricted to three pair constructions, a single two-year sample, $K=2$ regimes, unit-size long/flat/short positions, and a half-spread-plus-commission cost model that omits latency and market impact.
+\paragraph{Limitations.} The exercise is restricted to three pair constructions, three independent one-month sub-samples (August 2024, September 2024, and August 2025), $K=2$ regimes, unit-size long/flat/short positions, and a half-spread-plus-commission cost model that omits latency and market impact.
 
 \paragraph{Future directions.} The most natural extension is to combine the regime posteriors with a different entry signal in the drifting regime---for example, a momentum signal as in \textcite{avellaneda2010statarb}---rather than using the HMM only as a gate on a mean-reversion signal. A second direction is to pre-screen the pair universe with the baseline back-test before applying the HMM, avoiding modelling effort on pairs that the microstructure does not support \parencite{krauss2017statarb}.
