@@ -1,0 +1,62 @@
+%====================================================================
+%   SECTION 3 — PAIRS TRADING WITH THE BASELINE
+%====================================================================
+
+\section{Pairs trading with the baseline}\label{sec:pairsbaseline}
+
+This section defines the baseline strategy as a self-contained pairs-trading rule \parencite{gatev2006pairs,vidyamurthy2004pairs}. The regime-aware extensions of Section~\ref{sec:regimemodels} keep this rule's entry direction and only modify when it is allowed to trade.
+
+\subsection{Cointegration spread}\label{sec:spread}
+
+Two non-stationary log-price series $\log P_t^{\mathrm{mid},\,A}$ and $\log P_t^{\mathrm{mid},\,B}$ are cointegrated if some linear combination is stationary \parencite{engle1987cointegration}:
+\begin{equation}\label{eq:spreaddef}
+    S_t \;=\; \log P_t^{\mathrm{mid},\,A} \;-\; \beta\,\log P_t^{\mathrm{mid},\,B}.
+\end{equation}
+The hedge ratio $\beta$ is estimated by the Engle--Granger two-step procedure: OLS regression of $\log P^{\mathrm{mid},\,A}$ on $\log P^{\mathrm{mid},\,B}$, with stationarity of the residuals verified by an Augmented Dickey--Fuller test \parencite{dickey1979distribution,said1984testing}. High-frequency FX is not globally cointegrated: $\beta$ drifts with liquidity, session structure, and pair-specific shocks. We therefore estimate $\beta_t$ by rolling OLS with window $W_\beta$. Writing $x_s = \log P_s^{\mathrm{mid},\,B}$, $y_s = \log P_s^{\mathrm{mid},\,A}$, $\mathcal{W}_t = \{t-W_\beta+1,\ldots,t\}$,
+\begin{equation}\label{eq:rollingbeta}
+    \beta_t \;=\; \frac{W_\beta \sum_{s \in \mathcal{W}_t} x_s y_s - \bigl(\sum_{s \in \mathcal{W}_t} x_s\bigr)\bigl(\sum_{s \in \mathcal{W}_t} y_s\bigr)}{W_\beta \sum_{s \in \mathcal{W}_t} x_s^{2} - \bigl(\sum_{s \in \mathcal{W}_t} x_s\bigr)^{2}},
+    \qquad
+    \alpha_t \;=\; \tfrac{1}{W_\beta}\!\Bigl(\sum_{s \in \mathcal{W}_t} y_s - \beta_t \sum_{s \in \mathcal{W}_t} x_s\Bigr).
+\end{equation}
+The cointegration spread and the associated spread return are
+\begin{equation}\label{eq:rollingspreadret}
+    S_t \;=\; \log P_t^{\mathrm{mid},\,A} - \beta_t \log P_t^{\mathrm{mid},\,B} - \alpha_t,
+    \qquad
+    \Delta S_t \;=\; r_t^{A} - \beta_{t-1}\, r_t^{B},
+\end{equation}
+with $r_t^{i} = \log P_t^{\mathrm{mid},\,i} - \log P_{t-1}^{\mathrm{mid},\,i}$. The lag $\beta_{t-1}$ ensures the hedge ratio is observable when the return is realised.
+
+\subsection{The rolling \texorpdfstring{$z$-score}{z-score} and the baseline rule}\label{sec:zscore}
+
+The baseline reads $S_t$ through a rolling $z$-score over a window of length $W_z$:
+\begin{equation}\label{eq:zscore}
+    Z_t \;=\; \frac{S_t - \mu_t^{S}}{\sigma_t^{S}},
+    \quad
+    \mu_t^{S} = \tfrac{1}{W_z}\!\sum_{s=t-W_z+1}^{t}\! S_s,
+    \quad
+    (\sigma_t^{S})^{2} = \tfrac{1}{W_z}\!\sum_{s=t-W_z+1}^{t}\!\bigl(S_s - \mu_t^{S}\bigr)^{2}.
+\end{equation}
+With entry threshold $z_q$ and exit threshold $z_x$, the position $\pi_t \in \{-1,0,+1\}$ is updated by
+\begin{equation}\label{eq:baselinerule}
+    \pi_t \;=\;
+    \begin{cases}
+        +1 & \pi_{t-1}=0,\; Z_t < -z_q, \\
+        -1 & \pi_{t-1}=0,\; Z_t > +z_q, \\
+        \phantom{+}0 & \pi_{t-1} \neq 0,\; |Z_t| \leq z_x, \\
+        \pi_{t-1} & \text{otherwise.}
+    \end{cases}
+\end{equation}
+A long-spread position is opened when $S_t$ is sufficiently below its rolling mean and closed when it returns toward zero; the short rule is symmetric \parencite{gatev2006pairs}. For every unit of leg $A$ we trade $\hat{\beta}$ units of leg $B$, so the resulting portfolio is exposed to the relative move between the two legs rather than to FX direction \parencite{vidyamurthy2004pairs}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{plots/long-short.pdf}
+    \caption{Mechanics of pairs trading. The combined long/short portfolio is exposed only to the relative move between the two legs.}
+    \label{fig:longshort}
+\end{figure}
+
+A do-nothing reference $\pi_t^{\mathrm{BH}} = +1$ for every $t$ (Buy \& Hold) earns $\Delta S_t$ at each step, pays no transaction costs, and provides a passive drift benchmark.
+
+\subsection{Why the baseline is not enough}\label{sec:baselinelimits}
+
+The baseline assumes $S_t$ is governed by a single stationary process, so that fixed $(z_q, z_x)$ correctly characterise ``far from equilibrium'' for every $t$. Two empirical features of FX tick data violate this assumption: (i) squared spread returns exhibit strong positive autocorrelation, consistent with conditional heteroskedasticity \parencite{engle1982arch,bollerslev1986garch,cont2001empirical}; and (ii) a spread that mean-reverts quickly in quiet periods may drift directionally for hundreds of bars during news-driven or one-sided-flow episodes \parencite{hasbrouck2007microstructure}. The fixed-threshold rule has no mechanism to distinguish these cases. This motivates the regime-aware extensions below.

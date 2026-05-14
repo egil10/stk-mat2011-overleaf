@@ -1,0 +1,38 @@
+%====================================================================
+%   SECTION 5 — BACK-TEST PROTOCOL AND METRICS
+%====================================================================
+
+\section{Back-test protocol and metrics}\label{sec:backtest}
+
+\subsection{Transaction costs and walk-forward evaluation}\label{sec:walkforward}
+
+Every position change in leg $i$ pays the half-spread $\mathrm{HS}_t^{\,i}$ of \eqref{eq:midprice}, plus a fixed commission \parencite{aldridge2013hft,lopezdeprado2018advances}. The round-trip cost of one pair-position is therefore approximately $\mathrm{HS}^{A} + \hat\beta\,\mathrm{HS}^{B}$ in basis points. Strategies are evaluated in a walk-forward structure: parameters $\Theta$ and the hyperparameters $(W_\beta, W_z, z_q, z_x, z_v, \delta)$ are estimated on a training segment and applied to a disjoint out-of-sample test segment, with windows then slid forward \parencite{lopezdeprado2018advances,hautsch2012econometrics}.
+
+\subsection{Performance metrics}\label{sec:metrics}
+
+Let $R_t$ denote the strategy return at bar $t$, $\mu_R = \mathbb{E}[R]$, $\sigma_R = \sqrt{\mathrm{Var}(R)}$, $V_t$ the portfolio value with running peak $V_t^{\star} = \max_{s \leq t} V_s$, and $R_f$ a benchmark risk-free rate (set to zero). Statistical metrics describe the shape of the return distribution; financial metrics translate it into capital outcomes \parencite{tsay2010,cont2001empirical}.
+\begin{align}
+    \sigma_{\mathrm{ann}} &= \sigma_R\sqrt{T},
+    & \mathcal{S} &= \tfrac{\mathbb{E}[(R-\mu_R)^{3}]}{\sigma_R^{3}},
+    & \mathcal{K} &= \tfrac{\mathbb{E}[(R-\mu_R)^{4}]}{\sigma_R^{4}}, \label{eq:statmetrics}\\
+    \mathrm{VaR}_\alpha &= -Q_{1-\alpha}(R),
+    & \mathrm{CVaR}_\alpha &= -\mathbb{E}[R \mid R \leq -\mathrm{VaR}_\alpha],
+    & \mathrm{TF} &= \tfrac{\mathrm{CVaR}_\alpha}{\mathrm{VaR}_\alpha}, \label{eq:varcvar}
+\end{align}
+with $\alpha = 0.95$ \parencite{artzner1999coherent}. The drawdown family uses $D_t = (V_t^{\star} - V_t)/V_t^{\star}$:
+\begin{equation}\label{eq:drawdown}
+    \mathrm{MDD} = \max_t D_t,
+    \qquad
+    \mathrm{UI} = \sqrt{\tfrac{1}{N}\textstyle\sum_t D_t^{2}},
+\end{equation}
+where $\mathrm{UI}$ is the Ulcer index of \textcite{martin1989ulcer}; the maximum drawdown is treated in \textcite{magdonismail2004drawdown}. Risk-adjusted ratios relate excess return to risk:
+\begin{equation}\label{eq:ratios}
+    \mathrm{SR} = \tfrac{\mu_R - R_f}{\sigma_R}
+    \quad\text{\parencite{sharpe1994ratio}},
+    \qquad
+    \mathrm{Sortino} = \tfrac{\mu_R - R_f}{\sigma_d}
+    \quad\text{\parencite{sortino1991downside}},
+    \qquad
+    \mathrm{Calmar} = \tfrac{\mathrm{AR}}{\mathrm{MDD}}.
+\end{equation}
+Trade-level diagnostics (win rate, market exposure, profit factor, payoff ratio) summarise frequency and size; see Section~\ref{sec:result} for their interpretation.
