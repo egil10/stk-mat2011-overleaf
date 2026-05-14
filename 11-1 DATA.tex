@@ -15,11 +15,10 @@ Bid and ask streams are sorted by timestamp and aligned by a backward as-of merg
     \mathrm{HS}_t^{\,i} \;&=\; \tfrac{1}{2}\,\frac{P_t^{\mathrm{ask},\,i} - P_t^{\mathrm{bid},\,i}}{P_t^{\mathrm{mid},\,i}}\,\times\, 10^{4}.
 \end{aligned}
 \end{equation}
-$\mathrm{HS}_t^{\,i}$ approximates the cost of crossing the market for one leg \parencite{roll1984spread}. Since pairs trading enters and exits both legs simultaneously, the combined spread cost is central to the back-test.
+$\mathrm{HS}_t^{\,i}$ approximates the cost of crossing the market for one leg \parencite{roll1984spread}; since pairs trading enters and exits both legs simultaneously, the combined spread cost is central to the back-test.
 
-\subsection{Pre-averaging on number of ticks}\label{sec:preaveraging}
-
-Tick data are dominated by microstructure noise: bid--ask bounce, discreteness, and asynchronous quote updates contaminate the observed price relative to the latent efficient price \parencite{roll1984spread,hasbrouck2007microstructure,hautsch2012econometrics}. Following \textcite{jacod2017}, I therefore apply a pre-averaging step in tick time: each block of $L$ consecutive ticks is collapsed into a single observation by averaging the mid-prices within the block. With $\{P_{t_n}^{\mathrm{mid},\,i}\}_{n}$ denoting the synchronised tick-time mid-price for leg $i$, the pre-averaged series at block index $k$ is
+\paragraph{Pre-averaging on number of ticks.}\label{sec:preaveraging}
+Tick data are dominated by microstructure noise (bid--ask bounce, discreteness, asynchronous quote updates) that contaminates the observed price relative to the latent efficient price \parencite{roll1984spread,hasbrouck2007microstructure,hautsch2012econometrics}. Following \textcite{jacod2017}, I apply a pre-averaging step in tick time: each block of $L$ consecutive ticks is collapsed into a single observation by averaging the mid-prices within the block, so that with $\{P_{t_n}^{\mathrm{mid},\,i}\}_{n}$ denoting the synchronised tick-time mid-price for leg $i$, the pre-averaged series at block index $k$ is
 \begin{equation}\label{eq:preaverage}
     \widetilde P_k^{\,i} \;=\; \frac{1}{L}\sum_{n=(k-1)L+1}^{kL} P_{t_n}^{\mathrm{mid},\,i},
     \qquad k = 1, 2, \ldots
