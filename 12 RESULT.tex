@@ -68,27 +68,13 @@ The empirical distributions of pre-averaged spread returns make the heavy-tailed
 
 \subsection{Cross-pair performance}\label{sec:result-baseline}
 
-Figures~\ref{fig:audnzd-3m}--\ref{fig:noksek-3m} show the cumulative profit-and-loss (in basis points) of the four strategies, stacked across the three months, for each pair. The visual story is consistent across all nine pair-month panels: passive Buy \& Hold drifts mildly; the cointegration Baseline (rolling $z$-score with $z_q = 2.0$, $z_x = 0$) loses heavily; and the two HMM-aware strategies, AR and MS-AR, sit between the two, losing less than the baseline but never crossing into profit \parencite{gatev2006pairs,vidyamurthy2004pairs,krauss2017statarb}.
+Figure~\ref{fig:audnzd-3m} shows the cumulative profit-and-loss (in basis points) of the four strategies, stacked across the three months, for AUD/USD--NZD/USD. The corresponding panels for EUR/NOK--EUR/SEK and GBP/USD--EUR/USD are deferred to Appendix~\ref{sec:apx-strategy-panels}, where they are reproduced together with the AUD/USD--NZD/USD panel on a single symmetric-log grid. The per-month breakdown of the same nine pair-month cells is collected in Appendix~\ref{sec:apx-permonth-panels}. The visual story is consistent across all nine pair-month cells: passive Buy \& Hold drifts mildly; the cointegration Baseline (rolling $z$-score with $z_q = 2.0$, $z_x = 0$) loses heavily; and the two HMM-aware strategies, AR and MS-AR, sit between the two, losing less than the baseline but never crossing into profit \parencite{gatev2006pairs,vidyamurthy2004pairs,krauss2017statarb}. The high-spread Scandi pair EUR/NOK--EUR/SEK is the most extreme: Baseline losses there are an order of magnitude larger than on the other pairs, and even the gated strategies only contain---not reverse---the damage.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_three_month_strategy_panel.pdf}
     \caption{AUD/USD--NZD/USD, three-month strategy comparison. Each panel stacks the four cumulative-PnL curves for one month; cost model is half-spread $+$ $0.05$ bps commission. The Baseline (blue) leaks steadily; the AR gate (green) and MS-AR threshold (red) follow a much flatter, less negative trajectory.}
     \label{fig:audnzd-3m}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_three_month_strategy_panel.pdf}
-    \caption{GBP/USD--EUR/USD, three-month strategy comparison. The cheapest of the three pairs in per-leg cost, yet the Baseline rule still leaks across all three months; AR and MS-AR damp the loss to a fraction of the Baseline path.}
-    \label{fig:gbpeur-3m}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_three_month_strategy_panel.pdf}
-    \caption{EUR/NOK--EUR/SEK, three-month strategy comparison. The high-spread Scandi pair: Baseline losses are an order of magnitude larger than on the other pairs, and even the gated strategies only contain---not reverse---the damage \parencite{krauss2017statarb}.}
-    \label{fig:noksek-3m}
 \end{figure}
 
 Three findings emerge clearly from the panels.
@@ -99,98 +85,28 @@ Three findings emerge clearly from the panels.
 
 \textbf{(iii) MS-AR does not earn its complexity over AR.} The continuous, regime-weighted entry threshold of \eqref{eq:msarthreshold} and the binary danger gate of \eqref{eq:argate} produce nearly indistinguishable equity curves on every panel. Where they differ, MS-AR is mildly \emph{worse}: the softened threshold admits a few more entries than the binary gate, and at this cost level those marginal entries are net-negative. The extra free parameter $z_v$ therefore fails to justify itself at this resolution, consistent with the warning in \textcite{cappe2005} that adding smoothness to a regime decision rule is only beneficial when the marginal entries it admits are profitable in expectation.
 
-\subsubsection*{Per-month detail: symlog strategy panels}
-
-The stacked three-month panels above compress nine cumulative-PnL curves per pair onto one page. To show the same comparison at higher resolution we report each pair-month as an individual panel on a symmetric-log $y$-axis: the symlog scale preserves the shape of small-amplitude trajectories alongside the large Baseline drawdowns, so that the AR and MS-AR curves remain readable in the same frame as the deeply negative Baseline.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202408_strategy_panel_symlog.pdf}
-    \caption{AUD/USD--NZD/USD, August 2024 --- four-strategy cumulative PnL on a symmetric-log axis.}
-    \label{fig:res-audnzd-202408-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202412_strategy_panel_symlog.pdf}
-    \caption{AUD/USD--NZD/USD, December 2024 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-audnzd-202412-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202504_strategy_panel_symlog.pdf}
-    \caption{AUD/USD--NZD/USD, April 2025 --- four-strategy cumulative PnL (symlog). The tariff-driven episode produces the largest Baseline drawdown of the sample.}
-    \label{fig:res-audnzd-202504-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202408_strategy_panel_symlog.pdf}
-    \caption{EUR/NOK--EUR/SEK, August 2024 --- four-strategy cumulative PnL (symlog). The wide per-leg spread makes the Baseline leak an order of magnitude larger than on the other pairs.}
-    \label{fig:res-noksek-202408-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202412_strategy_panel_symlog.pdf}
-    \caption{EUR/NOK--EUR/SEK, December 2024 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-noksek-202412-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202504_strategy_panel_symlog.pdf}
-    \caption{EUR/NOK--EUR/SEK, April 2025 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-noksek-202504-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202408_strategy_panel_symlog.pdf}
-    \caption{GBP/USD--EUR/USD, August 2024 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-gbpeur-202408-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202412_strategy_panel_symlog.pdf}
-    \caption{GBP/USD--EUR/USD, December 2024 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-gbpeur-202412-sp-symlog}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202504_strategy_panel_symlog.pdf}
-    \caption{GBP/USD--EUR/USD, April 2025 --- four-strategy cumulative PnL (symlog).}
-    \label{fig:res-gbpeur-202504-sp-symlog}
-\end{figure}
-
 \subsection{Passive drift as a reference}\label{sec:result-buyhold}
 
 A Buy \& Hold position on the spread ($\pi_t^{\mathrm{BH}} = +1$, zero costs) is a useful passive reference \parencite{tsay2010}. In several months it is the only strategy with a positive cumulative PnL: notably on April 2025, where the spring 2025 tariff-driven episode produced strong directional moves on AUD/USD--NZD/USD and on EUR/NOK--EUR/SEK, the passive drift earned what the active rules paid out in transaction costs. This is itself an instructive observation: at these frictions, taking many small mean-reverting positions on a noisy spread is dominated by simply doing nothing.
 
-Figures~\ref{fig:res-audnzd-bh-overlay}--\ref{fig:res-gbpeur-bh-overlay} overlay the three monthly Buy \& Hold paths for each pair on a single axis. The dispersion across months is informative in itself: April 2025 is the standout episode on AUD/USD--NZD/USD and EUR/NOK--EUR/SEK, while the August and December months sit closer to flat, consistent with the macro picture of a tariff-driven directional regime in spring 2025 layered on top of two quieter periods.
+Figure~\ref{fig:res-bh-overlay-grid} overlays the three monthly Buy \& Hold paths for each pair on a single axis, with one panel per pair construction. The dispersion across months is informative in itself: April 2025 is the standout episode on AUD/USD--NZD/USD and EUR/NOK--EUR/SEK, while the August and December months sit closer to flat, consistent with the macro picture of a tariff-driven directional regime in spring 2025 layered on top of two quieter periods.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_BuyHold_by_month_overlay.pdf}
-    \caption{AUD/USD--NZD/USD, Buy \& Hold cumulative PnL overlaid across the three monthly episodes.}
-    \label{fig:res-audnzd-bh-overlay}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_BuyHold_by_month_overlay.pdf}
-    \caption{EUR/NOK--EUR/SEK, Buy \& Hold cumulative PnL overlaid across the three monthly episodes; the April 2025 path dominates the cross-month dispersion.}
-    \label{fig:res-noksek-bh-overlay}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_BuyHold_by_month_overlay.pdf}
-    \caption{GBP/USD--EUR/USD, Buy \& Hold cumulative PnL overlaid across the three monthly episodes.}
-    \label{fig:res-gbpeur-bh-overlay}
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_BuyHold_by_month_overlay.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_BuyHold_by_month_overlay.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_BuyHold_by_month_overlay.pdf}
+    \end{minipage}
+    \caption{Buy \& Hold cumulative PnL overlaid across the three monthly episodes. Left: AUD/USD--NZD/USD; centre: EUR/NOK--EUR/SEK (April 2025 dominates the cross-month dispersion); right: GBP/USD--EUR/USD.}
+    \label{fig:res-bh-overlay-grid}
 \end{figure}
 
 \subsection{Regime dynamics}\label{sec:result-regime}
