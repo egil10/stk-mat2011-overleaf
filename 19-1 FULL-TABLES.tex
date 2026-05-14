@@ -1,7 +1,12 @@
+\subsection{Daily strategy summaries (raw ledgers)}\label{sec:apx-daily-tables}
+
+The three tables that follow are the raw daily ledgers underlying every aggregate number reported in the body and the tearsheets, with one row per trading day, one block per monthly episode, and the same four strategy columns (BH, BL, AR, MS) used throughout the thesis. They are deliberately compact, so the abbreviations are dense; once decoded, every aggregate number in Tables~\ref{tab:result_pnl}--\ref{tab:result_activity} and in the tearsheets above can be reconstructed by summing or averaging the corresponding daily entries.
+
+Each cell follows the format \texttt{POSITION, ACTIVITY; PNL}, where POSITION describes the position held at the start of the day (L for long, S for short, F/M for flat-or-mixed within the day for the active strategies), ACTIVITY reports the trading activity (\texttt{NF} for no flips and a flat position the entire day, \texttt{n\,RT} for $n$ completed round-trip trades), and PNL is the day's profit-and-loss in basis points, signed and net of the half-spread plus $0.05\,\text{bps}$ commission cost model. The BH column always shows \texttt{L, NF} because Buy~\&~Hold simply holds a unit long-spread position throughout, so its daily PnL is the realised $\Delta S_t$ aggregated over the day. The BL column shows non-trivial trading activity on every day (the rolling $z$-score rule flips $5$ to $40$ times per day depending on volatility), while the AR and MS columns frequently show \texttt{NF} because the HMM gate $G_t$ of \eqref{eq:argate} or the regime-weighted threshold of \eqref{eq:msarthreshold} suppresses entries in the drifting regime. The bold \texttt{Total} row at the end of each monthly block is the sum of the corresponding daily PnL column for that strategy in that month, and matches the total-return row of the tearsheets up to floating-point rounding.
 
 \begin{table}[H]
 \centering
-\caption{\textbf{Daily AUD/USD--NZD/USD strategy summaries.}}
+\caption{Daily AUD/USD--NZD/USD strategy summaries.}
 \label{tab:app_audnzd_daily_stacked}
 \vspace{-0.8em}
 
@@ -102,7 +107,7 @@ Date & BH & BL & AR & MS \\
 
 \begin{table}[H]
 \centering
-\caption{\textbf{Daily EUR/NOK--EUR/SEK strategy summaries.}}
+\caption{Daily EUR/NOK--EUR/SEK strategy summaries.}
 \label{tab:app_noksek_daily_stacked}
 \vspace{-0.8em}
 
@@ -202,7 +207,7 @@ Date & BH & BL & AR & MS \\
 
 \begin{table}[H]
 \centering
-\caption{\textbf{Daily GBP/USD--EUR/USD strategy summaries.}}
+\caption{Daily GBP/USD--EUR/USD strategy summaries.}
 \label{tab:app_gbpeur_daily_stacked}
 \vspace{-0.8em}
 

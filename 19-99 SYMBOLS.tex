@@ -1,0 +1,87 @@
+\clearpage
+\subsection{Symbol dictionary}\label{sec:apx-symbols}
+
+The table below collects the mathematical notation used in the methods sections, in the order in which the symbols are introduced. Where two symbols refer to the same quantity in slightly different parameterisations (for example $c^{(k)}$ versus $\mu^{(k)}$ for the MS-AR(1) intercept), both rows are kept so the dictionary can be used as a lookup reference for either form.
+
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{p{0.18\textwidth} p{0.74\textwidth}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+\endhead
+
+\multicolumn{2}{@{}l}{\textit{Data and pre-processing (Section~\ref{sec:data}).}}\\
+$i \in \{A, B\}$              & Index of the two legs of a currency pair. \\
+$t$                           & Time index of a pre-averaged bar (block of $L$ ticks). \\
+$P_t^{\mathrm{bid},\,i}$      & Bid price of leg $i$ at time $t$. \\
+$P_t^{\mathrm{ask},\,i}$      & Ask price of leg $i$ at time $t$. \\
+$P_t^{\mathrm{mid},\,i}$      & Mid-price, $\tfrac{1}{2}(P^{\mathrm{bid}}_t + P^{\mathrm{ask}}_t)$, see \eqref{eq:midprice}. \\
+$\mathrm{HS}_t^{\,i}$         & Basis-point half-spread of leg $i$ at time $t$, see \eqref{eq:midprice}. \\
+$L$                           & Pre-averaging block size in number of ticks, see \eqref{eq:preaverage}. \\
+$\widetilde P_k^{\,i}$        & Pre-averaged mid-price of leg $i$ at block index $k$, see \eqref{eq:preaverage}. \\
+$r_t^{\,i}$                   & Log return of leg $i$ at bar $t$, $\log P_t^{\mathrm{mid},\,i} - \log P_{t-1}^{\mathrm{mid},\,i}$. \\
+
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Baseline pairs-trading rule (Section~\ref{sec:pairsbaseline}).}}\\
+$\beta$                       & Cointegration hedge ratio (global), see \eqref{eq:spreaddef}. \\
+$\beta_t,\;\alpha_t$          & Rolling hedge ratio and intercept on window $\mathcal{W}_t$, see \eqref{eq:rollingbeta}. \\
+$W_\beta$                     & Length of the rolling OLS window for $(\beta_t,\alpha_t)$. \\
+$\mathcal{W}_t$               & Index set $\{t-W_\beta+1,\ldots,t\}$ used by the rolling estimator. \\
+$\bar x_t,\;\bar y_t$         & Window means of $x_s = \log P_s^{\mathrm{mid},\,B}$ and $y_s = \log P_s^{\mathrm{mid},\,A}$. \\
+$S_t$                         & Cointegration spread $\log P_t^{\mathrm{mid},\,A} - \beta_t \log P_t^{\mathrm{mid},\,B} - \alpha_t$. \\
+$\Delta S_t$                  & Spread return $r_t^{A} - \beta_{t-1}\, r_t^{B}$, see \eqref{eq:rollingspreadret}. \\
+$W_z$                         & Length of the rolling window for the $z$-score mean and variance. \\
+$\mu_t^{S},\;\sigma_t^{S}$    & Rolling mean and standard deviation of $S_t$ over the $W_z$-bar window. \\
+$Z_t$                         & Rolling $z$-score $(S_t - \mu_t^{S})/\sigma_t^{S}$, see \eqref{eq:zscore}. \\
+$z_q$                         & Entry threshold on $|Z_t|$ for the baseline rule. \\
+$z_x$                         & Exit threshold on $|Z_t|$ for the baseline rule. \\
+$\pi_t \in \{-1, 0, +1\}$     & Position at bar $t$ (short / flat / long the spread), see \eqref{eq:baselinerule}. \\
+$\pi_t^{\mathrm{BH}}$         & Buy-and-Hold reference position, $\pi_t^{\mathrm{BH}} \equiv +1$. \\
+$\pi_t^{\mathrm{baseline}}$   & Baseline-rule position produced by \eqref{eq:baselinerule}. \\
+
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Regime-aware models (Section~\ref{sec:regimemodels}).}}\\
+$p$                           & Order of the generic AR($p$) model in \eqref{eq:arp}. \\
+$c,\;\phi_j,\;\sigma^{2}$     & Intercept, AR coefficients, and innovation variance of AR($p$); for $p = 1$, $\phi_1 \equiv \phi$, see \eqref{eq:ar1}. \\
+$\varepsilon_t$               & Innovation in the AR($p$)/AR(1) model, $\varepsilon_t \sim \mathcal{N}(0,\sigma^{2})$. \\
+$K$                           & Number of regimes in the Markov chain. \\
+$K_t \in \{1,\ldots,K\}$      & Hidden regime at bar $t$. \\
+$\mathbf{P} = (p_{ij})$       & $K \times K$ transition matrix, $p_{ij} = \mathbb{P}(K_t = j \mid K_{t-1} = i)$, see \eqref{eq:transitionmatrix}. \\
+$\nu = (\nu_1,\ldots,\nu_K)$  & Initial-state distribution of the Markov chain. \\
+$c^{(k)},\;\rho^{(k)},\;\sigma^{(k)}$ & Regime-$k$ intercept, AR(1) coefficient, and innovation standard deviation in \eqref{eq:msargen}. \\
+$\mu^{(k)}$                   & Regime-$k$ unconditional mean, $\mu^{(k)} = c^{(k)}/(1-\rho^{(k)})$, see \eqref{eq:meandevparam}. \\
+$\Theta$                      & Full HMM parameter set $\{\nu, \mathbf{P}, c^{(k)}, \rho^{(k)}, \sigma^{(k)}\}_{k=1}^{K}$, see \eqref{eq:thetadef}. \\
+$\gamma_t(k)$                 & Smoothed regime posterior $\mathbb{P}(K_t = k \mid S_1,\ldots,S_T;\Theta)$, see \eqref{eq:smoothedposterior}. \\
+$k_{\mathrm{MR}},\;k_{\mathrm{DR}}$ & Indices of the mean-reverting and drifting regimes, by innovation variance, see \eqref{eq:regimelabels}. \\
+$\gamma_t^{\mathrm{MR}},\;\gamma_t^{\mathrm{DR}}$ & Posterior probabilities of the MR and DR regimes at bar $t$; $\gamma_t^{\mathrm{MR}} + \gamma_t^{\mathrm{DR}} = 1$. \\
+$\delta \in (0,1)$            & Danger-threshold tolerance in the AR gate, see \eqref{eq:argate}. \\
+$G_t \in \{0, 1\}$            & Binary AR gate, $G_t = \mathbbm{1}\{\gamma_t^{\mathrm{MR}} \geq 1-\delta\}$. \\
+$z_v$                         & MS-AR drifting-regime threshold, with $z_v \geq z_q$, see \eqref{eq:msarthreshold}. \\
+$z_q^{\mathrm{eff}}(t)$       & Regime-weighted effective entry threshold for MS-AR, see \eqref{eq:msarthreshold}. \\
+
+\addlinespace
+\multicolumn{2}{@{}l}{\textit{Back-test protocol and performance metrics (Section~\ref{sec:backtest}).}}\\
+$R_t$                         & Strategy return at bar $t$. \\
+$\mu_R,\;\sigma_R$            & Mean and standard deviation of $R_t$. \\
+$R_f$                         & Benchmark risk-free rate, set to zero throughout. \\
+$T$                           & Number of bars per year used in the annualisation of $\sigma_R$. \\
+$\sigma_{\mathrm{ann}}$       & Annualised return volatility, $\sigma_R\sqrt{T}$, see \eqref{eq:statmetrics}. \\
+$\mathcal{S},\;\mathcal{K}$   & Skewness and kurtosis of $R_t$, see \eqref{eq:statmetrics}. \\
+$\alpha$                      & Confidence level for VaR/CVaR, $\alpha = 0.95$, see \eqref{eq:varcvar}. \\
+$\mathrm{VaR}_\alpha$         & Value-at-Risk at level $\alpha$, $-Q_{1-\alpha}(R)$. \\
+$\mathrm{CVaR}_\alpha$        & Conditional VaR (expected shortfall) at level $\alpha$. \\
+$\mathrm{TF}$                 & Tail-fatness ratio $\mathrm{CVaR}_\alpha/\mathrm{VaR}_\alpha$, see \eqref{eq:varcvar}. \\
+$V_t,\;V_t^{\star}$           & Portfolio value at bar $t$ and its running peak $\max_{s \leq t} V_s$. \\
+$D_t$                         & Drawdown $(V_t^{\star} - V_t)/V_t^{\star}$, see \eqref{eq:drawdown}. \\
+$\mathrm{MDD},\;\mathrm{UI}$  & Maximum drawdown and Ulcer index, see \eqref{eq:drawdown}. \\
+$\mathrm{SR}$                 & Sharpe ratio $(\mu_R - R_f)/\sigma_R$, see \eqref{eq:ratios}. \\
+$\mathrm{Sortino}$            & Sortino ratio $(\mu_R - R_f)/\sigma_d$, with $\sigma_d$ the downside deviation. \\
+$\mathrm{Calmar}$             & Calmar ratio, annualised return divided by maximum drawdown. \\
+$\mathrm{AR}$                 & Annualised return used in the Calmar ratio. (Not to be confused with the AR-gated strategy.)\\
+
+\bottomrule
+\end{longtable}

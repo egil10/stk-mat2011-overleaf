@@ -60,7 +60,7 @@ via the forward--backward algorithm. The M-step updates $(c^{(k)},\rho^{(k)},\si
 
 \subsection{Choice of number of regimes}\label{sec:modelselection}
 
-I fix $K = 2$ throughout. This choice is informed by two considerations. First, a long line of regime-switching work on financial time series shows that a parsimonious two-state model---a low-volatility, persistent ``normal'' regime and a high-volatility, less persistent ``stress'' regime---already captures the dominant non-stationarity in returns: \textcite{engelhamilton1990} use a two-state Markov-switching model for long swings in the dollar/mark, \textcite{hardy2001regime} shows that a two-regime mixture is sufficient for long-term equity returns at monthly horizon, and \textcite{bullabulla2006} reach the same conclusion on a much broader battery of stylised facts for daily financial returns. The two-regime parameterisation is also the canonical setting in the broader Markov-switching literature \parencite{hamilton1989new,krolzig1997msvar,cappe2005,elliott1995hidden}. Second, in preliminary exploration on the same per-day fits used in this thesis, $K = 3$ and $K = 4$ either failed to separate cleanly (the third state was unstable across seeds and bordering on duplicating one of the two original states) or split the high-volatility regime into sub-regimes whose entry implications for the trading rule were not distinguishable at the relevant cost level. Going to $K > 2$ also multiplies the number of free parameters in the transition matrix and the regime-specific innovation set, which under any model-selection criterion that penalises complexity in the spirit of \textcite{schwarz1978bic} would be hard to justify on the per-day sample sizes I work with. Following these two lines of evidence I therefore fix $K = 2$ and report results at that setting throughout.
+I fix $K = 2$ throughout, motivated by the regime-switching literature on financial time series, in which a parsimonious two-state model (a low-volatility, persistent ``normal'' regime and a high-volatility, less persistent ``stress'' regime) already captures the dominant non-stationarity in returns \parencite{engelhamilton1990,hardy2001regime,bullabulla2006,hamilton1989new,krolzig1997msvar,cappe2005,elliott1995hidden}. In preliminary exploration on the same per-day fits used here, $K \in \{3, 4\}$ either failed to separate cleanly across seeds or split the high-volatility state into sub-regimes whose entry implications were indistinguishable at the relevant cost level; the extra parameters in the transition matrix and innovation set would also be hard to justify under any complexity penalty in the spirit of \textcite{schwarz1978bic} at the per-day sample sizes used here.
 
 \subsection{Regime classification}\label{sec:regimes}
 
@@ -74,9 +74,9 @@ giving a mean-reverting (MR) regime and a drifting (DR) regime. The smoothed pos
 
 \subsection{Regime-aware strategies}\label{sec:regimestrategies}
 
-I build two regime-aware strategies on top of the baseline \eqref{eq:baselinerule}; both inherit its entry/exit directions and only change \emph{when} the rule is allowed to trade.
+I build two regime-aware strategies on top of the baseline \eqref{eq:baselinerule}; both inherit its entry/exit directions and only change when the rule is allowed to trade.
 
-\textbf{AR-gated.} A binary gate with danger threshold $\delta \in (0,1)$,
+\paragraph{AR-gated.} A binary gate with danger threshold $\delta \in (0,1)$,
 \begin{equation}\label{eq:argate}
     G_t \;=\; \mathbbm{1}\!\bigl\{\,\gamma_t^{\mathrm{MR}} \,\geq\, 1-\delta\,\bigr\},
 \end{equation}
@@ -90,7 +90,7 @@ modifies the rule to
 \end{equation}
 The gate is binary: trade exactly like the baseline, or sit in cash. It also applies to existing positions: if I am long the spread and the HMM flags danger, the position goes flat at the next bar.
 
-\textbf{MS-AR.} A continuous, regime-weighted entry threshold,
+\paragraph{MS-AR.} A continuous, regime-weighted entry threshold,
 \begin{equation}\label{eq:msarthreshold}
     z_q^{\mathrm{eff}}(t) \;=\; \gamma_t^{\mathrm{MR}}\, z_q \;+\; \gamma_t^{\mathrm{DR}}\, z_v,
     \qquad\text{with } z_v \geq z_q,
@@ -108,7 +108,7 @@ replaces $z_q$ in \eqref{eq:baselinerule} by $z_q^{\mathrm{eff}}(t)$. When MR is
 \toprule
 \textbf{Strategy} & \textbf{Always long?} & \textbf{Entry threshold} & \textbf{Gate} & \textbf{Reads HMM?} \\
 \midrule
-Buy \& Hold & Yes & --- & --- & No \\
+Buy \& Hold & Yes & n/a & n/a & No \\
 Baseline    & No  & $z_q$ & $1$ & No \\
 AR          & No  & $z_q$ & $\mathbbm{1}\{\gamma_t^{\mathrm{MR}} \geq 1-\delta\}$ & Yes (binary) \\
 MS-AR       & No  & $\gamma_t^{\mathrm{MR}} z_q + \gamma_t^{\mathrm{DR}} z_v$ & $1$ & Yes (continuous) \\

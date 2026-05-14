@@ -1,13 +1,15 @@
 \subsection{Tearsheets}\label{sec:apx-tearsheets}
 
-The three tables below provide a self-contained quantitative tearsheet for each pair construction, broken out into one sub-table per monthly episode (August 2024, December 2024, April 2025) and stacked vertically. Each sub-table reports return, risk, risk-adjusted performance, trading activity, and distributional diagnostics for Buy-and-Hold (BH), the baseline cointegration strategy (BL), the binary AR-gated strategy (AR), and the continuous MS-AR threshold strategy (MS). One pair per page.
+The three tables below provide a self-contained quantitative tearsheet for each pair construction, broken out into one sub-table per monthly episode (August 2024, December 2024, April 2025) and stacked vertically. Each sub-table reports return, risk, risk-adjusted performance, trading activity, and distributional diagnostics for Buy-and-Hold (BH), the baseline cointegration strategy (BL), the binary AR-gated strategy (AR), and the continuous MS-AR threshold strategy (MS), with one pair per page.
+
+The five blocks read as follows. The Return block reports the realised cumulative PnL in basis points over the episode (Total Return), its annualised counterpart (Annual Return, computed as $\text{bps}\times T_{\text{ann}}/T_{\text{episode}}$), and the best/worst monthly values; with only one month per episode, the best and worst columns coincide with the total and the ``positive months'' column is $0\%$ or $100\%$. The Risk block reports annualised volatility $\sigma_{\mathrm{ann}}$ of \eqref{eq:statmetrics}, the maximum drawdown $\mathrm{MDD}$ and its duration in bars, the Ulcer index $\mathrm{UI}$ of \eqref{eq:drawdown}, and the $95\%$ Value-at-Risk and Conditional VaR of \eqref{eq:varcvar}. The Risk-adj.\ block reports the Sharpe, Sortino, and Calmar ratios of \eqref{eq:ratios}, together with the trade-level Profit Factor (sum of winning trades divided by absolute sum of losing trades), Payoff Ratio (average win divided by average loss), and a Tail Ratio (the ratio of the $95$th to the absolute $5$th percentile of returns). The Trading block reports the number of round-trip trades, the win rate, the market exposure (fraction of bars with a non-zero position), and the average winning and losing trade in basis points. The Distr.\ block reports the per-bar skewness $\mathcal{S}$ and kurtosis $\mathcal{K}$ of \eqref{eq:statmetrics}, both of which are large in magnitude under the conditionally heteroskedastic, heavy-tailed return distribution discussed in Section~\ref{sec:result-pairdiag}. A dash in any cell indicates an undefined or numerically unstable statistic, typically because the strategy held no position or had too few trades to estimate the corresponding ratio.
 
 \clearpage
 
 \begin{table}[H]
 \centering
 \captionsetup{font=footnotesize}
-\caption{\textbf{AUD/USD--NZD/USD strategy tearsheet by monthly episode.}}
+\caption{AUD/USD--NZD/USD strategy tearsheet by monthly episode.}
 \label{tab:audusd_nzdusd_tearsheet_stacked}
 
 {\scriptsize
@@ -123,7 +125,7 @@ The three tables below provide a self-contained quantitative tearsheet for each 
 \begin{table}[H]
 \centering
 \captionsetup{font=footnotesize}
-\caption{\textbf{EUR/NOK--EUR/SEK strategy tearsheet by monthly episode.}}
+\caption{EUR/NOK--EUR/SEK strategy tearsheet by monthly episode.}
 \label{tab:eurnok_eursek_tearsheet_stacked}
 
 {\scriptsize
@@ -238,7 +240,7 @@ The three tables below provide a self-contained quantitative tearsheet for each 
 \begin{table}[H]
 \centering
 \captionsetup{font=footnotesize}
-\caption{\textbf{GBP/USD--EUR/USD strategy tearsheet by monthly episode.}}
+\caption{GBP/USD--EUR/USD strategy tearsheet by monthly episode.}
 \label{tab:gbpusd_eurusd_tearsheet_stacked}
 
 {\scriptsize
