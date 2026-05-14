@@ -57,13 +57,9 @@ estimated by maximum likelihood with the Expectation--Maximisation algorithm \pa
 \end{equation}
 via the forward--backward algorithm. The M-step updates $(c^{(k)},\rho^{(k)},\sigma^{(k)})$ and $\mathbf{P}$ to maximise the expected complete-data log-likelihood. The iteration is run to a small tolerance, restarted from several random seeds to mitigate convergence to local maxima \parencite{cappe2005}.
 
-\subsection{Model selection}\label{sec:modelselection}
+\subsection{Choice of number of regimes}\label{sec:modelselection}
 
-The number of states $K$ and AR order $p$ are chosen by the Bayesian Information Criterion \parencite{schwarz1978bic}. With $m$ free parameters, $T$ observations, and maximised likelihood $\hat L$,
-\begin{equation}\label{eq:bic}
-    \mathrm{BIC} \;=\; m\ln T - 2\ln\hat L.
-\end{equation}
-The BIC penalises complexity with a term that scales in $\ln T$, which is aggressive in the large samples produced by high-frequency tick data and is asymptotically consistent for the true model when it exists \parencite{esl,tsay2010}. It is also the standard choice for hidden Markov order selection \parencite{cappe2005,krolzig1997msvar}, which is prone to over-fit when more lenient criteria are used. We sweep over a grid of $(K,p)$ and retain the configuration that minimises $\mathrm{BIC}$ for the trading simulations.
+We fix $K = 2$ throughout. This choice is informed by two considerations. First, a long line of regime-switching work on financial time series shows that a parsimonious two-state model---a low-volatility, persistent ``normal'' regime and a high-volatility, less persistent ``stress'' regime---already captures the dominant non-stationarity in returns: \textcite{engelhamilton1990} use a two-state Markov-switching model for long swings in the dollar/mark, \textcite{hardy2001regime} shows that a two-regime mixture is sufficient for long-term equity returns at monthly horizon, and \textcite{bullabulla2006} reach the same conclusion on a much broader battery of stylised facts for daily financial returns. The two-regime parameterisation is also the canonical setting in the broader Markov-switching literature \parencite{hamilton1989new,krolzig1997msvar,cappe2005,elliott1995hidden}. Second, in preliminary exploration on the same per-day fits used in this thesis, $K = 3$ and $K = 4$ either failed to separate cleanly (the third state was unstable across seeds and bordering on duplicating one of the two original states) or split the high-volatility regime into sub-regimes whose entry implications for the trading rule were not distinguishable at the relevant cost level. Going to $K > 2$ also multiplies the number of free parameters in the transition matrix and the regime-specific innovation set, which under any model-selection criterion that penalises complexity in the spirit of \textcite{schwarz1978bic} would be hard to justify on the per-day sample sizes we work with. Following these two lines of evidence we therefore fix $K = 2$ and report results at that setting throughout.
 
 \subsection{Regime classification}\label{sec:regimes}
 

@@ -27,14 +27,7 @@ We observe only the emitted data: returns, spreads, and trading outcomes. The na
 
 \subsection{The role of the HMM in this thesis}\label{sec:roleofhmm}
 
-The exercise is deliberately layered.
-
-\begin{enumerate}
-    \item We build a single tradable signal: the rolling cointegration spread $S_t$ \parencite{engle1987cointegration,dickey1979distribution}, standardised into a $z$-score $Z_t$. The \emph{baseline} pairs-trading rule enters and exits positions on $Z_t$ alone \parencite{gatev2006pairs,vidyamurthy2004pairs}.
-    \item We back-test the baseline first under realistic transaction costs. This establishes the benchmark against which any added complexity must justify itself.
-    \item We then introduce a Markov-switching AR(1) on $S_t$ \parencite{hamilton1989new,krolzig1997msvar} to recover a hidden chain $K_t \in \{1,\ldots,K\}$ representing the active regime.
-    \item The HMM is used \emph{as a regime gate on top of the baseline signal}, not as an independent forecaster. The trading direction stays dictated by $Z_t$; the HMM's role is to suppress or down-weight trading during high-volatility, weak-mean-reversion regimes. In short: \emph{the baseline gives the signal, the HMM decides when not to trade}.
-\end{enumerate}
+The exercise is deliberately layered. We first build a single tradable signal, the rolling cointegration spread $S_t$ \parencite{engle1987cointegration,dickey1979distribution} standardised into a $z$-score $Z_t$, and use it inside a textbook pairs-trading rule that enters and exits positions on $Z_t$ alone \parencite{gatev2006pairs,vidyamurthy2004pairs}. This is the \emph{baseline}, and it is back-tested first under realistic transaction costs so that it serves as the benchmark against which any added complexity must justify itself. We then introduce a Markov-switching AR(1) on the same $S_t$ \parencite{hamilton1989new,krolzig1997msvar} to recover a hidden chain $K_t \in \{1,\ldots,K\}$ representing the active regime, and use the HMM \emph{as a regime gate on top of the baseline signal} rather than as an independent forecaster: the trading direction stays dictated by $Z_t$, and the HMM's role is to suppress or down-weight trading during high-volatility, weak-mean-reversion regimes. In short, the baseline gives the signal and the HMM decides when not to trade.
 
 \begin{figure}[H]
     \centering
