@@ -99,9 +99,11 @@ replaces $z_q$ in \eqref{eq:baselinerule} by $z_q^{\mathrm{eff}}(t)$. When MR is
 
 \subsection{Strategy summary}
 
+Table~\ref{tab:strategy_definitions} summarises the four strategies compared throughout the rest of the thesis. All three active rules share the same underlying signal (the cointegration spread $S_t$ and its rolling $z$-score $Z_t$) and the same directional entry rule, and differ only in whether and how the regime posterior $\gamma_t^{\mathrm{MR}}$ enters the decision. Buy~\&~Hold is a passive long-spread reference with no entry rule and no HMM input; the Baseline is the textbook $z$-score rule of \eqref{eq:baselinerule}; AR adds the binary gate of \eqref{eq:argate}; and MS-AR replaces the constant entry threshold with the regime-weighted threshold of \eqref{eq:msarthreshold}.
+
 \begin{table}[H]
 \centering
-\caption{Strategies. All share the cointegration spread $S_t$ and rolling $z$-score $Z_t$; they differ in whether and how $\gamma_t^{\mathrm{MR}}$ enters the rule.}
+\caption{The four strategies compared in this thesis. All three active rules share the cointegration spread $S_t$ of \eqref{eq:rollingspreadret} and the rolling $z$-score $Z_t$ of \eqref{eq:zscore}; they differ only in whether and how the regime posterior $\gamma_t^{\mathrm{MR}}$ enters the rule. The ``Gate'' column gives the indicator that multiplies the baseline position $\pi_t^{\mathrm{baseline}}$ before it is taken; a value of $1$ means the baseline is always allowed to trade.}
 \label{tab:strategy_definitions}
 \small
 \begin{tabular}{lllll}

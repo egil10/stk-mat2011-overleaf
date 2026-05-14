@@ -49,12 +49,12 @@ With entry threshold $z_q$ and exit threshold $z_x$, the position $\pi_t \in \{-
         \pi_{t-1} & \text{otherwise.}
     \end{cases}
 \end{equation}
-A long-spread position is opened when $S_t$ is sufficiently below its rolling mean and closed when it returns toward zero; the short rule is symmetric \parencite{gatev2006pairs}. For every unit of leg $A$ I trade $\hat{\beta}$ units of leg $B$, so the resulting portfolio is exposed to the relative move between the two legs rather than to FX direction \parencite{vidyamurthy2004pairs}.
+A long-spread position is opened when $S_t$ is sufficiently below its rolling mean and closed when it returns toward zero; the short rule is symmetric \parencite{gatev2006pairs}. For every unit of leg $A$ I trade $\hat{\beta}$ units of leg $B$, so the resulting portfolio is exposed to the relative move between the two legs rather than to FX direction \parencite{vidyamurthy2004pairs}. Figure~\ref{fig:longshort} illustrates the bookkeeping of a single round-trip on a representative pair.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{plots/long-short.pdf}
-    \caption{Mechanics of pairs trading. The combined long/short portfolio is exposed only to the relative move between the two legs.}
+    \caption{Mechanics of a single pairs-trade. Top: the price path of each leg over the trade window. Bottom: the combined long/short portfolio, which is constructed to be exposed only to the relative move between the two legs and is approximately neutral to the common FX direction. The position is entered when the spread is far from its rolling mean (in $z$-score units) and closed as the spread reverts.}
     \label{fig:longshort}
 \end{figure}
 
