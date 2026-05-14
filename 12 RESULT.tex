@@ -5,26 +5,24 @@
 \caption{\textbf{Trading activity and performance for GBP/USD--EUR/USD.}
 The AR and MS-AR regime-gated strategies sharply reduce trading activity and market exposure relative to the baseline z-score strategy. Total PnL is reported in basis points.}
 \label{tab:gbpeur_exposure_pnl}
-\begin{tabularx}{\textwidth}{ll
-    S[table-format=3.0]
-    S[table-format=2.2]
-    S[table-format=-4.1]}
+\small
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} llrrr}
 \toprule
-\textbf{Month} & \textbf{Strategy} & {\textbf{Trades}} & {\textbf{Exposure (\%)}} & {\textbf{Total PnL}} \\
+\textbf{Month} & \textbf{Strategy} & \textbf{Trades} & \textbf{Exposure (\%)} & \textbf{Total PnL} \\
 \midrule
-2024-12 & Baseline & 325 & 35.31 & -730.4 \\
-2024-12 & AR       &  58 &  5.86 &  -69.6 \\
-2024-12 & MS-AR    &  63 &  6.84 &  -75.8 \\
+2024-12 & Baseline & 325 & 35.31 &  -730.4 \\
+2024-12 & AR       &  58 &  5.86 &   -69.6 \\
+2024-12 & MS-AR    &  63 &  6.84 &   -75.8 \\
 \addlinespace
-2024-08 & Baseline & 281 & 33.50 & -396.1 \\
-2024-08 & AR       &  79 &  7.39 &  -48.6 \\
-2024-08 & MS-AR    &  83 &  9.18 &  -60.1 \\
+2024-08 & Baseline & 281 & 33.50 &  -396.1 \\
+2024-08 & AR       &  79 &  7.39 &   -48.6 \\
+2024-08 & MS-AR    &  83 &  9.18 &   -60.1 \\
 \addlinespace
 2025-04 & Baseline & 590 & 35.64 & -1509.2 \\
 2025-04 & AR       & 154 &  8.60 &  -350.6 \\
 2025-04 & MS-AR    & 161 & 10.13 &  -405.9 \\
 \bottomrule
-\end{tabularx}
+\end{tabular*}
 \end{table}
 
 This section reports the empirical results. Following the structure of Sections~\ref{sec:pairsbaseline}--\ref{sec:regimemodels}, we first inspect the data and pair-level diagnostics, then back-test the baseline rule, then add the regime-aware extensions. All numbers are net of the half-spread-plus-commission cost model of Section~\ref{sec:walkforward} \parencite{aldridge2013hft,lopezdeprado2018advances}. For each of the three pair constructions we report three monthly episodes side by side---\emph{August 2024}, \emph{December 2024}, and \emph{April 2025}---to keep cross-episode robustness visible at all times \parencite{lopezdeprado2018advances}.
