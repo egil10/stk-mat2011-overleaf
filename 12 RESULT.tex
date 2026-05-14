@@ -89,24 +89,13 @@ Three findings emerge clearly from the panels.
 
 A Buy \& Hold position on the spread ($\pi_t^{\mathrm{BH}} = +1$, zero costs) is a useful passive reference \parencite{tsay2010}. In several months it is the only strategy with a positive cumulative PnL: notably on April 2025, where the spring 2025 tariff-driven episode produced strong directional moves on AUD/USD--NZD/USD and on EUR/NOK--EUR/SEK, the passive drift earned what the active rules paid out in transaction costs. This is itself an instructive observation: at these frictions, taking many small mean-reverting positions on a noisy spread is dominated by simply doing nothing.
 
-Figure~\ref{fig:res-bh-overlay-grid} overlays the three monthly Buy \& Hold paths for each pair on a single axis, with one panel per pair construction. The dispersion across months is informative in itself: April 2025 is the standout episode on AUD/USD--NZD/USD and EUR/NOK--EUR/SEK, while the August and December months sit closer to flat, consistent with the macro picture of a tariff-driven directional regime in spring 2025 layered on top of two quieter periods.
+Figure~\ref{fig:res-audnzd-bh-overlay} overlays the three monthly Buy \& Hold paths for AUD/USD--NZD/USD on a single axis. The dispersion across months is informative in itself: April 2025 is the standout episode on AUD/USD--NZD/USD, while the August and December months sit closer to flat, consistent with the macro picture of a tariff-driven directional regime in spring 2025 layered on top of two quieter periods.
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_BuyHold_by_month_overlay.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/EURNOK_EURSEK_BuyHold_by_month_overlay.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}[t]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{plots/GBPUSD_EURUSD_BuyHold_by_month_overlay.pdf}
-    \end{minipage}
-    \caption{Buy \& Hold cumulative PnL overlaid across the three monthly episodes. Left: AUD/USD--NZD/USD; centre: EUR/NOK--EUR/SEK (April 2025 dominates the cross-month dispersion); right: GBP/USD--EUR/USD.}
-    \label{fig:res-bh-overlay-grid}
+    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_BuyHold_by_month_overlay.pdf}
+    \caption{AUD/USD--NZD/USD, Buy \& Hold cumulative PnL overlaid across the three monthly episodes.}
+    \label{fig:res-audnzd-bh-overlay}
 \end{figure}
 
 \subsection{Regime dynamics}\label{sec:result-regime}

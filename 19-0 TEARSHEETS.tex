@@ -1,175 +1,135 @@
 \subsection{Strategy tearsheets}\label{sec:apx-tearsheets}
 
-The three tables below provide a self-contained quantitative tearsheet for each pair construction, covering return, risk, risk-adjusted performance, trading activity, and distributional diagnostics across the three monthly episodes (December 2024, August 2024, April 2025) for Buy-and-Hold (BH), the baseline cointegration strategy (BL), the binary AR-gated strategy (AR), and the continuous MS-AR threshold strategy (MS). One tearsheet per page.
+The three tables below provide a self-contained quantitative tearsheet for each pair construction, broken out into one sub-table per monthly episode (August 2024, December 2024, April 2025) and stacked vertically. Each sub-table reports return, risk, risk-adjusted performance, trading activity, and distributional diagnostics for Buy-and-Hold (BH), the baseline cointegration strategy (BL), the binary AR-gated strategy (AR), and the continuous MS-AR threshold strategy (MS). One pair per page.
 
 \begin{table}[H]
 \centering
-\caption{\textbf{AUDUSD--NZDUSD strategy tearsheet across the three monthly episodes.}
-The table reports selected return, risk, risk-adjusted, trading, and distribution diagnostics
-for Buy-and-Hold, the baseline cointegration strategy, the binary AR-gated strategy, and the
-continuous MS-AR threshold strategy. Returns and risk quantities are reported in basis points
-where applicable.}
-\label{tab:audusd_nzdusd_tearsheet_all_months}
+\caption{\textbf{AUD/USD--NZD/USD strategy tearsheet by monthly episode.}}
+\label{tab:audusd_nzdusd_tearsheet_stacked}
 
 \scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{0.82}
 
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrrrrrrrrrrrr}
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{August 2024}}\\[0.15em]
 \toprule
-& \multicolumn{4}{c}{\textbf{December 2024}}
-& \multicolumn{4}{c}{\textbf{August 2024}}
-& \multicolumn{4}{c}{\textbf{April 2025}} \\
-\cmidrule(lr){2-5}
-\cmidrule(lr){6-9}
-\cmidrule(lr){10-13}
-\textbf{Metric}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
 \midrule
-
-\multicolumn{13}{l}{\textbf{Return}} \\
-Total Return (bps)
-& -39.34 & -776.45 & -136.70 & -158.02
-& -45.84 & -966.47 & -179.31 & -206.06
-& 155.23 & -2521.35 & -652.23 & -731.32 \\
-
-Annual Return (bps)
-& -495.49 & -9779.28 & -1721.69 & -1990.25
-& -577.34 & -12172.56 & -2258.32 & -2595.27
-& 1955.13 & -31756.03 & -8214.73 & -9210.85 \\
-
-Best Month (bps)
-& -39.34 & -776.45 & -136.70 & -158.02
-& -45.84 & -966.47 & -179.31 & -206.06
-& 155.23 & -2521.35 & -652.23 & -731.32 \\
-
-Worst Month (bps)
-& -39.34 & -776.45 & -136.70 & -158.02
-& -45.84 & -966.47 & -179.31 & -206.06
-& 155.23 & -2521.35 & -652.23 & -731.32 \\
-
-Positive Months
-& 0.00\% & 0.00\% & 0.00\% & 0.00\%
-& 0.00\% & 0.00\% & 0.00\% & 0.00\%
-& 100.00\% & 0.00\% & 0.00\% & 0.00\% \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk}} \\
-Annual Volatility (bps)
-& 356.59 & 264.79 & 80.61 & 109.32
-& 554.99 & 360.20 & 120.07 & 181.98
-& 743.57 & 541.55 & 225.04 & 252.92 \\
-
-Max Drawdown (bps)
-& -119.60 & -778.78 & -136.70 & -162.72
-& -171.64 & -966.67 & -179.31 & -210.59
-& -198.20 & -2521.66 & -652.45 & -737.07 \\
-
-Max DD Duration (bars)
-& 2698 & 5435 & 5321 & 5313
-& 2302 & 5330 & 4741 & 4999
-& 3452 & 10764 & 9796 & 10469 \\
-
-Ulcer Index
-& 49.36 & 412.81 & 68.77 & 80.60
-& 70.08 & 613.89 & 144.12 & 167.35
-& 64.99 & 1455.73 & 461.45 & 513.13 \\
-
-VaR 95\% (bps)
-& -2.09 & -1.85 & 0.00 & 0.00
-& -3.29 & -2.37 & 0.00 & 0.00
-& -3.21 & -2.68 & -0.64 & -0.96 \\
-
-CVaR 95\% (bps)
-& -3.09 & -2.99 & -0.04 & -0.05
-& -4.87 & -4.08 & -0.06 & -0.10
-& -4.58 & -4.44 & -2.06 & -2.32 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk-adjusted performance}} \\
-Sharpe Ratio
-& -1.39 & -36.93 & -21.36 & -18.21
-& -1.04 & -33.79 & -18.81 & -14.26
-& 2.63 & -58.64 & -36.50 & -36.42 \\
-
-Sortino Ratio
-& -1.85 & -23.03 & -7.44 & -5.80
-& -1.45 & -24.89 & -7.84 & -7.03
-& 3.71 & -46.67 & -18.38 & -19.30 \\
-
-Calmar Ratio
-& 4.14 & 12.56 & 12.59 & 12.23
-& 3.36 & 12.59 & 12.59 & 12.32
-& 9.86 & 12.59 & 12.59 & 12.50 \\
-
-Profit Factor
-& 0.98 & 0.44 & 0.38 & 0.44
-& 0.99 & 0.51 & 0.47 & 0.59
-& 1.02 & 0.46 & 0.44 & 0.47 \\
-
-Payoff Ratio
-& 0.97 & 0.67 & 0.55 & 0.62
-& 1.00 & 0.81 & 0.86 & 0.93
-& 1.03 & 0.73 & 0.71 & 0.70 \\
-
-Tail Ratio
-& 0.99 & 0.48 & -- & --
-& 0.98 & 0.63 & -- & --
-& 0.99 & 0.55 & 0.00 & 0.00 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Trading}} \\
-Number of Trades
-& 0 & 186 & 38 & 41
-& 0 & 193 & 39 & 45
-& 0 & 434 & 140 & 148 \\
-
-Win Rate
-& 50.35\% & 39.65\% & 40.78\% & 41.39\%
-& 49.71\% & 38.82\% & 35.18\% & 38.95\%
-& 49.89\% & 38.96\% & 38.43\% & 39.86\% \\
-
-Market Exposure
-& 90.43\% & 27.03\% & 5.14\% & 6.03\%
-& 89.78\% & 31.25\% & 5.70\% & 7.82\%
-& 94.92\% & 35.23\% & 10.50\% & 12.07\% \\
-
-Avg Win (bps)
-& 0.99 & 1.04 & 0.72 & 0.89
-& 1.60 & 1.56 & 1.45 & 1.83
-& 1.49 & 1.47 & 1.18 & 1.23 \\
-
-Avg Loss (bps)
-& -1.02 & -1.55 & -1.32 & -1.45
-& -1.60 & -1.93 & -1.69 & -1.97
-& -1.45 & -2.02 & -1.67 & -1.74 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Distribution}} \\
-Skewness
-& 0.06 & -5.94 & -4.67 & -5.81
-& 0.56 & -3.15 & -2.65 & 0.73
-& 0.08 & -2.06 & -2.50 & -2.45 \\
-
-Kurtosis
-& 26.41 & 116.15 & 50.27 & 119.04
-& 11.73 & 61.41 & 45.38 & 67.15
-& 4.87 & 28.09 & 34.11 & 34.01 \\
-
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & -45.84  & -966.47   & -179.31  & -206.06 \\
+Annual Return (bps)       & -577.34 & -12172.56 & -2258.32 & -2595.27 \\
+Best Month (bps)          & -45.84  & -966.47   & -179.31  & -206.06 \\
+Worst Month (bps)         & -45.84  & -966.47   & -179.31  & -206.06 \\
+Positive Months           & 0.00\%  & 0.00\%    & 0.00\%   & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 554.99  & 360.20    & 120.07   & 181.98 \\
+Max Drawdown (bps)        & -171.64 & -966.67   & -179.31  & -210.59 \\
+Max DD Duration (bars)    & 2302    & 5330      & 4741     & 4999 \\
+Ulcer Index               & 70.08   & 613.89    & 144.12   & 167.35 \\
+VaR 95\% (bps)            & -3.29   & -2.37     & 0.00     & 0.00 \\
+CVaR 95\% (bps)           & -4.87   & -4.08     & -0.06    & -0.10 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & -1.04   & -33.79    & -18.81   & -14.26 \\
+Sortino Ratio             & -1.45   & -24.89    & -7.84    & -7.03 \\
+Calmar Ratio              & 3.36    & 12.59     & 12.59    & 12.32 \\
+Profit Factor             & 0.99    & 0.51      & 0.47     & 0.59 \\
+Payoff Ratio              & 1.00    & 0.81      & 0.86     & 0.93 \\
+Tail Ratio                & 0.98    & 0.63      & --       & -- \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0       & 193       & 39       & 45 \\
+Win Rate                  & 49.71\% & 38.82\%   & 35.18\%  & 38.95\% \\
+Market Exposure           & 89.78\% & 31.25\%   & 5.70\%   & 7.82\% \\
+Avg Win (bps)             & 1.60    & 1.56      & 1.45     & 1.83 \\
+Avg Loss (bps)            & -1.60   & -1.93     & -1.69    & -1.97 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.56    & -3.15     & -2.65    & 0.73 \\
+Kurtosis                  & 11.73   & 61.41     & 45.38    & 67.15 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 
-\vspace{0.35em}
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{December 2024}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & -39.34  & -776.45   & -136.70  & -158.02 \\
+Annual Return (bps)       & -495.49 & -9779.28  & -1721.69 & -1990.25 \\
+Best Month (bps)          & -39.34  & -776.45   & -136.70  & -158.02 \\
+Worst Month (bps)         & -39.34  & -776.45   & -136.70  & -158.02 \\
+Positive Months           & 0.00\%  & 0.00\%    & 0.00\%   & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 356.59  & 264.79    & 80.61    & 109.32 \\
+Max Drawdown (bps)        & -119.60 & -778.78   & -136.70  & -162.72 \\
+Max DD Duration (bars)    & 2698    & 5435      & 5321     & 5313 \\
+Ulcer Index               & 49.36   & 412.81    & 68.77    & 80.60 \\
+VaR 95\% (bps)            & -2.09   & -1.85     & 0.00     & 0.00 \\
+CVaR 95\% (bps)           & -3.09   & -2.99     & -0.04    & -0.05 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & -1.39   & -36.93    & -21.36   & -18.21 \\
+Sortino Ratio             & -1.85   & -23.03    & -7.44    & -5.80 \\
+Calmar Ratio              & 4.14    & 12.56     & 12.59    & 12.23 \\
+Profit Factor             & 0.98    & 0.44      & 0.38     & 0.44 \\
+Payoff Ratio              & 0.97    & 0.67      & 0.55     & 0.62 \\
+Tail Ratio                & 0.99    & 0.48      & --       & -- \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0       & 186       & 38       & 41 \\
+Win Rate                  & 50.35\% & 39.65\%   & 40.78\%  & 41.39\% \\
+Market Exposure           & 90.43\% & 27.03\%   & 5.14\%   & 6.03\% \\
+Avg Win (bps)             & 0.99    & 1.04      & 0.72     & 0.89 \\
+Avg Loss (bps)            & -1.02   & -1.55     & -1.32    & -1.45 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.06    & -5.94     & -4.67    & -5.81 \\
+Kurtosis                  & 26.41   & 116.15    & 50.27    & 119.04 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{April 2025}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 155.23   & -2521.35  & -652.23   & -731.32 \\
+Annual Return (bps)       & 1955.13  & -31756.03 & -8214.73  & -9210.85 \\
+Best Month (bps)          & 155.23   & -2521.35  & -652.23   & -731.32 \\
+Worst Month (bps)         & 155.23   & -2521.35  & -652.23   & -731.32 \\
+Positive Months           & 100.00\% & 0.00\%    & 0.00\%    & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 743.57   & 541.55    & 225.04    & 252.92 \\
+Max Drawdown (bps)        & -198.20  & -2521.66  & -652.45   & -737.07 \\
+Max DD Duration (bars)    & 3452     & 10764     & 9796      & 10469 \\
+Ulcer Index               & 64.99    & 1455.73   & 461.45    & 513.13 \\
+VaR 95\% (bps)            & -3.21    & -2.68     & -0.64     & -0.96 \\
+CVaR 95\% (bps)           & -4.58    & -4.44     & -2.06     & -2.32 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 2.63     & -58.64    & -36.50    & -36.42 \\
+Sortino Ratio             & 3.71     & -46.67    & -18.38    & -19.30 \\
+Calmar Ratio              & 9.86     & 12.59     & 12.59     & 12.50 \\
+Profit Factor             & 1.02     & 0.46      & 0.44      & 0.47 \\
+Payoff Ratio              & 1.03     & 0.73      & 0.71      & 0.70 \\
+Tail Ratio                & 0.99     & 0.55      & 0.00      & 0.00 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 434       & 140       & 148 \\
+Win Rate                  & 49.89\%  & 38.96\%   & 38.43\%   & 39.86\% \\
+Market Exposure           & 94.92\%  & 35.23\%   & 10.50\%   & 12.07\% \\
+Avg Win (bps)             & 1.49     & 1.47      & 1.18      & 1.23 \\
+Avg Loss (bps)            & -1.45    & -2.02     & -1.67     & -1.74 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.08     & -2.06     & -2.50     & -2.45 \\
+Kurtosis                  & 4.87     & 28.09     & 34.11     & 34.01 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3em}
 \begin{minipage}{0.98\textwidth}
 \footnotesize
-\textit{Notes:} BH denotes Buy-and-Hold, BL denotes the baseline cointegration strategy,
-AR denotes the binary regime-gated strategy, and MS denotes the continuous MS-AR
-threshold strategy. A dash indicates that the statistic is undefined or numerically
-unstable in the underlying back-test output.
+\textit{Notes:} BH = Buy-and-Hold; BL = baseline cointegration; AR = binary regime-gated; MS = continuous MS-AR threshold. A dash indicates an undefined or numerically unstable statistic.
 \end{minipage}
 
 \end{table}
@@ -177,172 +137,132 @@ unstable in the underlying back-test output.
 
 \begin{table}[H]
 \centering
-\caption{\textbf{EURNOK--EURSEK strategy tearsheet across the three monthly episodes.}
-The table reports selected return, risk, risk-adjusted, trading, and distribution diagnostics
-for Buy-and-Hold, the baseline cointegration strategy, the binary AR-gated strategy, and the
-continuous MS-AR threshold strategy. Returns and risk quantities are reported in basis points
-where applicable.}
-\label{tab:eurnok_eursek_tearsheet_all_months}
+\caption{\textbf{EUR/NOK--EUR/SEK strategy tearsheet by monthly episode.}}
+\label{tab:eurnok_eursek_tearsheet_stacked}
 
 \scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{0.82}
 
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrrrrrrrrrrrr}
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{August 2024}}\\[0.15em]
 \toprule
-& \multicolumn{4}{c}{\textbf{December 2024}}
-& \multicolumn{4}{c}{\textbf{August 2024}}
-& \multicolumn{4}{c}{\textbf{April 2025}} \\
-\cmidrule(lr){2-5}
-\cmidrule(lr){6-9}
-\cmidrule(lr){10-13}
-\textbf{Metric}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
 \midrule
-
-\multicolumn{13}{l}{\textbf{Return}} \\
-Total Return (bps)
-& 60.58 & -4473.83 & -1592.84 & -2070.78
-& -148.51 & -6277.42 & -1816.72 & -2490.51
-& 527.70 & -19906.39 & -8103.49 & -9487.28 \\
-
-Annual Return (bps)
-& 763.03 & -56347.12 & -20061.51 & -26081.12
-& -1870.45 & -79062.97 & -22881.30 & -31367.54
-& 6646.26 & -250717.51 & -102062.01 & -119490.65 \\
-
-Best Month (bps)
-& 60.58 & -4473.83 & -1592.84 & -2070.78
-& -148.51 & -6277.42 & -1816.72 & -2490.51
-& 527.70 & -19906.39 & -8103.49 & -9487.28 \\
-
-Worst Month (bps)
-& 60.58 & -4473.83 & -1592.84 & -2070.78
-& -148.51 & -6277.42 & -1816.72 & -2490.51
-& 527.70 & -19906.39 & -8103.49 & -9487.28 \\
-
-Positive Months
-& 100.00\% & 0.00\% & 0.00\% & 0.00\%
-& 0.00\% & 0.00\% & 0.00\% & 0.00\%
-& 100.00\% & 0.00\% & 0.00\% & 0.00\% \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk}} \\
-Annual Volatility (bps)
-& 634.41 & 813.82 & 343.78 & 532.97
-& 904.87 & 1226.06 & 501.14 & 836.51
-& 1508.79 & 1988.38 & 973.31 & 1143.00 \\
-
-Max Drawdown (bps)
-& -212.66 & -4473.83 & -1592.84 & -2070.78
-& -459.55 & -6277.42 & -1816.72 & -2492.83
-& -474.38 & -19906.39 & -8103.49 & -9487.28 \\
-
-Max DD Duration (bars)
-& 4166 & 10633 & 10500 & 10500
-& 12611 & 14774 & 14236 & 14774
-& 18798 & 26085 & 26085 & 26085 \\
-
-Ulcer Index
-& 72.69 & 2498.43 & 1004.40 & 1232.91
-& 316.62 & 3826.73 & 1139.70 & 1583.40
-& 294.93 & 11686.94 & 4533.58 & 5341.94 \\
-
-VaR 95\% (bps)
-& -2.58 & -4.28 & -0.39 & -0.75
-& -3.27 & -3.52 & 0.00 & -0.12
-& -3.56 & -7.34 & -0.68 & -1.42 \\
-
-CVaR 95\% (bps)
-& -4.19 & -6.97 & -3.39 & -4.50
-& -4.99 & -7.99 & -0.14 & -3.97
-& -6.35 & -11.93 & -6.53 & -7.71 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk-adjusted performance}} \\
-Sharpe Ratio
-& 1.20 & -69.24 & -58.36 & -48.94
-& -2.07 & -64.49 & -45.66 & -37.50
-& 4.41 & -126.09 & -104.86 & -104.54 \\
-
-Sortino Ratio
-& 1.51 & -40.33 & -21.63 & -17.54
-& -2.66 & -35.21 & -11.67 & -9.99
-& 5.30 & -76.34 & -41.53 & -44.25 \\
-
-Calmar Ratio
-& 3.59 & 12.59 & 12.59 & 12.59
-& 4.07 & 12.59 & 12.59 & 12.58
-& 14.01 & 12.59 & 12.59 & 12.59 \\
-
-Profit Factor
-& 1.01 & 0.27 & 0.14 & 0.18
-& 0.99 & 0.32 & 0.11 & 0.16
-& 1.03 & 0.21 & 0.08 & 0.11 \\
-
-Payoff Ratio
-& 1.03 & 0.42 & 0.21 & 0.26
-& 0.98 & 0.49 & 0.18 & 0.24
-& 1.03 & 0.35 & 0.14 & 0.19 \\
-
-Tail Ratio
-& 1.03 & 0.24 & 0.00 & 0.14
-& 1.00 & 0.39 & -- & 0.00
-& 1.02 & 0.15 & 0.06 & 0.09 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Trading}} \\
-Number of Trades
-& 0 & 435 & 158 & 181
-& 0 & 606 & 137 & 158
-& 0 & 1116 & 495 & 545 \\
-
-Win Rate
-& 49.42\% & 39.48\% & 40.00\% & 40.44\%
-& 50.05\% & 39.65\% & 38.10\% & 39.15\%
-& 50.08\% & 37.89\% & 36.63\% & 36.97\% \\
-
-Market Exposure
-& 95.08\% & 35.19\% & 11.90\% & 14.64\%
-& 96.29\% & 34.84\% & 7.25\% & 9.22\%
-& 97.90\% & 36.22\% & 14.85\% & 17.44\% \\
-
-Avg Win (bps)
-& 1.13 & 1.14 & 0.50 & 0.71
-& 1.38 & 1.45 & 0.54 & 0.86
-& 1.41 & 1.50 & 0.50 & 0.71 \\
-
-Avg Loss (bps)
-& -1.09 & -2.71 & -2.42 & -2.70
-& -1.40 & -2.97 & -3.06 & -3.55
-& -1.38 & -4.30 & -3.59 & -3.72 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Distribution}} \\
-Skewness
-& -0.17 & -10.48 & -5.90 & -15.88
-& 0.21 & -13.00 & -15.75 & -22.55
-& 0.48 & -5.59 & -6.44 & -6.48 \\
-
-Kurtosis
-& 12.07 & 251.63 & 40.05 & 458.00
-& 21.37 & 308.63 & 415.35 & 740.30
-& 38.58 & 67.41 & 60.79 & 70.40 \\
-
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
+Annual Return (bps)       & -1870.45  & -79062.97  & -22881.30  & -31367.54 \\
+Best Month (bps)          & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
+Worst Month (bps)         & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
+Positive Months           & 0.00\%    & 0.00\%     & 0.00\%     & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 904.87    & 1226.06    & 501.14     & 836.51 \\
+Max Drawdown (bps)        & -459.55   & -6277.42   & -1816.72   & -2492.83 \\
+Max DD Duration (bars)    & 12611     & 14774      & 14236      & 14774 \\
+Ulcer Index               & 316.62    & 3826.73    & 1139.70    & 1583.40 \\
+VaR 95\% (bps)            & -3.27     & -3.52      & 0.00       & -0.12 \\
+CVaR 95\% (bps)           & -4.99     & -7.99      & -0.14      & -3.97 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & -2.07     & -64.49     & -45.66     & -37.50 \\
+Sortino Ratio             & -2.66     & -35.21     & -11.67     & -9.99 \\
+Calmar Ratio              & 4.07      & 12.59      & 12.59      & 12.58 \\
+Profit Factor             & 0.99      & 0.32       & 0.11       & 0.16 \\
+Payoff Ratio              & 0.98      & 0.49       & 0.18       & 0.24 \\
+Tail Ratio                & 1.00      & 0.39       & --         & 0.00 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0         & 606        & 137        & 158 \\
+Win Rate                  & 50.05\%   & 39.65\%    & 38.10\%    & 39.15\% \\
+Market Exposure           & 96.29\%   & 34.84\%    & 7.25\%     & 9.22\% \\
+Avg Win (bps)             & 1.38      & 1.45       & 0.54       & 0.86 \\
+Avg Loss (bps)            & -1.40     & -2.97      & -3.06      & -3.55 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.21      & -13.00     & -15.75     & -22.55 \\
+Kurtosis                  & 21.37     & 308.63     & 415.35     & 740.30 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 
-\vspace{0.35em}
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{December 2024}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
+Annual Return (bps)       & 763.03   & -56347.12  & -20061.51  & -26081.12 \\
+Best Month (bps)          & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
+Worst Month (bps)         & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
+Positive Months           & 100.00\% & 0.00\%     & 0.00\%     & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 634.41   & 813.82     & 343.78     & 532.97 \\
+Max Drawdown (bps)        & -212.66  & -4473.83   & -1592.84   & -2070.78 \\
+Max DD Duration (bars)    & 4166     & 10633      & 10500      & 10500 \\
+Ulcer Index               & 72.69    & 2498.43    & 1004.40    & 1232.91 \\
+VaR 95\% (bps)            & -2.58    & -4.28      & -0.39      & -0.75 \\
+CVaR 95\% (bps)           & -4.19    & -6.97      & -3.39      & -4.50 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 1.20     & -69.24     & -58.36     & -48.94 \\
+Sortino Ratio             & 1.51     & -40.33     & -21.63     & -17.54 \\
+Calmar Ratio              & 3.59     & 12.59      & 12.59      & 12.59 \\
+Profit Factor             & 1.01     & 0.27       & 0.14       & 0.18 \\
+Payoff Ratio              & 1.03     & 0.42       & 0.21       & 0.26 \\
+Tail Ratio                & 1.03     & 0.24       & 0.00       & 0.14 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 435        & 158        & 181 \\
+Win Rate                  & 49.42\%  & 39.48\%    & 40.00\%    & 40.44\% \\
+Market Exposure           & 95.08\%  & 35.19\%    & 11.90\%    & 14.64\% \\
+Avg Win (bps)             & 1.13     & 1.14       & 0.50       & 0.71 \\
+Avg Loss (bps)            & -1.09    & -2.71      & -2.42      & -2.70 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & -0.17    & -10.48     & -5.90      & -15.88 \\
+Kurtosis                  & 12.07    & 251.63     & 40.05      & 458.00 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{April 2025}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
+Annual Return (bps)       & 6646.26  & -250717.51  & -102062.01  & -119490.65 \\
+Best Month (bps)          & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
+Worst Month (bps)         & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
+Positive Months           & 100.00\% & 0.00\%      & 0.00\%      & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 1508.79  & 1988.38     & 973.31      & 1143.00 \\
+Max Drawdown (bps)        & -474.38  & -19906.39   & -8103.49    & -9487.28 \\
+Max DD Duration (bars)    & 18798    & 26085       & 26085       & 26085 \\
+Ulcer Index               & 294.93   & 11686.94    & 4533.58     & 5341.94 \\
+VaR 95\% (bps)            & -3.56    & -7.34       & -0.68       & -1.42 \\
+CVaR 95\% (bps)           & -6.35    & -11.93      & -6.53       & -7.71 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 4.41     & -126.09     & -104.86     & -104.54 \\
+Sortino Ratio             & 5.30     & -76.34      & -41.53      & -44.25 \\
+Calmar Ratio              & 14.01    & 12.59       & 12.59       & 12.59 \\
+Profit Factor             & 1.03     & 0.21        & 0.08        & 0.11 \\
+Payoff Ratio              & 1.03     & 0.35        & 0.14        & 0.19 \\
+Tail Ratio                & 1.02     & 0.15        & 0.06        & 0.09 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 1116        & 495         & 545 \\
+Win Rate                  & 50.08\%  & 37.89\%     & 36.63\%     & 36.97\% \\
+Market Exposure           & 97.90\%  & 36.22\%     & 14.85\%     & 17.44\% \\
+Avg Win (bps)             & 1.41     & 1.50        & 0.50        & 0.71 \\
+Avg Loss (bps)            & -1.38    & -4.30       & -3.59       & -3.72 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.48     & -5.59       & -6.44       & -6.48 \\
+Kurtosis                  & 38.58    & 67.41       & 60.79       & 70.40 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3em}
 \begin{minipage}{0.98\textwidth}
 \footnotesize
-\textit{Notes:} BH denotes Buy-and-Hold, BL denotes the baseline cointegration strategy,
-AR denotes the binary regime-gated strategy, and MS denotes the continuous MS-AR
-threshold strategy. A dash indicates that the statistic is undefined or numerically
-unstable in the underlying back-test output.
+\textit{Notes:} BH = Buy-and-Hold; BL = baseline cointegration; AR = binary regime-gated; MS = continuous MS-AR threshold. A dash indicates an undefined or numerically unstable statistic.
 \end{minipage}
 
 \end{table}
@@ -350,172 +270,132 @@ unstable in the underlying back-test output.
 
 \begin{table}[H]
 \centering
-\caption{\textbf{GBPUSD--EURUSD strategy tearsheet across the three monthly episodes.}
-The table reports selected return, risk, risk-adjusted, trading, and distribution diagnostics
-for Buy-and-Hold, the baseline cointegration strategy, the binary AR-gated strategy, and the
-continuous MS-AR threshold strategy. Returns and risk quantities are reported in basis points
-where applicable.}
-\label{tab:gbpusd_eurusd_tearsheet_all_months}
+\caption{\textbf{GBP/USD--EUR/USD strategy tearsheet by monthly episode.}}
+\label{tab:gbpusd_eurusd_tearsheet_stacked}
 
 \scriptsize
-\setlength{\tabcolsep}{3.2pt}
-\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{0.82}
 
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lrrrrrrrrrrrr}
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{August 2024}}\\[0.15em]
 \toprule
-& \multicolumn{4}{c}{\textbf{December 2024}}
-& \multicolumn{4}{c}{\textbf{August 2024}}
-& \multicolumn{4}{c}{\textbf{April 2025}} \\
-\cmidrule(lr){2-5}
-\cmidrule(lr){6-9}
-\cmidrule(lr){10-13}
-\textbf{Metric}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS}
-& \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
 \midrule
-
-\multicolumn{13}{l}{\textbf{Return}} \\
-Total Return (bps)
-& 25.10 & -730.39 & -69.62 & -75.81
-& 65.09 & -396.06 & -48.60 & -60.14
-& 15.94 & -1509.17 & -350.61 & -405.94 \\
-
-Annual Return (bps)
-& 316.08 & -9199.19 & -876.90 & -954.82
-& 819.75 & -4988.30 & -612.05 & -757.45
-& 200.78 & -19007.67 & -4415.92 & -5112.73 \\
-
-Best Month (bps)
-& 25.10 & -730.39 & -69.62 & -75.81
-& 65.09 & -396.06 & -48.60 & -60.14
-& 15.94 & -1509.17 & -350.61 & -405.94 \\
-
-Worst Month (bps)
-& 25.10 & -730.39 & -69.62 & -75.81
-& 65.09 & -396.06 & -48.60 & -60.14
-& 15.94 & -1509.17 & -350.61 & -405.94 \\
-
-Positive Months
-& 100.00\% & 0.00\% & 0.00\% & 0.00\%
-& 100.00\% & 0.00\% & 0.00\% & 0.00\%
-& 100.00\% & 0.00\% & 0.00\% & 0.00\% \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk}} \\
-Annual Volatility (bps)
-& 444.49 & 282.61 & 71.07 & 103.73
-& 497.41 & 289.35 & 103.71 & 130.86
-& 644.21 & 416.02 & 135.39 & 174.93 \\
-
-Max Drawdown (bps)
-& -101.94 & -738.06 & -71.95 & -79.82
-& -171.91 & -417.06 & -67.12 & -67.90
-& -332.36 & -1525.73 & -356.08 & -420.51 \\
-
-Max DD Duration (bars)
-& 2879 & 8011 & 8011 & 8063
-& 5168 & 6985 & 6156 & 6985
-& 7736 & 14733 & 13115 & 14105 \\
-
-Ulcer Index
-& 51.72 & 401.64 & 47.07 & 55.06
-& 85.73 & 263.30 & 41.59 & 42.89
-& 146.04 & 906.32 & 212.03 & 249.97 \\
-
-VaR 95\% (bps)
-& -2.12 & -1.48 & 0.00 & 0.00
-& -2.56 & -1.60 & -0.00 & -0.01
-& -2.34 & -1.65 & -0.09 & -0.27 \\
-
-CVaR 95\% (bps)
-& -3.22 & -2.63 & -0.03 & -0.03
-& -3.74 & -2.77 & -0.04 & -1.08
-& -3.36 & -2.85 & -0.94 & -1.19 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Risk-adjusted performance}} \\
-Sharpe Ratio
-& 0.71 & -32.55 & -12.34 & -9.20
-& 1.65 & -17.24 & -5.90 & -5.79
-& 0.31 & -45.69 & -32.62 & -29.23 \\
-
-Sortino Ratio
-& 0.95 & -25.99 & -4.99 & -3.39
-& 2.26 & -14.69 & -2.52 & -2.76
-& 0.45 & -37.03 & -14.91 & -13.20 \\
-
-Calmar Ratio
-& 3.10 & 12.46 & 12.19 & 11.96
-& 4.77 & 11.96 & 9.12 & 11.16
-& 0.60 & 12.46 & 12.40 & 12.16 \\
-
-Profit Factor
-& 1.01 & 0.61 & 0.65 & 0.72
-& 1.02 & 0.76 & 0.83 & 0.84
-& 1.00 & 0.60 & 0.50 & 0.55 \\
-
-Payoff Ratio
-& 1.00 & 0.93 & 1.03 & 1.07
-& 1.00 & 1.04 & 1.03 & 1.04
-& 1.01 & 0.92 & 0.86 & 0.89 \\
-
-Tail Ratio
-& 1.02 & 0.71 & -- & --
-& 0.99 & 0.85 & -- & 0.00
-& 1.01 & 0.68 & 0.00 & 0.00 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Trading}} \\
-Number of Trades
-& 0 & 325 & 58 & 63
-& 0 & 281 & 79 & 83
-& 0 & 590 & 154 & 161 \\
-
-Win Rate
-& 50.28\% & 39.48\% & 38.66\% & 40.29\%
-& 50.48\% & 42.26\% & 44.49\% & 44.87\%
-& 49.78\% & 39.64\% & 36.73\% & 38.33\% \\
-
-Market Exposure
-& 93.54\% & 35.31\% & 5.86\% & 6.84\%
-& 92.27\% & 33.50\% & 7.39\% & 9.18\%
-& 96.29\% & 35.64\% & 8.60\% & 10.13\% \\
-
-Avg Win (bps)
-& 1.01 & 1.01 & 0.70 & 0.86
-& 1.23 & 1.26 & 1.00 & 1.10
-& 1.09 & 1.09 & 0.75 & 0.87 \\
-
-Avg Loss (bps)
-& -1.01 & -1.08 & -0.68 & -0.81
-& -1.24 & -1.21 & -0.96 & -1.06
-& -1.08 & -1.19 & -0.87 & -0.98 \\
-
-\addlinespace[0.35em]
-\multicolumn{13}{l}{\textbf{Distribution}} \\
-Skewness
-& -0.32 & -1.16 & 0.90 & -1.03
-& -0.01 & -0.29 & -0.49 & 0.18
-& 0.25 & -1.15 & -1.83 & -2.87 \\
-
-Kurtosis
-& 9.58 & 25.35 & 122.03 & 334.80
-& 11.41 & 12.48 & 52.25 & 54.06
-& 4.75 & 20.62 & 37.78 & 66.55 \\
-
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 65.09    & -396.06    & -48.60   & -60.14 \\
+Annual Return (bps)       & 819.75   & -4988.30   & -612.05  & -757.45 \\
+Best Month (bps)          & 65.09    & -396.06    & -48.60   & -60.14 \\
+Worst Month (bps)         & 65.09    & -396.06    & -48.60   & -60.14 \\
+Positive Months           & 100.00\% & 0.00\%     & 0.00\%   & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 497.41   & 289.35     & 103.71   & 130.86 \\
+Max Drawdown (bps)        & -171.91  & -417.06    & -67.12   & -67.90 \\
+Max DD Duration (bars)    & 5168     & 6985       & 6156     & 6985 \\
+Ulcer Index               & 85.73    & 263.30     & 41.59    & 42.89 \\
+VaR 95\% (bps)            & -2.56    & -1.60      & -0.00    & -0.01 \\
+CVaR 95\% (bps)           & -3.74    & -2.77      & -0.04    & -1.08 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 1.65     & -17.24     & -5.90    & -5.79 \\
+Sortino Ratio             & 2.26     & -14.69     & -2.52    & -2.76 \\
+Calmar Ratio              & 4.77     & 11.96      & 9.12     & 11.16 \\
+Profit Factor             & 1.02     & 0.76       & 0.83     & 0.84 \\
+Payoff Ratio              & 1.00     & 1.04       & 1.03     & 1.04 \\
+Tail Ratio                & 0.99     & 0.85       & --       & 0.00 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 281        & 79       & 83 \\
+Win Rate                  & 50.48\%  & 42.26\%    & 44.49\%  & 44.87\% \\
+Market Exposure           & 92.27\%  & 33.50\%    & 7.39\%   & 9.18\% \\
+Avg Win (bps)             & 1.23     & 1.26       & 1.00     & 1.10 \\
+Avg Loss (bps)            & -1.24    & -1.21      & -0.96    & -1.06 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & -0.01    & -0.29      & -0.49    & 0.18 \\
+Kurtosis                  & 11.41    & 12.48      & 52.25    & 54.06 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 
-\vspace{0.35em}
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{December 2024}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 25.10    & -730.39    & -69.62   & -75.81 \\
+Annual Return (bps)       & 316.08   & -9199.19   & -876.90  & -954.82 \\
+Best Month (bps)          & 25.10    & -730.39    & -69.62   & -75.81 \\
+Worst Month (bps)         & 25.10    & -730.39    & -69.62   & -75.81 \\
+Positive Months           & 100.00\% & 0.00\%     & 0.00\%   & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 444.49   & 282.61     & 71.07    & 103.73 \\
+Max Drawdown (bps)        & -101.94  & -738.06    & -71.95   & -79.82 \\
+Max DD Duration (bars)    & 2879     & 8011       & 8011     & 8063 \\
+Ulcer Index               & 51.72    & 401.64     & 47.07    & 55.06 \\
+VaR 95\% (bps)            & -2.12    & -1.48      & 0.00     & 0.00 \\
+CVaR 95\% (bps)           & -3.22    & -2.63      & -0.03    & -0.03 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 0.71     & -32.55     & -12.34   & -9.20 \\
+Sortino Ratio             & 0.95     & -25.99     & -4.99    & -3.39 \\
+Calmar Ratio              & 3.10     & 12.46      & 12.19    & 11.96 \\
+Profit Factor             & 1.01     & 0.61       & 0.65     & 0.72 \\
+Payoff Ratio              & 1.00     & 0.93       & 1.03     & 1.07 \\
+Tail Ratio                & 1.02     & 0.71       & --       & -- \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 325        & 58       & 63 \\
+Win Rate                  & 50.28\%  & 39.48\%    & 38.66\%  & 40.29\% \\
+Market Exposure           & 93.54\%  & 35.31\%    & 5.86\%   & 6.84\% \\
+Avg Win (bps)             & 1.01     & 1.01       & 0.70     & 0.86 \\
+Avg Loss (bps)            & -1.01    & -1.08      & -0.68    & -0.81 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & -0.32    & -1.16      & 0.90     & -1.03 \\
+Kurtosis                  & 9.58     & 25.35      & 122.03   & 334.80 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+
+\begin{tabular}{lrrrr}
+\multicolumn{5}{c}{\textbf{April 2025}}\\[0.15em]
+\toprule
+\textbf{Metric} & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
+\midrule
+\multicolumn{5}{l}{\textit{Return}}\\
+Total Return (bps)        & 15.94    & -1509.17   & -350.61   & -405.94 \\
+Annual Return (bps)       & 200.78   & -19007.67  & -4415.92  & -5112.73 \\
+Best Month (bps)          & 15.94    & -1509.17   & -350.61   & -405.94 \\
+Worst Month (bps)         & 15.94    & -1509.17   & -350.61   & -405.94 \\
+Positive Months           & 100.00\% & 0.00\%     & 0.00\%    & 0.00\% \\
+\multicolumn{5}{l}{\textit{Risk}}\\
+Annual Volatility (bps)   & 644.21   & 416.02     & 135.39    & 174.93 \\
+Max Drawdown (bps)        & -332.36  & -1525.73   & -356.08   & -420.51 \\
+Max DD Duration (bars)    & 7736     & 14733      & 13115     & 14105 \\
+Ulcer Index               & 146.04   & 906.32     & 212.03    & 249.97 \\
+VaR 95\% (bps)            & -2.34    & -1.65      & -0.09     & -0.27 \\
+CVaR 95\% (bps)           & -3.36    & -2.85      & -0.94     & -1.19 \\
+\multicolumn{5}{l}{\textit{Risk-adjusted}}\\
+Sharpe Ratio              & 0.31     & -45.69     & -32.62    & -29.23 \\
+Sortino Ratio             & 0.45     & -37.03     & -14.91    & -13.20 \\
+Calmar Ratio              & 0.60     & 12.46      & 12.40     & 12.16 \\
+Profit Factor             & 1.00     & 0.60       & 0.50      & 0.55 \\
+Payoff Ratio              & 1.01     & 0.92       & 0.86      & 0.89 \\
+Tail Ratio                & 1.01     & 0.68       & 0.00      & 0.00 \\
+\multicolumn{5}{l}{\textit{Trading}}\\
+Number of Trades          & 0        & 590        & 154       & 161 \\
+Win Rate                  & 49.78\%  & 39.64\%    & 36.73\%   & 38.33\% \\
+Market Exposure           & 96.29\%  & 35.64\%    & 8.60\%    & 10.13\% \\
+Avg Win (bps)             & 1.09     & 1.09       & 0.75      & 0.87 \\
+Avg Loss (bps)            & -1.08    & -1.19      & -0.87     & -0.98 \\
+\multicolumn{5}{l}{\textit{Distribution}}\\
+Skewness                  & 0.25     & -1.15      & -1.83     & -2.87 \\
+Kurtosis                  & 4.75     & 20.62      & 37.78     & 66.55 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3em}
 \begin{minipage}{0.98\textwidth}
 \footnotesize
-\textit{Notes:} BH denotes Buy-and-Hold, BL denotes the baseline cointegration strategy,
-AR denotes the binary regime-gated strategy, and MS denotes the continuous MS-AR
-threshold strategy. A dash indicates that the statistic is undefined or numerically
-unstable in the underlying back-test output.
+\textit{Notes:} BH = Buy-and-Hold; BL = baseline cointegration; AR = binary regime-gated; MS = continuous MS-AR threshold. A dash indicates an undefined or numerically unstable statistic.
 \end{minipage}
 
 \end{table}
