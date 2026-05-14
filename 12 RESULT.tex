@@ -31,138 +31,39 @@ This section reports the empirical results. Following the structure of Sections~
 
 The three pairs differ substantially in liquidity and per-leg round-trip cost \parencite{roll1984spread,hasbrouck2007microstructure}: GBP/USD--EUR/USD is the cheapest, AUD/USD--NZD/USD is moderately liquid, and EUR/NOK--EUR/SEK is materially more expensive. All six leg-level return series are strongly non-Gaussian, with high kurtosis and significant Ljung--Box statistics on squared returns, consistent with conditional heteroskedasticity \parencite{engle1982arch,bollerslev1986garch,cont2001empirical}. Rolling cointegration tests \parencite{engle1987cointegration,dickey1979distribution,said1984testing} reject the no-cointegration null intermittently for AUD/USD--NZD/USD and GBP/USD--EUR/USD; EUR/NOK--EUR/SEK rejects globally but with a long implied half-life, which makes it economically weak for high-frequency mean reversion \parencite{krauss2017statarb}.
 
-The empirical distributions of pre-averaged spread returns make the heavy-tailed character of FX tick data concrete. Figures~\ref{fig:res-audnzd-202408-rd-lin}--\ref{fig:res-gbpeur-202504-rd-log} report the per-month return distribution for each pair on both linear and log $y$-axes: the linear view shows the bulk of the distribution and is informative about location and scale, while the log view exposes the tails and makes the kurtosis evidence of \textcite{cont2001empirical} visible pair by pair. Across all nine pair-month combinations the linear panels are visibly centred near zero with a sharp peak, and the log panels are conspicuously wider than the fitted Gaussian comparator at three or more standard deviations.
-
-\subsubsection*{AUD/USD--NZD/USD return distributions}
+The empirical distributions of pre-averaged spread returns make the heavy-tailed character of FX tick data concrete. Figure~\ref{fig:res-audnzd-rd-grid} reports, for AUD/USD--NZD/USD, the per-bar return distribution across the three monthly episodes on both linear and log $y$-axes: the linear view (top row) shows the bulk of the distribution and is informative about location and scale, while the log view (bottom row) exposes the tails and makes the kurtosis evidence of \textcite{cont2001empirical} visible. The linear panels are visibly centred near zero with a sharp peak; the log panels are conspicuously wider than the fitted Gaussian comparator at three or more standard deviations. The corresponding grids for EUR/NOK--EUR/SEK and GBP/USD--EUR/USD are deferred to Appendix~\ref{sec:apx-return-distributions}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202408_return_dist_linear.pdf}
-    \caption{AUD/USD--NZD/USD, August 2024 --- spread-return distribution (linear scale).}
-    \label{fig:res-audnzd-202408-rd-lin}
-\end{figure}
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202408_return_dist_linear.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202412_return_dist_linear.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202504_return_dist_linear.pdf}
+    \end{minipage}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202408_return_dist_log.pdf}
-    \caption{AUD/USD--NZD/USD, August 2024 --- spread-return distribution (log $y$-axis); tails are visibly heavier than the Gaussian comparator.}
-    \label{fig:res-audnzd-202408-rd-log}
-\end{figure}
+    \vspace{0.5em}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202412_return_dist_linear.pdf}
-    \caption{AUD/USD--NZD/USD, December 2024 --- spread-return distribution (linear).}
-    \label{fig:res-audnzd-202412-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202412_return_dist_log.pdf}
-    \caption{AUD/USD--NZD/USD, December 2024 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-audnzd-202412-rd-log}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202504_return_dist_linear.pdf}
-    \caption{AUD/USD--NZD/USD, April 2025 --- spread-return distribution (linear).}
-    \label{fig:res-audnzd-202504-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/AUDUSD_NZDUSD_202504_return_dist_log.pdf}
-    \caption{AUD/USD--NZD/USD, April 2025 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-audnzd-202504-rd-log}
-\end{figure}
-
-\subsubsection*{EUR/NOK--EUR/SEK return distributions}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202408_return_dist_linear.pdf}
-    \caption{EUR/NOK--EUR/SEK, August 2024 --- spread-return distribution (linear).}
-    \label{fig:res-noksek-202408-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202408_return_dist_log.pdf}
-    \caption{EUR/NOK--EUR/SEK, August 2024 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-noksek-202408-rd-log}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202412_return_dist_linear.pdf}
-    \caption{EUR/NOK--EUR/SEK, December 2024 --- spread-return distribution (linear).}
-    \label{fig:res-noksek-202412-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202412_return_dist_log.pdf}
-    \caption{EUR/NOK--EUR/SEK, December 2024 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-noksek-202412-rd-log}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202504_return_dist_linear.pdf}
-    \caption{EUR/NOK--EUR/SEK, April 2025 --- spread-return distribution (linear).}
-    \label{fig:res-noksek-202504-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/EURNOK_EURSEK_202504_return_dist_log.pdf}
-    \caption{EUR/NOK--EUR/SEK, April 2025 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-noksek-202504-rd-log}
-\end{figure}
-
-\subsubsection*{GBP/USD--EUR/USD return distributions}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202408_return_dist_linear.pdf}
-    \caption{GBP/USD--EUR/USD, August 2024 --- spread-return distribution (linear).}
-    \label{fig:res-gbpeur-202408-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202408_return_dist_log.pdf}
-    \caption{GBP/USD--EUR/USD, August 2024 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-gbpeur-202408-rd-log}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202412_return_dist_linear.pdf}
-    \caption{GBP/USD--EUR/USD, December 2024 --- spread-return distribution (linear).}
-    \label{fig:res-gbpeur-202412-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202412_return_dist_log.pdf}
-    \caption{GBP/USD--EUR/USD, December 2024 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-gbpeur-202412-rd-log}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202504_return_dist_linear.pdf}
-    \caption{GBP/USD--EUR/USD, April 2025 --- spread-return distribution (linear).}
-    \label{fig:res-gbpeur-202504-rd-lin}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/GBPUSD_EURUSD_202504_return_dist_log.pdf}
-    \caption{GBP/USD--EUR/USD, April 2025 --- spread-return distribution (log $y$-axis).}
-    \label{fig:res-gbpeur-202504-rd-log}
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202408_return_dist_log.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202412_return_dist_log.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202504_return_dist_log.pdf}
+    \end{minipage}
+    \caption{AUD/USD--NZD/USD spread-return distributions across the three monthly episodes. Columns: August 2024 (left), December 2024 (centre), April 2025 (right). Top row: linear $y$-axis showing the bulk of the distribution; bottom row: log $y$-axis exposing the tails relative to the Gaussian comparator.}
+    \label{fig:res-audnzd-rd-grid}
 \end{figure}
 
 \subsection{Cross-pair performance}\label{sec:result-baseline}
