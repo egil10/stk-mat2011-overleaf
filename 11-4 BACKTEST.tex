@@ -10,29 +10,34 @@ Every position change in leg $i$ pays the half-spread $\mathrm{HS}_t^{\,i}$ of \
 
 \subsection{Performance metrics}\label{sec:metrics} 
 
-Let $R_t$ denote the strategy return at bar $t$, $\mu_R = \mathbb{E}[R]$, $\sigma_R = \sqrt{\mathrm{Var}(R)}$, $V_t$ the portfolio value with running peak $V_t^{\star} = \max_{s \leq t} V_s$, and $R_f$ a benchmark risk-free rate (set to zero). Statistical metrics describe the shape of the return distribution; financial metrics translate it into capital outcomes \parencite{tsay2010,cont2001empirical}.
-\begin{align}
-    \sigma_{\mathrm{ann}} &= \sigma_R\sqrt{T},
-    & \mathcal{S} &= \tfrac{\mathbb{E}[(R-\mu_R)^{3}]}{\sigma_R^{3}},
-    & \mathcal{K} &= \tfrac{\mathbb{E}[(R-\mu_R)^{4}]}{\sigma_R^{4}}, \label{eq:statmetrics}\\
-    \mathrm{VaR}_\alpha &= -Q_{1-\alpha}(R),
-    & \mathrm{CVaR}_\alpha &= -\mathbb{E}[R \mid R \leq -\mathrm{VaR}_\alpha],
-    & \mathrm{TF} &= \tfrac{\mathrm{CVaR}_\alpha}{\mathrm{VaR}_\alpha}, \label{eq:varcvar}
-\end{align}
-with $\alpha = 0.95$ \parencite{artzner1999coherent}. The drawdown family uses $D_t = (V_t^{\star} - V_t)/V_t^{\star}$:
-\begin{equation}\label{eq:drawdown}
-    \mathrm{MDD} = \max_t D_t,
+Let $R_t$ denote the strategy return at bar $t$, $\mu_R = \mathbb{E}[R]$, $\sigma_R = \sqrt{\mathrm{Var}(R)}$, $V_t$ the portfolio value with running peak $V_t^{\star} = \max_{s \leq t} V_s$, and $R_f$ a benchmark risk-free rate (set to zero). Statistical metrics describe the shape of the return distribution; financial metrics translate it into capital outcomes \parencite{tsay2010,cont2001empirical}. The annualised volatility, skewness, and excess kurtosis are
+\begin{equation}\label{eq:statmetrics}
+    \sigma_{\mathrm{ann}} \;=\; \sigma_R\sqrt{T},
     \qquad
-    \mathrm{UI} = \sqrt{\tfrac{1}{N}\textstyle\sum_t D_t^{2}},
+    \mathcal{S} \;=\; \frac{\mathbb{E}[(R-\mu_R)^{3}]}{\sigma_R^{3}},
+    \qquad
+    \mathcal{K} \;=\; \frac{\mathbb{E}[(R-\mu_R)^{4}]}{\sigma_R^{4}}.
 \end{equation}
-where $\mathrm{UI}$ is the Ulcer index of \textcite{martin1989ulcer}; the maximum drawdown is treated in \textcite{magdonismail2004drawdown}. Risk-adjusted ratios relate excess return to risk:
+With $\alpha = 0.95$, the Value-at-Risk, Conditional VaR, and tail-fatness ratio are \parencite{artzner1999coherent}
+\begin{equation}\label{eq:varcvar}
+    \mathrm{VaR}_\alpha \;=\; -Q_{1-\alpha}(R),
+    \qquad
+    \mathrm{CVaR}_\alpha \;=\; -\,\mathbb{E}\bigl[R \mid R \leq -\mathrm{VaR}_\alpha\bigr],
+    \qquad
+    \mathrm{TF} \;=\; \frac{\mathrm{CVaR}_\alpha}{\mathrm{VaR}_\alpha}.
+\end{equation}
+The drawdown family uses $D_t = (V_t^{\star} - V_t)/V_t^{\star}$, with maximum drawdown and Ulcer index
+\begin{equation}\label{eq:drawdown}
+    \mathrm{MDD} \;=\; \max_{t}\, D_t,
+    \qquad
+    \mathrm{UI} \;=\; \sqrt{\,\frac{1}{N}\sum_{t=1}^{N} D_t^{2}\,},
+\end{equation}
+where $\mathrm{UI}$ is the Ulcer index of \textcite{martin1989ulcer} and the maximum drawdown is treated in \textcite{magdonismail2004drawdown}. Risk-adjusted ratios relate excess return to risk: the Sharpe ratio \parencite{sharpe1994ratio} divides by total volatility, the Sortino ratio \parencite{sortino1991downside} divides by downside deviation $\sigma_d$, and the Calmar ratio divides annualised return $\mathrm{AR}$ by the worst observed drawdown,
 \begin{equation}\label{eq:ratios}
-    \mathrm{SR} = \tfrac{\mu_R - R_f}{\sigma_R}
-    \quad\text{\parencite{sharpe1994ratio}},
+    \mathrm{SR} \;=\; \frac{\mu_R - R_f}{\sigma_R},
     \qquad
-    \mathrm{Sortino} = \tfrac{\mu_R - R_f}{\sigma_d}
-    \quad\text{\parencite{sortino1991downside}},
+    \mathrm{Sortino} \;=\; \frac{\mu_R - R_f}{\sigma_d},
     \qquad
-    \mathrm{Calmar} = \tfrac{\mathrm{AR}}{\mathrm{MDD}}.
+    \mathrm{Calmar} \;=\; \frac{\mathrm{AR}}{\mathrm{MDD}}.
 \end{equation}
 Trade-level diagnostics (win rate, market exposure, profit factor, payoff ratio) summarise frequency and size; see Section~\ref{sec:result} for their interpretation.
