@@ -23,8 +23,5 @@ The exercise is deliberately layered. We first build a single tradable signal, t
     \label{fig:true-and-hidden-states}
 \end{figure}
 
-\paragraph{Notation and abbreviations.}\label{sec:abbrev}
-Currency-pair constructions are abbreviated as AUD/NZD (AUD/USD--NZD/USD), EUR/NOK--SEK (EUR/NOK--EUR/SEK), and GBP/EUR (GBP/USD--EUR/USD), with full names on first use and in headers. The four strategies are BH (Buy~\&~Hold), BL (baseline cointegration), AR (binary AR-gated), and MS (continuous MS-AR threshold). Modelling acronyms: HMM (Hidden Markov Model), AR($p$) (order-$p$ autoregression), OLS (ordinary least squares), ADF (Augmented Dickey--Fuller), EM (expectation--maximisation), MR (mean-reverting, low-variance regime), DR (drifting, high-variance regime). Reported quantities: SR (Sharpe ratio), MDD (maximum drawdown), UI (Ulcer index), VaR and CVaR (95\% Value-at-Risk and Conditional VaR), bps (basis points, $10^{-4}$), RT (round-trip trade). A full symbol dictionary closes the appendix in Section~\ref{sec:apx-symbols}.
-
 \paragraph{Structure.}
 Section~\ref{sec:data} describes the data; Section~\ref{sec:pairsbaseline} develops the cointegration spread and the baseline rule; Section~\ref{sec:regimemodels} introduces the AR/HMM machinery and the regime-aware strategies; Section~\ref{sec:backtest} specifies the walk-forward back-test and the performance metrics; Section~\ref{sec:result} reports the empirical results; Section~\ref{sec:conclusion} concludes.
