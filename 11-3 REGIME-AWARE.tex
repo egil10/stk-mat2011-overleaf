@@ -80,7 +80,7 @@ replaces $z_q$ in \eqref{eq:baselinerule} by $z_q^{\mathrm{eff}}(t)$. When the M
 
 Table~\ref{tab:strategy_definitions} summarises the four strategies compared throughout the rest of the thesis. The three active rules all share the same spread $S_t$ and $z$-score $Z_t$, and differ only in whether and how $\gamma_t^{\mathrm{MR}}$ enters the decision. AR and MS-AR are not separate forecasters: on any bar where the HMM does not intervene they trade exactly like the baseline, so any difference between baseline and the regime-aware variants comes entirely from the gate suppressing or attenuating baseline trades.
 
-\begin{table}[H]
+\begin{table}[htbp!]
 \centering
 \caption{The four strategies compared in this thesis. The ``Gate'' column gives the indicator multiplying the baseline position $\pi_t^{\mathrm{baseline}}$ before it is taken; a value of $1$ means the baseline is always allowed to trade.}
 \label{tab:strategy_definitions}

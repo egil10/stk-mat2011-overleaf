@@ -6,7 +6,7 @@ All numbers are net of the half-spread-plus-commission cost model of Section~\re
 
 Table~\ref{tab:result_pnl} reports total PnL in basis points for the four strategies across the nine pair--month cells. Table~\ref{tab:result_activity} reports trading activity and the annualised Sharpe ratio for the three active rules on the same cells. The full back-test grid (return, risk, risk-adjusted, trading, and distributional metrics) is in Tables~\ref{tab:audusd_nzdusd_tearsheet_stacked}--\ref{tab:gbpusd_eurusd_tearsheet_stacked} of Appendix~\ref{sec:apx-tearsheets}, and the raw day-by-day ledgers are in Appendix~\ref{sec:apx-daily-tables} (Tables~\ref{tab:app_audnzd_daily_stacked}--\ref{tab:app_gbpeur_daily_stacked}).
 
-\begin{table}[H]
+\begin{table}[htbp!]
 \centering
 \captionsetup{font=footnotesize}
 \caption{Total PnL by pair, month, and strategy, in basis points, net of half-spread plus $0.05\,\text{bps}$ commission. BH is Buy~\&~Hold, BL the baseline cointegration rule, AR the binary AR-gated variant, and MS the continuous MS-AR threshold.}
@@ -31,7 +31,7 @@ GBP/USD--EUR/USD & Aug.\ 2024 &  $+65.1$  & $-396.1$    & $-48.6$    & $-60.1$  
 \end{tabular*}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[htbp!]
 \centering
 \captionsetup{font=footnotesize}
 \caption{Trading activity and Sharpe ratio for the three active strategies, by pair and month. ``RT'' is the number of round-trip trades; ``Exp.\ \%'' is the percentage of bars in which the strategy holds a non-zero position; Sharpe is annualised \parencite{sharpe1994ratio}.}
@@ -74,14 +74,14 @@ The results in \cref{tab:coint-audnzd,tab:coint-noksek,tab:coint-gbpeur} show th
 
 A representative screener panel for AUD/USD--NZD/USD in August 2024 is shown in \cref{fig:cointegration-audnzd-202408}. The complete August 2024 screener panels for all three pairs are reported in Appendix~\ref{sec:apx-cointegration-screener}.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_202408_cointegration_screener.pdf}
     \caption{AUD/USD--NZD/USD, August 2024: cointegration screener diagnostics. The panel documents the estimated long-run relation between the two legs and the residual-spread behaviour used to assess whether the pair is statistically suitable for relative-value trading before strategy-level entry, exit, and regime-filtering rules are applied.}
     \label{fig:cointegration-audnzd-202408}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[htbp!]
 \centering
 \captionsetup{font=footnotesize}
 \caption{Cointegration-screener diagnostics for AUD/USD--NZD/USD. The upper block reports full-sample diagnostics for each monthly episode. The lower block reports rolling-window diagnostics, where rejection shares measure the fraction of rolling windows with cointegration-test p-values below the stated threshold. HL denotes residual half-life in bars.}
@@ -119,7 +119,7 @@ Apr.\ 2025 & $13.3\%$ & $26.7\%$ & $112.9$ & $92$--$206$  & $0.8908 \pm 0.2999$ 
 
 The shape of the per-bar spread-return distribution makes the friction story concrete. Figure~\ref{fig:res-audnzd-rd-grid} shows, for AUD/USD--NZD/USD across the three episodes, the spread-return density on a linear $y$-axis (top row) and on a log $y$-axis (bottom row). The linear panels show a sharply peaked, near-zero-centred bulk, while the log panels expose Gaussian-incompatible tails at three or more standard deviations \parencite{cont2001empirical}. The corresponding grids for the other two pairs are in Appendix~\ref{sec:apx-return-distributions}; on EUR/NOK--EUR/SEK the log-tail panels are visibly the widest, which previews the largest active-strategy losses we report below.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \begin{minipage}[t]{0.32\textwidth}
         \centering
@@ -156,7 +156,7 @@ The shape of the per-bar spread-return distribution makes the friction story con
 
 Figure~\ref{fig:audnzd-3m} shows the cumulative profit-and-loss of the four strategies stacked across the three months for AUD/USD--NZD/USD. The corresponding panels for the other two pairs are collected on a single symlog grid in Appendix~\ref{sec:apx-strategy-panels}. Passive Buy~\&~Hold drifts mildly, the Baseline (rolling $z$-score with $z_q = 2.0$, $z_x = 0$) bleeds steadily, and the two HMM-aware strategies sit in between, losing less than the Baseline but never crossing into profit.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[width=\linewidth]{plots/AUDUSD_NZDUSD_three_month_strategy_panel_symlog.pdf}
     \caption{AUD/USD--NZD/USD, three-month strategy comparison on a symmetric-log $y$-axis. Each panel stacks the four cumulative-PnL curves for one month under the half-spread plus $0.05\,\text{bps}$ commission cost model. The Baseline (blue) leaks steadily; the AR gate (green) and MS-AR threshold (red) trace a much flatter, less negative trajectory; Buy~\&~Hold (grey) is positive in April 2025.}

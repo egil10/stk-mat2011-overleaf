@@ -4,7 +4,7 @@ Modern financial markets are largely mathematical objects. The trading pits and 
 
 Foreign exchange (FX) is a natural setting for this problem. It is global, electronic, and open almost twenty-four hours a day. On daily scales, exchange rates look like continuous diffusions \parencite{blackscholes1973pricing}. At the tick level, prices move in small discrete jumps, quotes update asynchronously, and the path is dominated by microstructure frictions \parencite{roll1984spread}. Figure~\ref{fig:high-frequency-microstructure} shows this scale dependence directly: the daily view is roughly diffusive, the hourly view shows local mean reversion, and the tick view is mostly bid--ask bounce. Currency pairs with shared economic exposure are natural candidates for pairs trading, where one bets on short-term deviations between two related exchange rates reverting to a common trend \parencite{gatev2006pairs}. The three pairs we study (AUD/USD vs NZD/USD, EUR/NOK vs EUR/SEK, GBP/USD vs EUR/USD) span a range of liquidity and dependence.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[width=0.9\linewidth]{plots/high_frequency_minimal.pdf}
     \caption{The same FX series at three temporal resolutions. Top: daily closes, approximately diffusive. Middle: hourly bars, local mean reversion within a slow drift. Bottom: raw tick mid-prices, dominated by discrete bid--ask bounce and asynchronous quote updates.}
@@ -16,7 +16,7 @@ A second difficulty is that each pair is itself non-stationary. Volatility clust
 \paragraph{Role of the HMM in this thesis.}\label{sec:roleofhmm}
 The set-up is layered. We first build a single tradable signal: the rolling cointegration spread $S_t$ \parencite{engle1987cointegration}, standardised into a $z$-score $Z_t$, plugged into a textbook pairs-trading rule \parencite{gatev2006pairs}. This baseline is back-tested under realistic transaction costs and serves as the benchmark that any more complex method has to beat. We then fit a Markov-switching AR(1) to the same $S_t$ \parencite{hamilton1989new} to recover a hidden chain $K_t$ representing the active regime, and use it as a gate on top of the baseline rather than as a separate forecaster. The trading direction is always set by $Z_t$, and the entry rule is identical to the baseline; the HMM only decides whether the rule is allowed to act at a given bar. The regime-aware strategies cannot enter a trade the baseline does not enter, nor flip a position the baseline does not flip; they can only suppress trading in high-volatility regimes. Any difference in performance between the baseline and the regime-aware variants is therefore due to the gate alone, which is why baseline results are reported first. Figure~\ref{fig:true-and-hidden-states} previews this regime recovery on a simulated two-regime AR(1).
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[width=0.85\linewidth]{plots/true-and-hidden-states.pdf}
     \caption{HMM regime recovery on a simulated two-regime AR(1). Top: observable series with the true generating regime shaded. Middle: smoothed posterior probability of the high-volatility regime from the Baum--Welch fit \parencite{baum1970maximization}. Bottom: classification error. The hidden chain is recovered from the observable series alone, the same property used by the regime gate of Section~\ref{sec:regimestrategies} on the real cointegration spread.}
