@@ -1,6 +1,6 @@
 \subsection{Tearsheets}\label{sec:apx-tearsheets}
 
-The five blocks in the tables below read as follows. The Return block reports the realised cumulative PnL in basis points over the episode (Total Return), its annualised counterpart (Annual Return, computed as $\text{bps}\times T_{\text{ann}}/T_{\text{episode}}$), and the best/worst monthly values; with only one month per episode, the best and worst columns coincide with the total and the ``positive months'' column is $0\%$ or $100\%$. The Risk block reports annualised volatility $\sigma_{\mathrm{ann}}$ of \eqref{eq:statmetrics}, the maximum drawdown $\mathrm{MDD}$ and its duration in bars, the Ulcer index $\mathrm{UI}$ of \eqref{eq:drawdown}, and the $95\%$ Value-at-Risk and Conditional VaR of \eqref{eq:varcvar}. The Risk-adj.\ block reports the Sharpe, Sortino, and Calmar ratios of \eqref{eq:ratios}, together with the trade-level Profit Factor (sum of winning trades divided by absolute sum of losing trades), Payoff Ratio (average win divided by average loss), and a Tail Ratio (the ratio of the $95$th to the absolute $5$th percentile of returns). The Trading block reports the number of round-trip trades, the win rate, the market exposure (fraction of bars with a non-zero position), and the average winning and losing trade in basis points. The Distr.\ block reports the per-bar skewness $\mathcal{S}$ and kurtosis $\mathcal{K}$ of \eqref{eq:statmetrics}, both of which are large in magnitude under the conditionally heteroskedastic, heavy-tailed return distribution discussed in Section~\ref{sec:result-pairdiag}. 
+The five blocks in the tables below read as follows. The Return block reports the realised cumulative PnL in basis points over the episode (Total Return) and its annualised counterpart (Annual Return, computed as $\text{bps}\times T_{\text{ann}}/T_{\text{episode}}$). The Risk block reports annualised volatility $\sigma_{\mathrm{ann}}$ of \eqref{eq:coremetrics}, the maximum drawdown $\mathrm{MDD}$ and its duration in bars, the Ulcer index $\mathrm{UI}$ of \eqref{eq:ulcer}, and the $95\%$ Value-at-Risk and Conditional VaR of \eqref{eq:varcvar}. The Risk-adj.\ block reports the Sharpe ratio of \eqref{eq:coremetrics} and the Sortino and Calmar ratios of \eqref{eq:extraratios}, together with the trade-level Profit Factor (sum of winning trades divided by absolute sum of losing trades), Payoff Ratio (average win divided by average loss), and a Tail Ratio (the ratio of the $95$th to the absolute $5$th percentile of returns). The Trading block reports the number of round-trip trades, the win rate, the market exposure (fraction of bars with a non-zero position), and the average winning and losing trade in basis points. The Distr.\ block reports the per-bar skewness $\mathcal{S}$ and kurtosis $\mathcal{K}$ of \eqref{eq:distshape}, both of which are large in magnitude under the conditionally heteroskedastic, heavy-tailed return distribution discussed in Section~\ref{sec:result-pairdiag}.
 
 \clearpage
 
@@ -20,22 +20,13 @@ The five blocks in the tables below read as follows. The Return block reports th
 & \textbf{BH} & \textbf{BL} & \textbf{AR} & \textbf{MS} \\
 \midrule
 
-\textbf{Return} 
+\textbf{Return}
 & Aug. 2024 & Total Return (bps)        & -45.84  & -966.47   & -179.31  & -206.06 \\
 &           & Annual Return (bps)       & -577.34 & -12172.56 & -2258.32 & -2595.27 \\
-&           & Best Month (bps)          & -45.84  & -966.47   & -179.31  & -206.06 \\
-&           & Worst Month (bps)         & -45.84  & -966.47   & -179.31  & -206.06 \\
-&           & Positive Months           & 0.00\%  & 0.00\%    & 0.00\%   & 0.00\% \\
 & Dec. 2024 & Total Return (bps)        & -39.34  & -776.45   & -136.70  & -158.02 \\
 &           & Annual Return (bps)       & -495.49 & -9779.28  & -1721.69 & -1990.25 \\
-&           & Best Month (bps)          & -39.34  & -776.45   & -136.70  & -158.02 \\
-&           & Worst Month (bps)         & -39.34  & -776.45   & -136.70  & -158.02 \\
-&           & Positive Months           & 0.00\%  & 0.00\%    & 0.00\%   & 0.00\% \\
 & Apr. 2025 & Total Return (bps)        & 155.23   & -2521.35  & -652.23   & -731.32 \\
 &           & Annual Return (bps)       & 1955.13  & -31756.03 & -8214.73  & -9210.85 \\
-&           & Best Month (bps)          & 155.23   & -2521.35  & -652.23   & -731.32 \\
-&           & Worst Month (bps)         & 155.23   & -2521.35  & -652.23   & -731.32 \\
-&           & Positive Months           & 100.00\% & 0.00\%    & 0.00\%    & 0.00\% \\
 \midrule
 
 \textbf{Risk}
@@ -139,19 +130,10 @@ The five blocks in the tables below read as follows. The Return block reports th
 \textbf{Return}
 & Aug. 2024 & Total Return (bps)        & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
 &           & Annual Return (bps)       & -1870.45  & -79062.97  & -22881.30  & -31367.54 \\
-&           & Best Month (bps)          & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
-&           & Worst Month (bps)         & -148.51   & -6277.42   & -1816.72   & -2490.51 \\
-&           & Positive Months           & 0.00\%    & 0.00\%     & 0.00\%     & 0.00\% \\
 & Dec. 2024 & Total Return (bps)        & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
 &           & Annual Return (bps)       & 763.03   & -56347.12  & -20061.51  & -26081.12 \\
-&           & Best Month (bps)          & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
-&           & Worst Month (bps)         & 60.58    & -4473.83   & -1592.84   & -2070.78 \\
-&           & Positive Months           & 100.00\% & 0.00\%     & 0.00\%     & 0.00\% \\
 & Apr. 2025 & Total Return (bps)        & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
 &           & Annual Return (bps)       & 6646.26  & -250717.51  & -102062.01  & -119490.65 \\
-&           & Best Month (bps)          & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
-&           & Worst Month (bps)         & 527.70   & -19906.39   & -8103.49    & -9487.28 \\
-&           & Positive Months           & 100.00\% & 0.00\%      & 0.00\%      & 0.00\% \\
 \midrule
 
 \textbf{Risk}
@@ -254,19 +236,10 @@ The five blocks in the tables below read as follows. The Return block reports th
 \textbf{Return}
 & Aug. 2024 & Total Return (bps)        & 65.09    & -396.06    & -48.60   & -60.14 \\
 &           & Annual Return (bps)       & 819.75   & -4988.30   & -612.05  & -757.45 \\
-&           & Best Month (bps)          & 65.09    & -396.06    & -48.60   & -60.14 \\
-&           & Worst Month (bps)         & 65.09    & -396.06    & -48.60   & -60.14 \\
-&           & Positive Months           & 100.00\% & 0.00\%     & 0.00\%   & 0.00\% \\
 & Dec. 2024 & Total Return (bps)        & 25.10    & -730.39    & -69.62   & -75.81 \\
 &           & Annual Return (bps)       & 316.08   & -9199.19   & -876.90  & -954.82 \\
-&           & Best Month (bps)          & 25.10    & -730.39    & -69.62   & -75.81 \\
-&           & Worst Month (bps)         & 25.10    & -730.39    & -69.62   & -75.81 \\
-&           & Positive Months           & 100.00\% & 0.00\%     & 0.00\%   & 0.00\% \\
 & Apr. 2025 & Total Return (bps)        & 15.94    & -1509.17   & -350.61   & -405.94 \\
 &           & Annual Return (bps)       & 200.78   & -19007.67  & -4415.92  & -5112.73 \\
-&           & Best Month (bps)          & 15.94    & -1509.17   & -350.61   & -405.94 \\
-&           & Worst Month (bps)         & 15.94    & -1509.17   & -350.61   & -405.94 \\
-&           & Positive Months           & 100.00\% & 0.00\%     & 0.00\%    & 0.00\% \\
 \midrule
 
 \textbf{Risk}

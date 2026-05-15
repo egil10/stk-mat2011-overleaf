@@ -4,7 +4,7 @@
 
 \section{Regime-aware models}\label{sec:regimemodels}
 
-We introduce the AR/HMM machinery on a generic series and then specialise to the spread $S_t$. The autoregressive model of order $p$ projects a series $Y_t$ on its $p$ most recent past values \parencite{hamilton1994},
+We introduce the AR/HMM machinery on a generic series $Y_t$ and then apply it to the spread $S_t$. An autoregressive model of order $p$ predicts $Y_t$ from its $p$ most recent past values \parencite{hamilton1994},
 \begin{equation}\label{eq:arp}
     Y_t \;=\; c \;+\; \phi_{1} Y_{t-1} \;+\; \cdots \;+\; \phi_{p} Y_{t-p} \;+\; \varepsilon_t, \qquad \varepsilon_t \overset{\mathrm{iid}}{\sim} \mathcal{N}(0,\sigma^{2}),
 \end{equation}
@@ -12,56 +12,56 @@ with the simplest non-trivial case AR(1),
 \begin{equation}\label{eq:ar1}
     Y_t \;=\; c + \phi\, Y_{t-1} + \varepsilon_t,
 \end{equation}
-having unconditional mean $c/(1-\phi)$ for $|\phi|<1$. AR(1) captures momentum ($\phi > 0$) or immediate mean reversion ($\phi < 0$) only if $(c,\phi,\sigma^{2})$ are constant over the sample; to relax that we let the parameters of \eqref{eq:ar1} be piecewise constant, switching with an unobserved discrete-time Markov chain $K_t \in \{1,\ldots,K\}$ \parencite{hamilton1989new}. The dynamics of $K_t$ are governed by a $K \times K$ transition matrix $\mathbf{P} = (p_{ij})$ and an initial distribution $\nu = (\nu_1,\ldots,\nu_K)^{\top}$,
+which has unconditional mean $c/(1-\phi)$ when $|\phi|<1$. AR(1) describes either momentum ($\phi > 0$) or fast mean reversion ($\phi < 0$), but only if the parameters $(c,\phi,\sigma^{2})$ stay constant throughout the sample. We relax that constancy assumption by letting the parameters switch between a small set of values according to an unobserved Markov chain $K_t \in \{1,\ldots,K\}$ \parencite{hamilton1989new}. The chain is described by a $K \times K$ transition matrix $\mathbf{P} = (p_{ij})$ and an initial distribution $\nu = (\nu_1,\ldots,\nu_K)^{\top}$,
 \begin{equation}\label{eq:transitionmatrix}
     p_{ij} \;=\; \mathbb{P}(K_t = j \mid K_{t-1} = i),
     \qquad
     \nu_k \;=\; \mathbb{P}(K_1 = k),
 \end{equation}
-with the row-stochastic constraint $\sum_{j=1}^{K} p_{ij} = 1$ for every $i$. The Markov assumption is deliberately simple: the future depends on the past only through the current state, yet the framework is rich enough to capture persistence, sudden switching, and regime-dependent parameters within a single probabilistic model.
+with row sums $\sum_{j=1}^{K} p_{ij} = 1$ for every $i$. The Markov assumption is deliberately simple: the future depends on the past only through the current state. But the model is still rich enough to capture persistence, sudden switching, and regime-dependent parameters in a single probabilistic story.
 
 \subsection{Markov-switching AR(1) on the spread}\label{sec:msarspread}
 
-We specialise to $S_t$ from \eqref{eq:rollingspreadret} and take $K = 2$. The joint generative model is
+We now specialise to $S_t$ from \eqref{eq:rollingspreadret} and take $K = 2$. Conditional on the active regime $K_t = k$, the spread follows an AR(1) with its own intercept, AR coefficient, and innovation variance:
 \begin{equation}\label{eq:msargen}
 \begin{aligned}
     S_t \mid S_{t-1},\, K_t = k \;&\sim\; \mathcal{N}\!\bigl(c^{(k)} + \rho^{(k)} S_{t-1},\;(\sigma^{(k)})^{2}\bigr),\\[4pt]
-    \mathbf{P} \;&=\; \begin{pmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{pmatrix},
+    \mathbf{P} \;&=\; \begin{pmatrix} p_{11} & p_{12} \\ p_{21} & p_{22} \end{pmatrix}.
 \end{aligned}
 \end{equation}
-an AR(1) on the spread with all three parameters $(c^{(k)},\rho^{(k)},\sigma^{(k)})$ switching \parencite{krolzig1997msvar}. For $|\rho^{(k)}|<1$ the regime mean is $\mu^{(k)} = c^{(k)}/(1-\rho^{(k)})$, yielding the mean-deviation form
+All three regime-level parameters $(c^{(k)},\rho^{(k)},\sigma^{(k)})$ switch with the chain \parencite{krolzig1997msvar}. For $|\rho^{(k)}|<1$ the regime-$k$ unconditional mean is $\mu^{(k)} = c^{(k)}/(1-\rho^{(k)})$, which lets us write the same model in mean-deviation form,
 \begin{equation}\label{eq:meandevparam}
     S_t \;=\; \mu^{(k)} \;+\; \rho^{(k)}\bigl(S_{t-1} - \mu^{(k)}\bigr) \;+\; \varepsilon_t^{(k)},
     \qquad
     \varepsilon_t^{(k)} \;\sim\; \mathcal{N}\bigl(0,\,(\sigma^{(k)})^{2}\bigr).
 \end{equation}
-Values of $\rho^{(k)}$ close to zero correspond to fast mean reversion; values close to unity, to near-random-walk behaviour. Before estimation, $S_t$ is winsorised at $\mathrm{median}(S) \pm 4\cdot\mathrm{std}(S)$ and rescaled by $10^{4}$ for numerical stability.
+A $\rho^{(k)}$ near zero means the spread reverts quickly; a $\rho^{(k)}$ near one means it behaves almost like a random walk. Before estimation, $S_t$ is winsorised at $\mathrm{median}(S) \pm 4\cdot\mathrm{std}(S)$ and rescaled by $10^{4}$ for numerical stability.
 
 \paragraph{Estimation, regime choice, and labelling.} The HMM parameter set
 \begin{equation}\label{eq:thetadef}
     \Theta \;=\; \bigl\{\, \nu,\; \mathbf{P},\; c^{(k)},\; \rho^{(k)},\; \sigma^{(k)} : k=1,\ldots,K \,\bigr\}
 \end{equation}
-is estimated by maximum likelihood, fitted with the Markov-switching routine in the \texttt{statsmodels} package \parencite{seabold2010statsmodels} from multiple random starts to mitigate convergence to local maxima. The smoothed regime posteriors
+is fitted by maximum likelihood using the Markov-switching routine in the \texttt{statsmodels} package \parencite{seabold2010statsmodels}, restarted from several random seeds to reduce sensitivity to local maxima. The same fit produces the smoothed regime posteriors
 \begin{equation}\label{eq:smoothedposterior}
-    \gamma_t(k) \;=\; \mathbb{P}(K_t = k \mid S_1,\ldots,S_T;\Theta)
+    \gamma_t(k) \;=\; \mathbb{P}(K_t = k \mid S_1,\ldots,S_T;\Theta).
 \end{equation}
-fall out of the same fit. We fix $K = 2$ throughout, motivated by the regime-switching literature in which a parsimonious two-state model already captures the dominant non-stationarity in returns \parencite{hamilton1989new}; in preliminary exploration $K \in \{3, 4\}$ either failed to separate cleanly across seeds or split the high-volatility state into sub-regimes whose entry implications were indistinguishable at the relevant cost level. With $K=2$ we label regimes by innovation variance,
+We fix $K = 2$ throughout. A two-state model (one ``normal'' low-volatility regime and one ``stress'' high-volatility regime) is the standard parsimonious choice in the regime-switching literature \parencite{hamilton1989new}; in our preliminary exploration $K \in \{3, 4\}$ either failed to separate cleanly across seeds or split the high-volatility state into sub-regimes whose entry implications were indistinguishable at our cost level. With $K=2$ we label the two regimes by innovation variance,
 \begin{equation}\label{eq:regimelabels}
     k_{\mathrm{MR}} \;=\; \arg\min_{k}\,\sigma^{(k)},
     \qquad
     k_{\mathrm{DR}} \;=\; \arg\max_{k}\,\sigma^{(k)},
 \end{equation}
-giving a mean-reverting (MR) and a drifting (DR) regime, with $\gamma_t^{\mathrm{MR}} = \mathbb{P}(K_t = k_{\mathrm{MR}} \mid S_1,\ldots,S_T)$ and $\gamma_t^{\mathrm{DR}} = 1 - \gamma_t^{\mathrm{MR}}$. In live trading only past observations are available, so the filtered posterior $\mathbb{P}(K_t = k_{\mathrm{MR}} \mid S_1,\ldots,S_t)$ is used inside the walk-forward back-test while the smoothed posterior is reserved for diagnostic figures.
+so the low-variance state is called the mean-reverting regime (MR) and the high-variance state the drifting regime (DR). We write $\gamma_t^{\mathrm{MR}} = \mathbb{P}(K_t = k_{\mathrm{MR}} \mid S_1,\ldots,S_T)$ and $\gamma_t^{\mathrm{DR}} = 1 - \gamma_t^{\mathrm{MR}}$. In live trading only past data is available, so the back-test uses the filtered posterior $\mathbb{P}(K_t = k_{\mathrm{MR}} \mid S_1,\ldots,S_t)$ inside the gate; the smoothed posterior is kept for the diagnostic figures.
 
 \subsection{Regime-aware strategies}\label{sec:regimestrategies}
 
-We build two regime-aware strategies on top of the baseline \eqref{eq:baselinerule}. Both inherit the baseline's entry direction and exit logic without modification: at every bar the candidate position is $\pi_t^{\mathrm{baseline}}$ from \eqref{eq:baselinerule}, and the regime model can only veto or attenuate that candidate. Neither variant can generate a position the baseline did not generate, nor reverse a position the baseline took.
+We build two regime-aware strategies on top of the baseline \eqref{eq:baselinerule}. Both keep the baseline's entry direction and exit logic untouched: at every bar the candidate position is $\pi_t^{\mathrm{baseline}}$ from \eqref{eq:baselinerule}, and the regime model can only veto or attenuate that candidate. Neither variant can generate a position the baseline did not generate, nor reverse a position the baseline took.
 
 \paragraph{AR-gated.} A binary gate with danger threshold $\delta \in (0,1)$,
 \begin{equation}\label{eq:argate}
     G_t \;=\; \mathbbm{1}\!\bigl\{\,\gamma_t^{\mathrm{MR}} \,\geq\, 1-\delta\,\bigr\},
 \end{equation}
-modifies the rule to
+modifies the position rule to
 \begin{equation}\label{eq:arpositionrule}
     \pi_t \;=\;
     \begin{cases}
@@ -69,16 +69,16 @@ modifies the rule to
         \pi_t^{\mathrm{baseline}} & \text{if } G_t = 1.
     \end{cases}
 \end{equation}
-The gate is binary: trade exactly like the baseline, or sit in cash. It also applies to existing positions: if we are long the spread and the HMM flags danger, the position goes flat at the next bar.
+The gate is binary: either trade exactly like the baseline, or sit in cash. It also closes existing positions: if we are long the spread and the HMM flags danger, we go flat at the next bar.
 
 \paragraph{MS-AR.} A continuous, regime-weighted entry threshold,
 \begin{equation}\label{eq:msarthreshold}
     z_q^{\mathrm{eff}}(t) \;=\; \gamma_t^{\mathrm{MR}}\, z_q \;+\; \gamma_t^{\mathrm{DR}}\, z_v,
     \qquad\text{with } z_v \geq z_q,
 \end{equation}
-replaces $z_q$ in \eqref{eq:baselinerule} by $z_q^{\mathrm{eff}}(t)$. When MR is highly probable, $z_q^{\mathrm{eff}} \approx z_q$ and the strategy trades like the baseline; when DR dominates, a larger $|Z_t|$ deviation is required before entering.
+replaces $z_q$ in \eqref{eq:baselinerule} by $z_q^{\mathrm{eff}}(t)$. When the MR regime is highly probable, $z_q^{\mathrm{eff}} \approx z_q$ and the strategy trades like the baseline. When the DR regime dominates, the threshold rises towards $z_v$ and the rule needs a bigger $|Z_t|$ deviation before it enters.
 
-Table~\ref{tab:strategy_definitions} summarises the four strategies compared throughout the rest of the thesis. All three active rules share the cointegration spread $S_t$ and its $z$-score $Z_t$ and differ only in whether and how $\gamma_t^{\mathrm{MR}}$ enters the decision. In particular, AR and MS-AR are not separate forecasters; on any bar where the HMM does not intervene they trade exactly like the baseline, so any difference in performance between baseline and the regime-aware variants is attributable entirely to the gate suppressing or attenuating baseline trades.
+Table~\ref{tab:strategy_definitions} summarises the four strategies compared throughout the rest of the thesis. The three active rules all share the same spread $S_t$ and $z$-score $Z_t$, and differ only in whether and how $\gamma_t^{\mathrm{MR}}$ enters the decision. AR and MS-AR are not separate forecasters: on any bar where the HMM does not intervene they trade exactly like the baseline, so any difference between baseline and the regime-aware variants comes entirely from the gate suppressing or attenuating baseline trades.
 
 \begin{table}[H]
 \centering

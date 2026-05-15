@@ -22,7 +22,7 @@ $P_t^{\mathrm{ask},\,i}$      & Ask price of leg $i$ at time $t$. \\
 $P_t^{\mathrm{mid},\,i}$      & Mid-price, $\tfrac{1}{2}(P^{\mathrm{bid}}_t + P^{\mathrm{ask}}_t)$, see \eqref{eq:midprice}. \\
 $\mathrm{HS}_t^{\,i}$         & Basis-point half-spread of leg $i$ at time $t$, see \eqref{eq:midprice}. \\
 $L$                           & Pre-averaging block size in number of ticks, see \eqref{eq:preaverage}. \\
-$\widetilde P_k^{\,i}$        & Pre-averaged mid-price of leg $i$ at block index $k$, see \eqref{eq:preaverage}. \\
+$\overline{P}_t^{\,i}$        & Pre-averaged mid-price of leg $i$ at block index $t$, see \eqref{eq:preaverage}. \\
 $r_t^{\,i}$                   & Log return of leg $i$ at bar $t$, $\log P_t^{\mathrm{mid},\,i} - \log P_{t-1}^{\mathrm{mid},\,i}$. \\
 
 \addlinespace
@@ -69,16 +69,17 @@ $R_t$                         & Strategy return at bar $t$. \\
 $\mu_R,\;\sigma_R$            & Mean and standard deviation of $R_t$. \\
 $R_f$                         & Benchmark risk-free rate, set to zero throughout. \\
 $T$                           & Number of bars per year used in the annualisation of $\sigma_R$. \\
-$\sigma_{\mathrm{ann}}$       & Annualised return volatility, $\sigma_R\sqrt{T}$, see \eqref{eq:statmetrics}. \\
-$\mathcal{S},\;\mathcal{K}$   & Skewness and kurtosis of $R_t$, see \eqref{eq:statmetrics}. \\
+$\sigma_{\mathrm{ann}}$       & Annualised return volatility, $\sigma_R\sqrt{T}$, see \eqref{eq:coremetrics}. \\
+$\mathcal{S},\;\mathcal{K}$   & Skewness and kurtosis of $R_t$, see \eqref{eq:distshape}. \\
 $\alpha$                      & Confidence level for VaR/CVaR, $\alpha = 0.95$, see \eqref{eq:varcvar}. \\
 $\mathrm{VaR}_\alpha$         & Value-at-Risk at level $\alpha$, $-Q_{1-\alpha}(R)$. \\
 $\mathrm{CVaR}_\alpha$        & Conditional VaR (expected shortfall) at level $\alpha$. \\
 $\mathrm{TF}$                 & Tail-fatness ratio $\mathrm{CVaR}_\alpha/\mathrm{VaR}_\alpha$, see \eqref{eq:varcvar}. \\
 $V_t,\;V_t^{\star}$           & Portfolio value at bar $t$ and its running peak $\max_{s \leq t} V_s$. \\
-$D_t$                         & Drawdown $(V_t^{\star} - V_t)/V_t^{\star}$, see \eqref{eq:drawdown}. \\
-$\mathrm{MDD},\;\mathrm{UI}$  & Maximum drawdown and Ulcer index, see \eqref{eq:drawdown}. \\
-$\mathrm{SR}$                 & Sharpe ratio $(\mu_R - R_f)/\sigma_R$, see \eqref{eq:ratios}. \\
+$D_t$                         & Drawdown $(V_t^{\star} - V_t)/V_t^{\star}$, see \eqref{eq:ulcer}. \\
+$\mathrm{MDD}$                & Maximum drawdown of $D_t$, see \eqref{eq:coremetrics}. \\
+$\mathrm{UI}$                 & Ulcer index of \textcite{martin1989ulcer}, see \eqref{eq:ulcer}. \\
+$\mathrm{SR}$                 & Sharpe ratio $(\mu_R - R_f)/\sigma_R$, see \eqref{eq:coremetrics}. \\
 $\mathrm{Sortino}$            & Sortino ratio $(\mu_R - R_f)/\sigma_d$, with $\sigma_d$ the downside deviation. \\
 $\mathrm{Calmar}$             & Calmar ratio, annualised return divided by maximum drawdown. \\
 $\mathrm{AR}$                 & Annualised return used in the Calmar ratio. (Not to be confused with the AR-gated strategy.)\\

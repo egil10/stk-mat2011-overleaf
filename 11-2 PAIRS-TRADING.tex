@@ -4,27 +4,27 @@
 
 \section{Pairs trading with the baseline}\label{sec:pairsbaseline}
 
-This section defines the baseline strategy as a self-contained pairs-trading rule \parencite{gatev2006pairs}; the regime-aware extensions of Section~\ref{sec:regimemodels} keep its entry direction and only modify when it is allowed to trade.
+This section defines the baseline strategy as a self-contained pairs-trading rule \parencite{gatev2006pairs}. The regime-aware extensions of Section~\ref{sec:regimemodels} inherit its entry direction and only change when it is allowed to trade.
 
 \paragraph{Cointegration spread.}\label{sec:spread}
-Two non-stationary log-price series $\log P_t^{\mathrm{mid},\,A}$ and $\log P_t^{\mathrm{mid},\,B}$ are cointegrated if some linear combination is stationary \parencite{engle1987cointegration}:
+Two non-stationary log-price series $\log P_t^{\mathrm{mid},\,A}$ and $\log P_t^{\mathrm{mid},\,B}$ are cointegrated if some linear combination of them is stationary \parencite{engle1987cointegration}:
 \begin{equation}\label{eq:spreaddef}
     S_t \;=\; \log P_t^{\mathrm{mid},\,A} \;-\; \beta\,\log P_t^{\mathrm{mid},\,B}.
 \end{equation}
-The hedge ratio $\beta$ is estimated by the Engle--Granger two-step procedure: OLS regression of $\log P^{\mathrm{mid},\,A}$ on $\log P^{\mathrm{mid},\,B}$, with stationarity of the residuals verified by an Augmented Dickey--Fuller test \parencite{dickey1979distribution}. High-frequency FX is not globally cointegrated: $\beta$ drifts with liquidity, session structure, and pair-specific shocks. We therefore estimate $\beta_t$ by rolling OLS with window $W_\beta$. Writing $x_s = \log P_s^{\mathrm{mid},\,B}$, $y_s = \log P_s^{\mathrm{mid},\,A}$, and $\mathcal{W}_t = \{t-W_\beta+1,\ldots,t\}$ with window means $\bar x_t, \bar y_t$,
+The hedge ratio $\beta$ is fitted by the Engle--Granger two-step method: an OLS regression of $\log P^{\mathrm{mid},\,A}$ on $\log P^{\mathrm{mid},\,B}$, with the residuals tested for stationarity using an Augmented Dickey--Fuller test \parencite{dickey1979distribution}. High-frequency FX is not globally cointegrated: $\beta$ drifts with liquidity, time of day, and pair-specific shocks. We therefore estimate a rolling $\beta_t$ over a window of $W_\beta$ bars. Writing $x_s = \log P_s^{\mathrm{mid},\,B}$, $y_s = \log P_s^{\mathrm{mid},\,A}$, and $\mathcal{W}_t = \{t-W_\beta+1,\ldots,t\}$ with window means $\bar x_t, \bar y_t$,
 \begin{equation}\label{eq:rollingbeta}
     \beta_t \;=\; \frac{\sum_{s \in \mathcal{W}_t}(x_s - \bar x_t)(y_s - \bar y_t)}{\sum_{s \in \mathcal{W}_t}(x_s - \bar x_t)^{2}},
     \qquad
     \alpha_t \;=\; \bar y_t \;-\; \beta_t\, \bar x_t.
 \end{equation}
-The cointegration spread and its associated return are
+The cointegration spread and its bar-by-bar return are
 \begin{equation}\label{eq:rollingspreadret}
 \begin{aligned}
     S_t \;&=\; \log P_t^{\mathrm{mid},\,A} \;-\; \beta_t \log P_t^{\mathrm{mid},\,B} \;-\; \alpha_t,\\[2pt]
     \Delta S_t \;&=\; r_t^{A} \;-\; \beta_{t-1}\, r_t^{B},
 \end{aligned}
 \end{equation}
-with bar log-returns $r_t^{i} = \log P_t^{\mathrm{mid},\,i} - \log P_{t-1}^{\mathrm{mid},\,i}$. The lag $\beta_{t-1}$ ensures the hedge ratio is observable when the return is realised.
+with bar log-returns $r_t^{i} = \log P_t^{\mathrm{mid},\,i} - \log P_{t-1}^{\mathrm{mid},\,i}$. The lag $\beta_{t-1}$ in the return makes sure the hedge ratio used to weight the legs is already known when the return is realised.
 
 \paragraph{Rolling $z$-score and the baseline rule.}\label{sec:zscore}
 The baseline reads $S_t$ through a rolling $z$-score over a window of length $W_z$,
@@ -37,7 +37,7 @@ with rolling mean and variance
     \qquad
     \bigl(\sigma_t^{S}\bigr)^{2} \;=\; \frac{1}{W_z}\sum_{s=t-W_z+1}^{t}\bigl(S_s - \mu_t^{S}\bigr)^{2}.
 \end{equation*}
-With entry threshold $z_q$ and exit threshold $z_x$, the position $\pi_t \in \{-1,0,+1\}$ is updated by
+With entry threshold $z_q$ and exit threshold $z_x$, the position $\pi_t \in \{-1,0,+1\}$ updates by
 \begin{equation}\label{eq:baselinerule}
     \pi_t \;=\;
     \begin{cases}
@@ -47,13 +47,15 @@ With entry threshold $z_q$ and exit threshold $z_x$, the position $\pi_t \in \{-
         \pi_{t-1} & \text{otherwise.}
     \end{cases}
 \end{equation}
-A long-spread position is opened when $S_t$ is sufficiently below its rolling mean and closed when it returns toward zero; the short rule is symmetric. For every unit of leg $A$ we trade $\hat{\beta}$ units of leg $B$, so the resulting portfolio is exposed to the relative move between the two legs rather than to FX direction \parencite{vidyamurthy2004pairs}. Figure~\ref{fig:longshort} illustrates the bookkeeping of a single round-trip on a representative pair.
+A long-spread position is opened when $S_t$ is far enough below its rolling mean and closed once it comes back; the short rule is the mirror image. For every unit of leg $A$ we trade $\hat{\beta}$ units of leg $B$, so the portfolio is exposed to the relative move between the two legs rather than to FX direction \parencite{vidyamurthy2004pairs}. Figure~\ref{fig:longshort} shows the mechanics of a single round-trip on a representative pair.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{plots/long-short.pdf}
-    \caption{Mechanics of a single pairs-trade. Top: the price path of each leg over the trade window. Bottom: the combined long/short portfolio, which is constructed to be exposed only to the relative move between the two legs and is approximately neutral to the common FX direction. The position is entered when the spread is far from its rolling mean (in $z$-score units) and closed as the spread reverts.}
+    \caption{Mechanics of a single pairs-trade. Top: the price path of each leg over the trade window. Bottom: the combined long/short portfolio, which is exposed only to the relative move between the two legs and is approximately neutral to the common FX direction. The position is entered when the spread is far from its rolling mean (in $z$-score units) and closed as the spread reverts.}
     \label{fig:longshort}
 \end{figure}
 
-As a benchmark we also track a do-nothing reference that simply holds a long unit spread position throughout the sample, $\pi_t^{\mathrm{BH}} = +1$ for every $t$ (Buy~\&~Hold). It is meant as the simplest possible answer to the question ``what would happen if we did not trade at all?'': it earns the bar-by-bar move $\Delta S_t$ of the cointegration spread, pays no transaction costs, and so isolates the directional drift of the spread itself from any active timing. Any active rule that fails to beat this passive line on a risk-adjusted basis is, on the data we look at, not earning its costs. The baseline assumes $S_t$ is governed by a single stationary process, so that fixed $(z_q, z_x)$ correctly characterise ``far from equilibrium'' for every $t$; two empirical features of FX tick data violate this, namely positive autocorrelation in squared spread returns (conditional heteroskedasticity \parencite{cont2001empirical}) and directional drift over hundreds of bars during news-driven episodes \parencite{hasbrouck2007microstructure}, neither of which the fixed-threshold rule can distinguish. This motivates the regime-aware extensions of Section~\ref{sec:regimemodels}.
+As a benchmark we also track a do-nothing reference that simply holds a long unit spread position throughout the sample, $\pi_t^{\mathrm{BH}} = +1$ for every $t$ (Buy~\&~Hold). It is the simplest possible answer to ``what would happen if we did not trade at all?'' It earns the bar-by-bar move $\Delta S_t$ of the cointegration spread, pays no transaction costs, and isolates the directional drift of the spread itself from any active timing. Any active rule that cannot beat this passive line on a risk-adjusted basis is, on the data we look at, not earning its costs.
+
+The baseline assumes that $S_t$ is generated by a single stationary process, so that one fixed pair of thresholds $(z_q, z_x)$ captures ``far from equilibrium'' at every $t$. Two well-known features of FX tick data make this assumption fragile: the variance of $\Delta S_t$ clusters in time (conditional heteroskedasticity, \parencite{cont2001empirical}), and the spread can drift directionally over hundreds of bars during news-driven episodes \parencite{hasbrouck2007microstructure}. The fixed-threshold rule cannot tell these episodes apart from ordinary mean reversion, which motivates the regime-aware extensions of Section~\ref{sec:regimemodels}.
