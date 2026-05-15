@@ -25,3 +25,79 @@ This appendix reports the cointegration-screening diagnostics for the August 202
 \end{figure}
 
 \clearpage
+
+\subsection{Cointegration tables}
+
+\begin{table}[H]
+\centering
+\captionsetup{font=footnotesize}
+\caption{Cointegration-screener diagnostics for EUR/NOK--EUR/SEK. The pair exhibits the strongest rolling evidence in April 2025, but it is also the most expensive pair to trade. Statistical mean reversion is therefore not sufficient on its own: the signal must survive the substantially higher transaction-cost burden. HL denotes residual half-life in bars.}
+\label{tab:coint-noksek}
+\footnotesize
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{0.95}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r}
+\toprule
+\multicolumn{4}{l}{\textbf{Full-sample diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p$-value} & \textbf{HL} & \textbf{$\beta$} \\
+\midrule
+Aug.\ 2024 & $0.4452$ & $1358.2$ & $1.0603$ \\
+Dec.\ 2024 & $0.2909$ & $690.6$  & $-1.0217$ \\
+Apr.\ 2025 & $0.0170$ & $670.2$  & $1.5689$ \\
+\bottomrule
+\end{tabular*}
+
+\vspace{0.6em}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r r r}
+\toprule
+\multicolumn{6}{l}{\textbf{Rolling-window diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p<0.05$} & \textbf{$p<0.10$} & \textbf{HL median} & \textbf{HL IQR} & \textbf{$\beta$ mean $\pm$ sd} \\
+\midrule
+Aug.\ 2024 & $6.2\%$  & $12.3\%$ & $129.2$ & $108$--$175$ & $0.7893 \pm 0.6505$ \\
+Dec.\ 2024 & $4.5\%$  & $6.8\%$  & $191.0$ & $158$--$279$ & $0.2394 \pm 0.8960$ \\
+Apr.\ 2025 & $23.1\%$ & $41.3\%$ & $100.0$ & $49$--$149$  & $0.8746 \pm 0.5419$ \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{font=footnotesize}
+\caption{Cointegration-screener diagnostics for GBP/USD--EUR/USD. Despite being the cheapest pair to trade, the spread has weak cointegration evidence across the selected monthly episodes. Full-sample p-values are high, and rolling-window rejection rates are limited, especially in August and December 2024. HL denotes residual half-life in bars.}
+\label{tab:coint-gbpeur}
+\footnotesize
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{0.95}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r}
+\toprule
+\multicolumn{4}{l}{\textbf{Full-sample diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p$-value} & \textbf{HL} & \textbf{$\beta$} \\
+\midrule
+Aug.\ 2024 & $0.5879$ & $1335.8$ & $1.3084$ \\
+Dec.\ 2024 & $0.2558$ & $599.1$  & $1.0124$ \\
+Apr.\ 2025 & $0.7905$ & $3845.5$ & $0.7376$ \\
+\bottomrule
+\end{tabular*}
+
+\vspace{0.6em}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r r r}
+\toprule
+\multicolumn{6}{l}{\textbf{Rolling-window diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p<0.05$} & \textbf{$p<0.10$} & \textbf{HL median} & \textbf{HL IQR} & \textbf{$\beta$ mean $\pm$ sd} \\
+\midrule
+Aug.\ 2024 & $0.0\%$ & $0.0\%$  & $287.7$ & $160$--$407$ & $0.9283 \pm 0.4813$ \\
+Dec.\ 2024 & $0.0\%$ & $7.3\%$  & $301.9$ & $128$--$488$ & $0.7682 \pm 0.2791$ \\
+Apr.\ 2025 & $9.2\%$ & $10.8\%$ & $201.0$ & $131$--$335$ & $0.6677 \pm 0.4401$ \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\clearpage

@@ -66,9 +66,13 @@ Why does Buy~\&~Hold dominate? The reason is mechanical, not statistical. Buy~\&
 \subsection{Pair-level diagnostics and cointegration structure}
 \label{sec:result-pairdiag}
 
-The three pair constructions cover a wide range of liquidity \parencite{roll1984spread}: GBP/USD--EUR/USD is the cheapest, AUD/USD--NZD/USD is in the middle, and EUR/NOK--EUR/SEK is the most expensive by some margin. All six leg-level return series are strongly non-Gaussian, with high kurtosis and significant Ljung--Box statistics on squared returns, consistent with conditional heteroskedasticity \parencite{cont2001empirical}. The per-bar period-return panels in Appendix~\ref{sec:apx-period-returns} show the same fat-tailed behaviour at the trade-relevant horizon.
+The three pair constructions cover a wide range of liquidity \parencite{roll1984spread}. GBP/USD--EUR/USD is the cheapest pair to trade, AUD/USD--NZD/USD sits in the middle, and EUR/NOK--EUR/SEK is the most expensive by a large margin. All six leg-level return series are strongly non-Gaussian, with high kurtosis and significant Ljung--Box statistics on squared returns, consistent with the volatility clustering and conditional heteroskedasticity commonly observed in financial returns \parencite{cont2001empirical}. The per-bar period-return panels in Appendix~\ref{sec:apx-period-returns} show that these heavy tails remain visible at the trade-relevant horizon.
 
-The more important pre-trade question, however, is not whether the individual legs are Gaussian, but whether the constructed spread has enough statistical structure to support a relative-value interpretation. The cointegration-screener panels in Appendix~\ref{sec:apx-cointegration-screener} document this directly for the August 2024 episode. They summarise the estimated long-run relation between each pair, the behaviour of the residual spread, and the evidence for stationarity or mean reversion before any trading rule is applied. Rolling Augmented Dickey--Fuller tests \parencite{dickey1979distribution} with Newey--West standard errors \parencite{neweywest1987}, computed via \texttt{statsmodels} \parencite{seabold2010statsmodels}, reject the no-cointegration null intermittently for AUD/USD--NZD/USD and GBP/USD--EUR/USD. EUR/NOK--EUR/SEK rejects globally, but its higher transaction-cost environment means that statistical mean reversion is not automatically economically exploitable. A representative screener panel is shown in \cref{fig:cointegration-audnzd-202408} \parencite{krauss2017statarb}.
+For a relative-value strategy, however, the central pre-trade question is not whether the individual legs are Gaussian. The relevant question is whether the constructed spread has enough statistical structure to justify mean-reversion trading. The cointegration screener therefore evaluates each pair-month along two dimensions. First, the full-sample test asks whether the entire monthly episode supports a stable long-run relation. Second, the rolling-window diagnostics ask whether this relation is persistent through time, or whether apparent cointegration is only a local and unstable feature of the sample.
+
+The results in \cref{tab:coint-audnzd,tab:coint-noksek,tab:coint-gbpeur} show that cointegration is episodic rather than universal. AUD/USD--NZD/USD has the cleanest full-sample evidence in December 2024, with a p-value of $0.0445$ and a comparatively short full-sample half-life of $228.1$ bars. EUR/NOK--EUR/SEK has the strongest rolling evidence in April 2025, where $23.1\%$ of windows reject at the 5\% level and $41.3\%$ reject at the 10\% level. GBP/USD--EUR/USD is generally the weakest cointegration candidate: its full-sample p-values remain high across all three months, and its rolling rejection rates are mostly close to zero. This is important because the later strategy results should not be interpreted as trades on permanently cointegrated assets. They are trades on spreads whose mean-reverting structure appears intermittently and must therefore be filtered, timed, and penalised heavily for transaction costs \parencite{dickey1979distribution,neweywest1987,seabold2010statsmodels,krauss2017statarb}.
+
+A representative screener panel for AUD/USD--NZD/USD in August 2024 is shown in \cref{fig:cointegration-audnzd-202408}. The complete August 2024 screener panels for all three pairs are reported in Appendix~\ref{sec:apx-cointegration-screener}.
 
 \begin{figure}[H]
     \centering
@@ -76,6 +80,42 @@ The more important pre-trade question, however, is not whether the individual le
     \caption{AUD/USD--NZD/USD, August 2024: cointegration screener diagnostics. The panel documents the estimated long-run relation between the two legs and the residual-spread behaviour used to assess whether the pair is statistically suitable for relative-value trading before strategy-level entry, exit, and regime-filtering rules are applied.}
     \label{fig:cointegration-audnzd-202408}
 \end{figure}
+
+\begin{table}[H]
+\centering
+\captionsetup{font=footnotesize}
+\caption{Cointegration-screener diagnostics for AUD/USD--NZD/USD. The upper block reports full-sample diagnostics for each monthly episode. The lower block reports rolling-window diagnostics, where rejection shares measure the fraction of rolling windows with cointegration-test p-values below the stated threshold. HL denotes residual half-life in bars.}
+\label{tab:coint-audnzd}
+\footnotesize
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{0.95}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r}
+\toprule
+\multicolumn{4}{l}{\textbf{Full-sample diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p$-value} & \textbf{HL} & \textbf{$\beta$} \\
+\midrule
+Aug.\ 2024 & $0.5262$ & $634.1$ & $0.9092$ \\
+Dec.\ 2024 & $0.0445$ & $228.1$ & $0.8676$ \\
+Apr.\ 2025 & $0.1127$ & $721.2$ & $0.8588$ \\
+\bottomrule
+\end{tabular*}
+
+\vspace{0.6em}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l r r r r r}
+\toprule
+\multicolumn{6}{l}{\textbf{Rolling-window diagnostics}} \\
+\midrule
+\textbf{Month} & \textbf{$p<0.05$} & \textbf{$p<0.10$} & \textbf{HL median} & \textbf{HL IQR} & \textbf{$\beta$ mean $\pm$ sd} \\
+\midrule
+Aug.\ 2024 & $4.9\%$  & $7.3\%$  & $150.3$ & $102$--$228$ & $0.7942 \pm 0.2970$ \\
+Dec.\ 2024 & $0.0\%$  & $2.4\%$  & $121.6$ & $96$--$144$  & $0.9584 \pm 0.1744$ \\
+Apr.\ 2025 & $13.3\%$ & $26.7\%$ & $112.9$ & $92$--$206$  & $0.8908 \pm 0.2999$ \\
+\bottomrule
+\end{tabular*}
+\end{table}
 
 The shape of the per-bar spread-return distribution makes the friction story concrete. Figure~\ref{fig:res-audnzd-rd-grid} shows, for AUD/USD--NZD/USD across the three episodes, the spread-return density on a linear $y$-axis (top row) and on a log $y$-axis (bottom row). The linear panels show a sharply peaked, near-zero-centred bulk, while the log panels expose Gaussian-incompatible tails at three or more standard deviations \parencite{cont2001empirical}. The corresponding grids for the other two pairs are in Appendix~\ref{sec:apx-return-distributions}; on EUR/NOK--EUR/SEK the log-tail panels are visibly the widest, which previews the largest active-strategy losses we report below.
 
