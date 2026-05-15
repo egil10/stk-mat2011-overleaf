@@ -1,0 +1,33 @@
+\subsection{Additional performance metrics}\label{sec:apx-extra-metrics}
+
+This subsection collects the distributional, tail-risk, and risk-adjusted metrics that are reported in the per-pair tearsheets but were moved out of Section~\ref{sec:backtest} to keep the body focused on the three core measures (volatility, Sharpe, max drawdown). Notation follows Section~\ref{sec:metrics}: $R_t$ is the strategy return, $\mu_R$ and $\sigma_R$ its mean and standard deviation, $V_t$ the portfolio value with running peak $V_t^{\star}$, and $R_f = 0$ the benchmark.
+
+\paragraph{Distributional shape.} Skewness and excess kurtosis describe the asymmetry and tail-heaviness of the return distribution:
+\begin{equation}\label{eq:distshape}
+    \mathcal{S} \;=\; \frac{\mathbb{E}[(R-\mu_R)^{3}]}{\sigma_R^{3}},
+    \qquad
+    \mathcal{K} \;=\; \frac{\mathbb{E}[(R-\mu_R)^{4}]}{\sigma_R^{4}}.
+\end{equation}
+
+\paragraph{Tail risk.} With $\alpha = 0.95$, the Value-at-Risk, Conditional VaR, and tail-fatness ratio are \parencite{artzner1999coherent}
+\begin{equation}\label{eq:varcvar}
+    \mathrm{VaR}_\alpha \;=\; -Q_{1-\alpha}(R),
+    \qquad
+    \mathrm{CVaR}_\alpha \;=\; -\,\mathbb{E}\bigl[R \mid R \leq -\mathrm{VaR}_\alpha\bigr],
+    \qquad
+    \mathrm{TF} \;=\; \frac{\mathrm{CVaR}_\alpha}{\mathrm{VaR}_\alpha}.
+\end{equation}
+
+\paragraph{Drawdown family beyond MDD.} The Ulcer index of \textcite{martin1989ulcer} measures the depth and duration of drawdowns by the root-mean-square of the drawdown series $D_t = (V_t^{\star} - V_t)/V_t^{\star}$:
+\begin{equation}\label{eq:ulcer}
+    \mathrm{UI} \;=\; \sqrt{\,\frac{1}{N}\sum_{t=1}^{N} D_t^{2}\,}.
+\end{equation}
+
+\paragraph{Additional risk-adjusted ratios.} The Sortino ratio \parencite{sortino1991downside} divides by downside deviation $\sigma_d$ rather than total volatility, and the Calmar ratio divides annualised return $\mathrm{AR}$ by the worst observed drawdown:
+\begin{equation}\label{eq:extraratios}
+    \mathrm{Sortino} \;=\; \frac{\mu_R - R_f}{\sigma_d},
+    \qquad
+    \mathrm{Calmar} \;=\; \frac{\mathrm{AR}}{\mathrm{MDD}}.
+\end{equation}
+
+\clearpage

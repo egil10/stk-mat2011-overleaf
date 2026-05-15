@@ -41,11 +41,11 @@ Values of $\rho^{(k)}$ close to zero correspond to fast mean reversion; values c
 \begin{equation}\label{eq:thetadef}
     \Theta \;=\; \bigl\{\, \nu,\; \mathbf{P},\; c^{(k)},\; \rho^{(k)},\; \sigma^{(k)} : k=1,\ldots,K \,\bigr\}
 \end{equation}
-is estimated by maximum likelihood with the EM algorithm \parencite{dempster1977}, which for HMMs is the Baum--Welch procedure \parencite{baum1970maximization}. The E-step computes the smoothed regime posteriors
+is estimated by maximum likelihood, fitted with the Markov-switching routine in the \texttt{statsmodels} package \parencite{seabold2010statsmodels} from multiple random starts to mitigate convergence to local maxima. The smoothed regime posteriors
 \begin{equation}\label{eq:smoothedposterior}
     \gamma_t(k) \;=\; \mathbb{P}(K_t = k \mid S_1,\ldots,S_T;\Theta)
 \end{equation}
-via the forward--backward algorithm; the M-step updates $(c^{(k)},\rho^{(k)},\sigma^{(k)})$ and $\mathbf{P}$ to maximise the expected complete-data log-likelihood, restarted from several random seeds to mitigate convergence to local maxima \parencite{cappe2005}. We fix $K = 2$ throughout, motivated by the regime-switching literature in which a parsimonious two-state model (a low-volatility ``normal'' regime and a high-volatility ``stress'' regime) already captures the dominant non-stationarity in returns \parencite{hamilton1989new,hardy2001regime}; in preliminary exploration $K \in \{3, 4\}$ either failed to separate cleanly across seeds or split the high-volatility state into sub-regimes whose entry implications were indistinguishable at the relevant cost level, and the extra parameters would be hard to justify under a BIC-style penalty \parencite{schwarz1978bic} at the per-day sample sizes used here. With $K=2$ we label regimes by innovation variance,
+fall out of the same fit. We fix $K = 2$ throughout, motivated by the regime-switching literature in which a parsimonious two-state model already captures the dominant non-stationarity in returns \parencite{hamilton1989new}; in preliminary exploration $K \in \{3, 4\}$ either failed to separate cleanly across seeds or split the high-volatility state into sub-regimes whose entry implications were indistinguishable at the relevant cost level. With $K=2$ we label regimes by innovation variance,
 \begin{equation}\label{eq:regimelabels}
     k_{\mathrm{MR}} \;=\; \arg\min_{k}\,\sigma^{(k)},
     \qquad
